@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "reactpy-table"
 version = "0.1.0"
-description = ""
+description = "Headless UI for building powerful tables"
 authors = ["Steve Jones <jonesst2608@gmail.com>"]
 readme = "README.md"
 

@@ -4,14 +4,10 @@ from reactpy import component, html, use_state, use_memo, event
 from utils.logger import log, logging
 from utils.make_data import make_data
 from utils.pico_run import pico_run
-
 from reactpy_table import use_reactpy_table, Column, Columns, ColumnSort, Table, Options, Paginator, TableSearch, SimplePaginator, SimpleColumnSort, SimpleTableSearch
-
-
 from utils.reactpy_helpers import For
 
 # https://codesandbox.io/p/devbox/tanstack-table-example-expanding-jr4nn3?embed=1
-
 
 PRODUCTS = [
     {"name": "Education Dashboard", "description": "Html templates", "technology": "Angular", "id": "#194556", "price": "$149"},
@@ -33,7 +29,6 @@ COLS: Columns = [
     Column(name='price', label='Price')
     ]
 
-
 class Product(BaseModel):
     index: int
     name: str
@@ -42,14 +37,11 @@ class Product(BaseModel):
     id: str
     price: str
 
-
 def make_products(number: int) -> List[Product] :
     return make_data(number, PRODUCTS, Product)
 
 # https://medium.com/@jordammendes/build-powerfull-tables-in-reactjs-with-tanstack-9d57a3a63e35
 # https://tanstack.com/table/v8/docs/examples/react/expanding
-
-
 
 @component
 def TablePaginator(paginator: Paginator):
