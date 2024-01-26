@@ -11,3 +11,5 @@ from .simple_paginator import SimplePaginator
 from .simple_row_model import SimpleRowModel
 from .simple_column_sort import SimpleColumnSort
 from .simple_table_search import SimpleTableSearch
+
+__version__ = "0.0.2"
