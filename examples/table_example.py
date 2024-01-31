@@ -110,7 +110,7 @@ def Text(*children):
     """Add the pico button margin to make the 
     given text line up with the button text."""
 
-    return html.span({'style': 'margin-bottom: var(--spacing);'}, *children)
+    return html.span({'id': 'pg-pages','style': 'margin-bottom: var(--spacing);'}, *children)
 
 
 @component
@@ -121,7 +121,7 @@ def Search(search: TableSearch):
         text = event['currentTarget']['value']
         search.table_search(text)
 
-    return html.input({'type': 'search', 'placeholder': 'Search', 'aria-label': 'Search', 'onchange': on_change})
+    return html.input({'id':'tbl-search', 'type': 'search', 'placeholder': 'Search', 'aria-label': 'Search', 'onchange': on_change})
 
 @component
 def THead(table: Table):
@@ -141,7 +141,7 @@ def THead(table: Table):
         up = sort.is_sort_reverse(col)
 
         text = col.label + (" 🠕" if up else " 🠗")
-        return html.th({'onclick': on_click}, text)
+        return html.th({'id': f'tbl-sort-{col.label.lower()}', 'onclick': on_click}, text)
 
     columns = table.data.cols
 

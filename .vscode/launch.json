@@ -21,14 +21,14 @@
     },
 
     {
-      "name": "2a. PyTest (tests/test_example.py)",
+      "name": "2a. PyTest (tests/test_example_app.py)",
       "type": "python",
       "request": "launch",
       "stopOnEntry": false,
       "module": "pytest",
       "args": [
         "-o log_cli=1",
-        "tests/test_example.py",
+        "tests/test_example_app.py",
         "--headed"
       ],
       "cwd": "${workspaceRoot}",
