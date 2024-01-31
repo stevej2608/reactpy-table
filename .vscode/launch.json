@@ -21,14 +21,31 @@
     },
 
     {
-      "name": "2a. PyTest (tests/test_hello.py)",
+      "name": "2a. PyTest (tests/test_example.py)",
       "type": "python",
       "request": "launch",
       "stopOnEntry": false,
       "module": "pytest",
       "args": [
         "-o log_cli=1",
-        "tests/test_hello.py",
+        "tests/test_example.py",
+        "--headed"
+      ],
+      "cwd": "${workspaceRoot}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "justMyCode": false
+    },
+
+    {
+      "name": "2b. PyTest (tests/test_simple.py)",
+      "type": "python",
+      "request": "launch",
+      "stopOnEntry": false,
+      "module": "pytest",
+      "args": [
+        "-o log_cli=1",
+        "tests/test_simple.py",
         "--headed"
       ],
       "cwd": "${workspaceRoot}",

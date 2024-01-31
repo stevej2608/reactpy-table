@@ -2,7 +2,6 @@ import pytest
 from playwright.async_api import async_playwright
 from reactpy.testing import DisplayFixture, BackendFixture
 
-
 @pytest.fixture(scope="session")
 def anyio_backend():
     return 'asyncio'
