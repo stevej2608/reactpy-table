@@ -47,13 +47,13 @@ def make_products(number: int) -> List[Product] :
 def TablePaginator(paginator: Paginator):
 
     @component
-    def Button(text:str, action, disabled=False):
+    def Button(id:str, text:str, action, disabled=False):
 
         @event
         def onclick(event):
             action()
 
-        return html.button({'onclick': onclick, 'disabled': disabled}, text)
+        return html.button({'id': id, 'onclick': onclick, 'disabled': disabled}, text)
 
     @component
     def PageSize(size:int):
@@ -75,9 +75,9 @@ def TablePaginator(paginator: Paginator):
 
         @component
         def PageOption(size:int):
-            return html.option({'value': size}, f"Show {size}")
+            return html.option({'value': size}, f"{size}")
 
-        return html.select({'value': sizes[0], "on_change": on_change}, For(PageOption, sizes))
+        return html.select({'id': 'dd1', 'value': sizes[0], "on_change": on_change}, For(PageOption, sizes))
 
 
     @component
@@ -113,10 +113,10 @@ def TablePaginator(paginator: Paginator):
     no_next = not paginator.can_get_next_page()
 
     return html.div({'class_name': 'grid', 'style': {'align-items': 'center','grid-template-columns': '2.5fr 1.5fr 1.5fr 2.5fr 4fr 1.2fr 2fr 3fr'}},
-        Button("<<", paginator.first_page, disabled = no_previous),
-        Button("<", paginator.previous_page, disabled = no_previous),
-        Button(">", paginator.next_page, disabled = no_next),
-        Button(">>", paginator.last_page, disabled = no_next),
+        Button("pg-first", "<<", paginator.first_page, disabled = no_previous),
+        Button("pg-prev", "<", paginator.previous_page, disabled = no_previous),
+        Button("pg-next", ">", paginator.next_page, disabled = no_next),
+        Button("pg-last", ">>", paginator.last_page, disabled = no_next),
         Text("Page",html.strong(f" {paginator.page_index + 1} of {paginator.page_count}")),
         PageInput(),
         PageSizeSelect([10, 20, 30, 40, 50])
@@ -177,7 +177,7 @@ def TColgroup(col_widths: List[int]):
 
 
 def TRow(index: int, row: Product):
-    return  html.tr(
+    return  html.tr({'id': f"row-{index}"},
         html.td(str(row.index)),
         html.td(row.name),
         html.td(row.description),

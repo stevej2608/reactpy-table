@@ -5,10 +5,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "1a examples/world_example.py",
+      "name": "1a examples/table_example.py",
       "type": "python",
       "request": "launch",
-      "module": "examples.world_example",
+      "module": "examples.table_example",
       "justMyCode": false,
       "console": "internalConsole",
       "internalConsoleOptions": "openOnSessionStart",
