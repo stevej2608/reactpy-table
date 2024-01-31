@@ -21,10 +21,10 @@
     },
 
     {
-      "name": "1b examples/table_basic_example.py",
+      "name": "1b examples/basic_example.py",
       "type": "python",
       "request": "launch",
-      "module": "examples.table_basic_example",
+      "module": "examples.basic_example",
       "justMyCode": false,
       "console": "internalConsole",
       "internalConsoleOptions": "openOnSessionStart",
