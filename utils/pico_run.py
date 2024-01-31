@@ -30,7 +30,7 @@ def pico_run(app: Union[Component, Callable], options=PICO_OPTIONS):
 
     @component
     def AppMain():
-        return html.div({'class_name': 'container'},
+        return html.div({'class_name': 'container', 'style': {'max-width': '1900px'}},
             html.section(
                 children
             )

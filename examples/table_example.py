@@ -1,44 +1,26 @@
 from typing import List, cast
 from pydantic import BaseModel
 from reactpy import component, html, use_state, use_memo, event
+from reactpy_table import use_reactpy_table, Column, Columns, ColumnSort, Table, Options, Paginator, TableSearch, SimplePaginator, SimpleColumnSort, SimpleTableSearch
 from utils.logger import log, logging
 from utils.make_data import make_data
 from utils.pico_run import pico_run
-from reactpy_table import use_reactpy_table, Column, Columns, ColumnSort, Table, Options, Paginator, TableSearch, SimplePaginator, SimpleColumnSort, SimpleTableSearch
 from utils.reactpy_helpers import For
+
+from .data.sp500 import get_sp500, CompanyModel
 
 # https://codesandbox.io/p/devbox/tanstack-table-example-expanding-jr4nn3?embed=1
 
-PRODUCTS = [
-    {"name": "Education Dashboard", "description": "Html templates", "technology": "Angular", "id": "#194556", "price": "$149"},
-    {"name": "React UI Kit", "description": "Html templates", "technology": "React JS", "id": "#623232", "price": "$129"},
-    {"name": "DashboardPro", "description": "Html templates", "technology": "SolidJS", "id": "#194334", "price": "$449"},
-    {"name": "Charts Package", "description": "Fancy charts", "technology": "Angular", "id": "#323323", "price": "$129"},
-    {"name": "Server Render", "description": "NodeJS", "technology": "Typescript", "id": "#994336", "price": "$749"},
-    {"name": "Accounts Package", "description": "NodeJS", "technology": "Typescript", "id": "#144256", "price": "$779"},
-    {"name": "Grav CMS", "description": "Content Management", "technology": "PHP", "id": "#624478", "price": "$29"},
-    {"name": "Wordpress", "description": "Content Management", "technology": "PHP", "id": "#192656", "price": "$55"}
-]
 
 COLS: Columns = [
     Column(name='index', label='#'),
+    Column(name='symbol', label='Symbol'),
     Column(name='name', label='Name'),
-    Column(name='description', label='Description'),
-    Column(name='technology', label='Technology'),
-    Column(name='id', label='ID'),
-    Column(name='price', label='Price')
+    Column(name='sector', label='Sector'),
+    Column(name='industry', label='Industry'),
+    Column(name='headquarters', label='Headquarters'),
+    Column(name='CIK', label='CIK')
     ]
-
-class Product(BaseModel):
-    index: int
-    name: str
-    description: str
-    technology: str
-    id: str
-    price: str
-
-def make_products(number: int) -> List[Product] :
-    return make_data(number, PRODUCTS, Product)
 
 # https://medium.com/@jordammendes/build-powerfull-tables-in-reactjs-with-tanstack-9d57a3a63e35
 # https://tanstack.com/table/v8/docs/examples/react/expanding
@@ -176,18 +158,19 @@ def TColgroup(col_widths: List[int]):
     )
 
 
-def TRow(index: int, row: Product):
+def TRow(index: int, row: CompanyModel):
     return  html.tr({'id': f"row-{index}"},
         html.td(str(row.index)),
+        html.td(row.symbol),
         html.td(row.name),
-        html.td(row.description),
-        html.td(row.technology),
-        html.td(row.id),
-        html.td(row.price),
+        html.td(row.sector),
+        html.td(row.industry),
+        html.td(row.headquarters),
+        html.td(row.CIK),
     )
 
 
-def TBody(table: List[Product]):
+def TBody(table: List[CompanyModel]):
     return  html.tbody(
         For(TRow, iterator=enumerate(table))
     )
@@ -203,15 +186,15 @@ def TFoot(columns: Columns):
 @component
 def AppMain():
 
-    table_data = use_memo(lambda: make_products(10000))
+    table_data = use_memo(lambda:get_sp500())
 
     table = use_reactpy_table(Options(
         rows=table_data,
         cols = COLS,
         plugins=[
-            SimplePaginator.init,
+            SimpleTableSearch.init,
             SimpleColumnSort.init,
-            SimpleTableSearch.init
+            SimplePaginator.init
             ]
     ))
 
@@ -221,7 +204,7 @@ def AppMain():
         html.h2('ReactPy Table Example'),
         Search(table.search),
         html.table({"role": "grid"},
-            TColgroup([80, 150, 100, 100, 100, 100]),
+            TColgroup([80, 150, 250, 200, 300, 250, 100]),
             THead(table),
             TBody(table.paginator.rows),
             TFoot(table.data.cols),

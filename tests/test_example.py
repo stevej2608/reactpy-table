@@ -14,10 +14,10 @@ async def test_sample(display: DisplayFixture):
     # Confirm first row, last row and number of rows
 
     text = await display.page.locator('id=row-0').all_inner_texts()
-    assert text[0] == '1\tServer Render\tNodeJS\tTypescript\t#994336\t$749'
+    assert text[0].startswith('1')
 
     text = await display.page.locator('id=row-9').all_inner_texts()
-    assert text[0] == '10\tServer Render\tNodeJS\tTypescript\t#994336\t$749'
+    assert text[0].startswith('10')
 
     rows = await display.page.locator('tr').count()
     assert rows == 10
@@ -58,7 +58,10 @@ async def test_sample(display: DisplayFixture):
     pg_next = display.page.locator('id=pg-last')
     await pg_next.click()
 
+    rows = await display.page.locator('tr').count()
+    assert rows == 5
+
     # Confirm last row
 
-    text = await display.page.locator('id=row-19').all_inner_texts()
-    assert text[0].startswith('1000')
+    text = await display.page.locator('id=row-4').all_inner_texts()
+    assert text[0].startswith('505')
