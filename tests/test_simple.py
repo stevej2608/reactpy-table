@@ -1,8 +1,8 @@
 import pytest
 from reactpy import html, component, Layout, use_memo
-from .data.users import make_data
-
 from reactpy_table import use_reactpy_table, Columns, Options, SimplePaginator, SimpleColumnSort, SimpleTableSearch
+
+from .data.users import make_data
 
 
 @pytest.mark.anyio
@@ -47,7 +47,7 @@ async def test_basic_usage():
                 ]
         ))
         return html.div()
-    
+
     async with Layout(TestComponent()) as layout:
         await layout.render()
         assert table
