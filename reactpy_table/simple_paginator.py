@@ -36,16 +36,23 @@ class SimplePaginator(Paginator):
         return math.ceil(row_count / self.page_size)
 
 
+    @property
+    def row_count(self) -> int :
+        return len(self.data.rows)
+
+
     def first_page(self):
         self.set_page_index(0)
 
 
     def previous_page(self):
-        self.set_page_index(self.page_index - 1)
+        if self.page_index > 0:
+            self.set_page_index(self.page_index - 1)
 
 
     def next_page(self):
-        self.set_page_index(self.page_index + 1)
+        if self.page_index < self.page_count - 1:
+            self.set_page_index(self.page_index + 1)
 
 
     def last_page(self):
@@ -56,6 +63,8 @@ class SimplePaginator(Paginator):
     @update_state
     def set_page_size(self, page_size:int):
         log.info('set_page_size')
+
+        self.page_index = int((self.page_index * self.page_size) /  page_size)
         self.page_size = page_size
 
 

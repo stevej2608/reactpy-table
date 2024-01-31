@@ -1,3 +1,4 @@
+from typing import List, Any
 from abc import abstractmethod
 from .abstract_plugin import Plugin
 
@@ -5,15 +6,24 @@ from .abstract_plugin import Plugin
 class Paginator(Plugin):
 
     page_index: int = 0
+    """Page index [0..n]"""
+
     page_size: int
 
     @property
     @abstractmethod
-    def rows(self): ...
+    def rows(self) -> List[Any]:
+        """Return rows in current page"""
 
     @property
     @abstractmethod
-    def page_count(self): ...
+    def page_count(self) -> int :
+        """Return number of pages"""
+
+    @property
+    @abstractmethod
+    def row_count(self) -> int :
+        """Return total number of rows"""
 
     @abstractmethod
     def first_page(self): ...
