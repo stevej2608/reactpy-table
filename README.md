@@ -11,6 +11,8 @@ The initial release supports the following features:
 - [X] Freeform text search
 - [X] Forward/Reverse column based sort
 - [X] Pagination
+- [ ] Integration with Pandas (in progress)
+- [ ] Remote large dataset support
 
 ## Usage
 
