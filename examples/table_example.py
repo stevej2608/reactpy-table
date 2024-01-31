@@ -1,29 +1,14 @@
 from typing import List, cast
-from pydantic import BaseModel
 from reactpy import component, html, use_state, use_memo, event
 from reactpy_table import use_reactpy_table, Column, Columns, ColumnSort, Table, Options, Paginator, TableSearch, SimplePaginator, SimpleColumnSort, SimpleTableSearch
 from utils.logger import log, logging
-from utils.make_data import make_data
 from utils.pico_run import pico_run
 from utils.reactpy_helpers import For
 
-from .data.sp500 import get_sp500, CompanyModel
+from .data.sp500 import get_sp500, CompanyModel, COLS
 
-# https://codesandbox.io/p/devbox/tanstack-table-example-expanding-jr4nn3?embed=1
+# Example supports search, sort & pagination
 
-
-COLS: Columns = [
-    Column(name='index', label='#'),
-    Column(name='symbol', label='Symbol'),
-    Column(name='name', label='Name'),
-    Column(name='sector', label='Sector'),
-    Column(name='industry', label='Industry'),
-    Column(name='headquarters', label='Headquarters'),
-    Column(name='CIK', label='CIK')
-    ]
-
-# https://medium.com/@jordammendes/build-powerfull-tables-in-reactjs-with-tanstack-9d57a3a63e35
-# https://tanstack.com/table/v8/docs/examples/react/expanding
 
 @component
 def TablePaginator(paginator: Paginator):

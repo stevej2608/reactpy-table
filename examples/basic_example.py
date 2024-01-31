@@ -1,23 +1,14 @@
-## reactpy-table
+from typing import List
+from reactpy import component, html, use_memo
+from reactpy_table import use_reactpy_table, Column, Table, Options
+from utils.logger import log, logging
+from utils.pico_run import pico_run
+from utils.reactpy_helpers import For
 
-![](./docs/img/screenshot.png)
+from .data.sp500 import get_sp500, CompanyModel, COLS
 
-Headless UI for building powerful tables with [ReactPy]. The project 
-takes its design ideas from the hugely popular, ReactJS based, [TanStack Table].
+# Minimal example, see table_example.py for search, sort & pagination
 
-The initial release supports the following features:
-
-- [X] Headless UI, CSS agnostic
-- [X] Freeform text search
-- [X] Forward/Reverse column based sort
-- [X] Pagination
-
-## Usage
-
-	pip install reactpy-table
-
-*[basic_example.py](examples/basic_example.py)*
-```
 @component
 def THead(table: Table):
     cols = table.data.cols
@@ -60,8 +51,9 @@ def AppMain():
             TBody(table.data.rows)
         ),
     )
-```
 
-[TanStack Table]: https://tanstack.com/table/latest
-[ReactPy]: https://reactpy.dev/docs/index.html
+# python -m examples.table_basic_example
 
+if __name__ == "__main__":
+    log.setLevel(logging.INFO)
+    pico_run(AppMain)

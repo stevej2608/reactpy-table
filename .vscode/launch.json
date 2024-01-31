@@ -21,6 +21,22 @@
     },
 
     {
+      "name": "1b examples/table_basic_example.py",
+      "type": "python",
+      "request": "launch",
+      "module": "examples.table_basic_example",
+      "justMyCode": false,
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "serverReadyAction": {
+        "pattern": "Uvicorn running on\\s+(https?://\\S+)",
+        "uriFormat": "%s/",
+        "action": "debugWithChrome",
+        "killOnServerStop": true
+      }
+    },
+
+    {
       "name": "2a. PyTest (tests/test_example_app.py)",
       "type": "python",
       "request": "launch",

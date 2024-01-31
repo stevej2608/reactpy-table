@@ -1,5 +1,7 @@
 from typing import List
 from pydantic import BaseModel
+from reactpy_table import Column, Columns
+
 
 class CompanyModel(BaseModel):
     index: int
@@ -11,8 +13,19 @@ class CompanyModel(BaseModel):
     CIK: str
 
 
-def get_sp500() -> List[CompanyModel]:
-    return [CompanyModel(index=index+1, **row) for index, row in enumerate(SP500)]
+def get_sp500(rows:int=None) -> List[CompanyModel]:
+    table_rows = [CompanyModel(index=index+1, **row) for index, row in enumerate(SP500)]
+    return table_rows if rows is None else table_rows[0:rows] 
+
+COLS: Columns = [
+    Column(name='index', label='#'),
+    Column(name='symbol', label='Symbol'),
+    Column(name='name', label='Name'),
+    Column(name='sector', label='Sector'),
+    Column(name='industry', label='Industry'),
+    Column(name='headquarters', label='Headquarters'),
+    Column(name='CIK', label='CIK')
+    ]
 
 # https://github.com/noahg/sp500csv/tree/master
 
