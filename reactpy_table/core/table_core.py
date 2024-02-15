@@ -31,6 +31,7 @@ def use_reactpy_table(options: Options = Options()) -> ReactpyTable:
 
             new = table.model_copy()
             try:
+                assert set_table is not None
                 set_table(new)
             except Exception as ex:
                 log.info('Update model failed %s', ex)

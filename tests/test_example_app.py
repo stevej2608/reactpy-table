@@ -1,6 +1,8 @@
 import pytest
 from reactpy.testing import DisplayFixture
+
 from examples.table_example import AppMain
+
 
 # https://playwright.dev/python/docs/next/locators
 # https://playwright.dev/python/docs/next/other-locators#xpath-locator
@@ -8,7 +10,11 @@ from examples.table_example import AppMain
 @pytest.mark.anyio
 async def test_paginator(display: DisplayFixture):
     await display.show(AppMain)
+
     h2 = await display.page.wait_for_selector("h2")
+
+    assert h2 is not None
+
     assert (await h2.text_content()) == 'ReactPy Table Example'
 
     # Confirm first row, last row, number of rows  and page display
@@ -83,6 +89,9 @@ async def test_paginator(display: DisplayFixture):
 async def test_search(display: DisplayFixture):
     await display.show(AppMain)
     h2 = await display.page.wait_for_selector("h2")
+
+    assert h2 is not None
+
     assert (await h2.text_content()) == 'ReactPy Table Example'
 
     search = display.page.locator('id=tbl-search')
@@ -96,6 +105,9 @@ async def test_search(display: DisplayFixture):
 async def test_sort(display: DisplayFixture):
     await display.show(AppMain)
     h2 = await display.page.wait_for_selector("h2")
+
+    assert h2 is not None
+
     assert (await h2.text_content()) == 'ReactPy Table Example'
 
     search = display.page.locator('id=tbl-sort-#')
