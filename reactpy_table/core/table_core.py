@@ -12,7 +12,7 @@ class ReactpyTable(Table):
 PluginFactory = Callable[['TableData', Updater], None]
 
 class Options(TableData):
-    plugins: List[PluginFactory] = []
+    plugins: List[Callable[..., None]] = []
 
 
 def use_reactpy_table(options: Options = Options()) -> ReactpyTable:
@@ -28,7 +28,7 @@ def use_reactpy_table(options: Options = Options()) -> ReactpyTable:
         def _updater():
 
             log.info('Update table')
-    
+
             new = table.model_copy()
             try:
                 set_table(new)

@@ -23,13 +23,13 @@ class SimpleTableSearch(TableSearch):
 
 
     @update_state
-    def table_search(self, text:str, case_sensitive=False):
+    def table_search(self, text:str, case_sensitive:bool=False):
 
         if not case_sensitive:
             text = text.lower()
 
         def _filter(element: Column):
-            element_text = ' '.join([str(val)  for val in element.dict().values()])
+            element_text = ' '.join([str(val)  for val in element.model_dump().values()])
 
             if not case_sensitive:
                 element_text = element_text.lower()

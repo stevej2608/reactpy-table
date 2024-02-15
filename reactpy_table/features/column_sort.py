@@ -19,7 +19,7 @@ class SimpleColumnSort(ColumnSort):
     def init(table: Table, updater: Updater) -> None:
 
 
-        state = {}
+        state: Dict[str, ColumnState] = {}
         for col in table.data.cols:
             name = col if isinstance(col, str) else col.name
             state[name] = ColumnState()
@@ -36,7 +36,7 @@ class SimpleColumnSort(ColumnSort):
         def _sort(col:Column, element: Any):
             name = col if isinstance(col, str) else col.name
             return getattr(element, name)
-   
+
         state = self.get_state(col)
         state.reverse = not state.reverse
 

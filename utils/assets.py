@@ -1,12 +1,13 @@
 from mimetypes import guess_type
 from os import path
-from os.path import isfile
 
 from fastapi import FastAPI, Response
 from utils.options import Options
 from utils.logger import log
 
-async def get_file(filename):
+# pyright: reportUnusedFunction=false
+
+async def get_file(filename: str):
 
     if not path.isfile(filename):
         log.warning("File '%s' is missing", filename)

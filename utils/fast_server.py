@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Any
+from typing import Callable, Any
 import sys
 import signal
 import multiprocessing
@@ -12,6 +12,9 @@ from .var_name import var_name
 from .fast_server_options import DEFAULT_OPTIONS
 
 app = FastAPI(description="ReactPy", version="0.1.0")
+
+# pyright: reportDeprecated=false
+# pyright: reportUnusedFunction=false
 
 LOGS = [
     "asgi-logger",

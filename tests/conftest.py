@@ -1,4 +1,3 @@
-from typing import Any
 import pytest
 from playwright.async_api import Browser
 from playwright.async_api import async_playwright
@@ -13,7 +12,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "--headed",
         dest="headed",
         action="store_true",
-        help="Open a browser window when runnging web-based tests",
+        help="Open a browser window when running web-based tests",
     )
 
 @pytest.fixture(scope="session")

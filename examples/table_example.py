@@ -134,6 +134,7 @@ def TColgroup(col_widths: List[int]):
     )
 
 
+@component
 def TRow(index: int, row: CompanyModel):
     return  html.tr({'id': f"row-{index}"},
         html.td(str(row.index)),

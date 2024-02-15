@@ -1,8 +1,9 @@
+from typing import List
 import pytest
 from reactpy import html, component, Layout, use_memo
 from reactpy_table import use_reactpy_table, Columns, Options, SimplePaginator, SimpleColumnSort, SimpleTableSearch
 
-from .data.users import make_data
+from .data.users import make_data, DataModel
 
 
 @pytest.mark.anyio
@@ -14,7 +15,7 @@ async def test_make_data():
 
 @pytest.mark.anyio
 async def test_use_memo():
-    rows = []
+    rows: List[DataModel] = []
 
     @component
     def TestComponent():

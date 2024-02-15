@@ -1,6 +1,5 @@
 from typing import List, Any
 from pydantic import BaseModel, validator, ValidationError
-from reactpy.core.types import VdomDict
 from reactpy import html
 
 
@@ -44,8 +43,8 @@ class Options(BaseModel):
 
     @validator("head")
     @classmethod
-    def validate_head(cls, value):
-        vals = []
+    def validate_head(cls, value: List[Any]):
+        vals: List[Any] = []
         for v in value:
             if isinstance(v, str):
                 if v.endswith('.css'):
@@ -66,7 +65,7 @@ class Options(BaseModel):
         return vals
 
 
-    def __add__(self, other):
+    def __add__(self, other:"Options"):
         model = self.model_copy()
         model.head += other.head
 

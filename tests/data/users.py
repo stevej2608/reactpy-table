@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, cast, Any
 from pydantic import BaseModel
 
 # https://json-generator.com/#
@@ -15021,4 +15021,4 @@ class DataModel(BaseModel):
     address: str
 
 def make_data(rows:int=len(ROW_DATA)) -> List[DataModel]:
-    return [DataModel(**row) for row in ROW_DATA]
+    return [DataModel(**cast(Any, row)) for row in ROW_DATA]
