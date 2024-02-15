@@ -1,5 +1,6 @@
-from typing import List, cast
+from typing import List, cast, Callable, Dict, Any
 from reactpy import component, html, use_state, use_memo, event
+from reactpy.core.component import Component
 from reactpy_table import use_reactpy_table, Column, Columns, ColumnSort, Table, Options, Paginator, TableSearch, SimplePaginator, SimpleColumnSort, SimpleTableSearch
 from utils.logger import log, logging
 from utils.pico_run import pico_run
@@ -14,29 +15,19 @@ from .data.sp500 import get_sp500, CompanyModel, COLS
 def TablePaginator(paginator: Paginator):
 
     @component
-    def Button(id:str, text:str, action, disabled=False):
+    def Button(id:str, text:str, action: Callable[...,None], disabled: bool=False):
 
         @event
-        def onclick(event):
+        def onclick(event: Dict[str, Any]):
             action()
 
         return html.button({'id': id, 'onclick': onclick, 'disabled': disabled}, text)
 
     @component
-    def PageSize(size:int):
-
-        @event
-        def onclick(event):
-            paginator.set_page_size(size)
-
-        return html.option({'value': size, 'onclick': onclick}, f"Show {size}")
-
-
-    @component
     def PageSizeSelect(sizes:List[int]):
 
         @event
-        def on_change(event):
+        def on_change(event: Dict[str, Any]):
             page_size = int(event['currentTarget']['value'])
             paginator.set_page_size(page_size)
 
@@ -53,7 +44,7 @@ def TablePaginator(paginator: Paginator):
         count_value, set_count = use_state(0)
 
         @event(prevent_default=True)
-        def on_change(event):
+        def on_change(event: Dict[str, Any]):
 
             try:
                 new_value = int(event['currentTarget']['value'])
@@ -64,7 +55,7 @@ def TablePaginator(paginator: Paginator):
 
             log.info('new_value = %d', new_value)
 
-            if (paginator.page_index != new_value - 1):
+            if paginator.page_index != new_value - 1:
                 paginator.set_page_index(new_value - 1)
             else:
                 set_count(count_value + 1)
@@ -91,7 +82,7 @@ def TablePaginator(paginator: Paginator):
 
 
 @component
-def Text(*children):
+def Text(*children: List[Component]):
     """Add the pico button margin to make the 
     given text line up with the button text."""
 
@@ -102,7 +93,7 @@ def Text(*children):
 def Search(search: TableSearch):
 
     @event
-    def on_change(event):
+    def on_change(event: Dict[str, Any]):
         text = event['currentTarget']['value']
         search.table_search(text)
 
@@ -117,7 +108,7 @@ def THead(table: Table):
         sort = cast(ColumnSort, table.sort)
 
         @event
-        def on_click(event):
+        def on_click(event: Dict[str, Any]):
             log.info('onclick col=%s', col)
             sort.toggle_sort(col)
 
