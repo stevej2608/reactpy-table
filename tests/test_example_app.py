@@ -114,4 +114,3 @@ async def test_sort(display: DisplayFixture):
 
     text = await display.page.locator('id=row-0').all_inner_texts()
     assert text[0].startswith('11')
-

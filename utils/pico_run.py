@@ -1,4 +1,4 @@
-from typing import Union, Callable
+from typing import Union, Callable, cast
 from types import FunctionType
 from reactpy import component, html
 from reactpy.core.component import Component
@@ -13,7 +13,8 @@ PICO_OPTIONS = Options(
         )
     )
 
-def pico_run(app: Union[Component, Callable], options=PICO_OPTIONS):
+
+def pico_run(app: Union[Component, Callable[..., Component]], options:Options=PICO_OPTIONS) -> None:
     """Wrap the given app in a simple container and call the FastAPI server
 
     Args:
@@ -24,12 +25,13 @@ def pico_run(app: Union[Component, Callable], options=PICO_OPTIONS):
         _type_: _description_
     """
     if isinstance(app, FunctionType):
-        children = app()
+        children: Component = app()
     else:
-        children = app
+        children = cast(Component, app)
 
     @component
     def AppMain():
+        nonlocal children
         return html.div({'class_name': 'container', 'style': {'max-width': '1900px'}},
             html.section(
                 children

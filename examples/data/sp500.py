@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from reactpy_table import Column, Columns
 
@@ -13,7 +13,7 @@ class CompanyModel(BaseModel):
     CIK: str
 
 
-def get_sp500(rows:int=None) -> List[CompanyModel]:
+def get_sp500(rows:Optional[int]=None) -> List[CompanyModel]:
     table_rows = [CompanyModel(index=index+1, **row) for index, row in enumerate(SP500)]
     return table_rows if rows is None else table_rows[0:rows] 
 
@@ -28,6 +28,8 @@ COLS: Columns = [
     ]
 
 # https://github.com/noahg/sp500csv/tree/master
+
+# cSpell:disable
 
 SP500 = [
     {

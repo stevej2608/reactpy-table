@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Dict, Any
 import sys
 import signal
 import multiprocessing
@@ -58,7 +58,7 @@ def disable_noisy_logs():
         _log.setLevel(logging.ERROR)
 
 
-def handler(signum, frame):
+def handler(signum:int, frame: Any):
     active = multiprocessing.active_children()
     for child in active:
         child.terminate()
@@ -66,10 +66,10 @@ def handler(signum, frame):
 
 def run(AppMain: Callable[[], Component],
         options:Options=DEFAULT_OPTIONS,
-        host='127.0.0.1',
-        port=8000,
-        disable_server_logs=False,
-        **kwargs) -> None:
+        host: str='127.0.0.1',
+        port: int=8000,
+        disable_server_logs: bool=False,
+        **kwargs: Any) -> None:
 
     """Called once to run reactpy application on the fastapi server
 

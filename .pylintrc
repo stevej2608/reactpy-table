@@ -643,3 +643,4 @@ disable=
     C0103, # invalid-name
     W0718, # broad-exception-caught
     W0621, # redefined-outer-name
+    E1131, # unsupported-binary-operation

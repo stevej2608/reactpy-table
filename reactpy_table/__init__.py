@@ -1,3 +1,6 @@
+
+# pyright: reportUnusedImport=false
+
 from .types.abstract_paginator import Paginator
 from .types.abstract_column_sort import ColumnSort
 from .types.abstract_table_search import TableSearch

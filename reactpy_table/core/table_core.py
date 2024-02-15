@@ -29,7 +29,7 @@ def use_reactpy_table(options: Options = Options()) -> ReactpyTable:
 
             log.info('Update table')
     
-            new = table.copy()
+            new = table.model_copy()
             try:
                 set_table(new)
             except Exception as ex:
