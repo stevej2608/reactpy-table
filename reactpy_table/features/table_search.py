@@ -1,9 +1,9 @@
 
 
-from .table_data import RowData, Column
-from .abstract_plugin import Updater, update_state
-from .abstract_table import Table
-from .abstract_table import TableSearch
+from ..types.table_data import RowData, Column
+from ..types.feature import Updater, update_state
+from ..types.abstract_table import Table
+from ..types.abstract_table import TableSearch
 
 
 

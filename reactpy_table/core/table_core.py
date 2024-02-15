@@ -2,8 +2,8 @@ from typing import Callable, Any, Union, List
 from reactpy import use_state
 from utils.logger import log
 
-from .table_data import TableData, Updater
-from .abstract_table import Table
+from ..types.table_data import TableData, Updater
+from ..types.abstract_table import Table
 
 class ReactpyTable(Table):
     ...

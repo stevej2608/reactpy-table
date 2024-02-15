@@ -1,6 +1,6 @@
 from typing import List
 from reactpy import component, html, use_memo
-from reactpy_table import use_reactpy_table, Column, Table, Options
+from reactpy_table import use_reactpy_table, Table, Options
 from utils.logger import log, logging
 from utils.pico_run import pico_run
 from utils.reactpy_helpers import For

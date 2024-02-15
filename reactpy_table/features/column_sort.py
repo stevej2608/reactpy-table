@@ -1,10 +1,10 @@
 from typing import Dict, Any
 from pydantic import BaseModel
 
-from .abstract_plugin import Updater, update_state
-from .abstract_column_sort import ColumnSort
-from .table_data import Column
-from .abstract_table import Table
+from ..types.feature import Updater, update_state
+from ..types.abstract_column_sort import ColumnSort
+from ..types.table_data import Column
+from ..types.abstract_table import Table
 
 class ColumnState(BaseModel):
     reverse: bool = False

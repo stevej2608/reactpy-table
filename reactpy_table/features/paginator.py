@@ -2,10 +2,10 @@
 from typing import List, Any
 import math
 from utils.logger import log
-from .abstract_plugin import Updater, update_state
+from ..types.feature import Updater, update_state
 
-from .abstract_table import Table
-from .abstract_paginator import Paginator
+from ..types.abstract_table import Table
+from ..types.abstract_paginator import Paginator
 
 
 DEFAULT_PAGE_SIZE = 10

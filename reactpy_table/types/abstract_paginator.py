@@ -1,9 +1,9 @@
 from typing import List, Any
 from abc import abstractmethod
-from .abstract_plugin import Plugin
+from .feature import Feature
 
 
-class Paginator(Plugin):
+class Paginator(Feature):
 
     page_index: int = 0
     """Page index [0..n]"""

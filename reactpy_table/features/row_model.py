@@ -1,6 +1,6 @@
-from .abstract_plugin import Updater
-from .abstract_row_model import RowModel
-from .abstract_table import Table
+from ..types.feature import Updater
+from ..types.abstract_row_model import RowModel
+from ..types.abstract_table import Table
 
 class SimpleRowModel(RowModel):
 

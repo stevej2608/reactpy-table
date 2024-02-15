@@ -1,8 +1,8 @@
 from abc import abstractmethod
-from .abstract_plugin import Plugin
+from .feature import Feature
 
 
-class TableSearch(Plugin):
+class TableSearch(Feature):
 
     @abstractmethod
     def table_search(self, text:str): ...

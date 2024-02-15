@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from .table_data import TableData, Updater
 
 
-class Plugin(BaseModel):
+class Feature(BaseModel):
     data: TableData
     updater: Updater
 
@@ -23,7 +23,7 @@ class Plugin(BaseModel):
 def update_state(method):
     """Update the table state if plugin state changes"""
     @wraps(method)
-    def _impl(self: Plugin, *args, **kwargs):
+    def _impl(self: Feature, *args, **kwargs):
         result = method(self, *args, **kwargs)
         self.updater()
         return result
