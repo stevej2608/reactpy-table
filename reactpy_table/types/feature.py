@@ -1,12 +1,29 @@
 from typing import Callable, TypeVar, Any, cast
+from ..types.abstract_table import Table
 
-from pydantic import BaseModel
-from .table_data import TableData, Updater
+class Feature:
+    table: Table
+
+    @staticmethod
+    def init(table: Table) -> 'Feature':
+        raise NotImplementedError()
+
+    @property
+    def data(self):
+        return self.table.data
+
+    @property
+    def initial_values(self):
+        return self.table.data.cols
 
 
-class Feature(BaseModel):
-    data: TableData
-    updater: Updater
+    def __init__(self, table:Table):
+        self.table = table
+
+
+    def updater(self) -> None:
+        self.table.updater(self)
+
 
 Func = TypeVar("Func", bound=Callable[..., Any])
 

@@ -1,18 +1,28 @@
-from typing import Callable, Any, Union, List
+from typing import Callable, Any, Union, Type
 from reactpy import use_state
 from utils.logger import log
 
-from ..types.table_data import TableData, Updater
+from reactpy_table import DefaultColumnSort, DefaultTableSearch, DefaultRowModel, DefaultPaginator
+
+from ..types.table_data import TableData
 from ..types.abstract_table import Table
+
+from ..types.abstract_paginator import Paginator
+from ..types.abstract_column_sort import ColumnSort
+from ..types.abstract_table_search import TableSearch
+from ..types.feature import Feature
+
 
 class ReactpyTable(Table):
     ...
 
 
-PluginFactory = Callable[['TableData', Updater], None]
+type TypeFeature[T] = Type[T] | None
 
 class Options(TableData):
-    plugins: List[Callable[..., None]] = []
+    paginator: TypeFeature[Paginator] = None
+    sort: TypeFeature[ColumnSort] = None
+    search: TypeFeature[TableSearch] = None
 
 
 def use_reactpy_table(options: Options = Options()) -> ReactpyTable:
@@ -23,21 +33,24 @@ def use_reactpy_table(options: Options = Options()) -> ReactpyTable:
 
     def _create_table() -> ReactpyTable:
         table_data = TableData(rows=options.rows, cols=options.cols)
-        table = ReactpyTable(data=table_data)
+        table = ReactpyTable(
+            data=table_data,
+            paginator = options.paginator or DefaultPaginator,
+            sort = options.sort or DefaultColumnSort,
+            search = options.search or DefaultTableSearch,
+            row_model = DefaultRowModel,
+            )
 
-        def _updater():
-
+        def state_updater(self: ReactpyTable, feature: Feature) -> None:
             log.info('Update table')
-
-            new = table.model_copy()
             try:
                 assert set_table is not None
-                set_table(new)
+                set_table(self)
             except Exception as ex:
                 log.info('Update model failed %s', ex)
 
-        for plugin_factory in options.plugins:
-            plugin_factory(table, _updater)
+        # table.updater = state_updater
+        setattr(table, 'updater', state_updater)
 
         return table
 

@@ -2,25 +2,19 @@
 from typing import List, Any
 import math
 from utils.logger import log
-from ..types.feature import Updater, update_state
-
 from ..types.abstract_table import Table
 from ..types.abstract_paginator import Paginator
+from ..types.feature import update_state
 
 
 DEFAULT_PAGE_SIZE = 10
 
 
-class SimplePaginator(Paginator):
-
+class DefaultPaginator(Paginator):
 
     @staticmethod
-    def init(table: Table, updater: Updater) -> None:
-        table.paginator = SimplePaginator(
-            data=table.data, 
-            page_size=DEFAULT_PAGE_SIZE,
-            updater=updater
-            )
+    def init(table: Table) -> 'Paginator':
+        return DefaultPaginator(table=table, page_size=DEFAULT_PAGE_SIZE)
 
 
     @property

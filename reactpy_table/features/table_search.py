@@ -1,25 +1,16 @@
-
-
-from ..types.table_data import RowData, Column
-from ..types.feature import Updater, update_state
+from ..types.table_data import Column
+from ..types.feature import update_state
 from ..types.abstract_table import Table
 from ..types.abstract_table import TableSearch
 
 
-
-class SimpleTableSearch(TableSearch):
-
-    initial_values: RowData
+class DefaultTableSearch(TableSearch):
 
 
     @staticmethod
-    def init(table: Table, updater: Updater) -> None:
-
-        table.search = SimpleTableSearch(
-            data=table.data,
-            initial_values = table.data.rows,
-            updater=updater
-            )
+    def init(table: Table) -> 'TableSearch':
+        search = DefaultTableSearch(table=table)
+        return search
 
 
     @update_state

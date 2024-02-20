@@ -1,7 +1,7 @@
 from typing import List
 import pytest
 from reactpy import html, component, Layout, use_memo
-from reactpy_table import use_reactpy_table, Columns, Options, SimplePaginator, SimpleColumnSort, SimpleTableSearch
+from reactpy_table import use_reactpy_table, Columns, Options
 
 from .data.users import make_data, DataModel
 
@@ -41,11 +41,6 @@ async def test_basic_usage():
         table = use_reactpy_table(Options(
             rows=make_data(100),
             cols = COLS,
-            plugins=[
-                SimplePaginator.init,
-                SimpleColumnSort.init,
-                SimpleTableSearch.init
-                ]
         ))
         return html.div()
 

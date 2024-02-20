@@ -1,7 +1,7 @@
-from typing import List, Any
+from typing import Any, List
 from abc import abstractmethod
 from .feature import Feature
-
+from .abstract_table import Table
 
 class Paginator(Feature):
 
@@ -9,6 +9,17 @@ class Paginator(Feature):
     """Page index [0..n]"""
 
     page_size: int
+
+
+    @staticmethod
+    def init(table: Table) -> 'Paginator':
+        raise NotImplementedError()
+
+
+    def __init__(self, table: Table, page_size:int):
+        super().__init__(table)
+        self.page_size = page_size
+
 
     @property
     @abstractmethod

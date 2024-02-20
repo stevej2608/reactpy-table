@@ -1,7 +1,7 @@
-from typing import List, cast, Callable, Dict, Any
+from typing import List, Callable, Dict, Any
 from reactpy import component, html, use_state, use_memo, event
 from reactpy.core.component import Component
-from reactpy_table import use_reactpy_table, Column, Columns, ColumnSort, Table, Options, Paginator, TableSearch, SimplePaginator, SimpleColumnSort, SimpleTableSearch
+from reactpy_table import use_reactpy_table, Column, Columns, Table, Options, Paginator, TableSearch, DefaultPaginator
 from utils.logger import log, logging
 from utils.pico_run import pico_run
 from utils.reactpy_helpers import For
@@ -105,7 +105,7 @@ def THead(table: Table):
     @component
     def text_with_arrow(col: Column):
 
-        sort = cast(ColumnSort, table.sort)
+        sort = table.sort
 
         @event
         def on_click(event: Dict[str, Any]):
@@ -163,16 +163,12 @@ def TFoot(columns: Columns):
 @component
 def AppMain():
 
-    table_data = use_memo(lambda:get_sp500())
+    table_data = use_memo(get_sp500)
 
     table = use_reactpy_table(Options(
         rows=table_data,
         cols = COLS,
-        plugins=[
-            SimpleTableSearch.init,
-            SimpleColumnSort.init,
-            SimplePaginator.init
-            ]
+        paginator = DefaultPaginator
     ))
 
 

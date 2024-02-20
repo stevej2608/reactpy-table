@@ -10,9 +10,9 @@ from .types.table_data import TableData, Column, Columns
 from .core.table_core import ReactpyTable, use_reactpy_table
 from .core.table_core import  Options
 
-from .features.paginator import SimplePaginator
-from .features.row_model import SimpleRowModel
-from .features.column_sort import SimpleColumnSort
-from .features.table_search import SimpleTableSearch
+from .features.column_sort import DefaultColumnSort
+from .features.paginator import DefaultPaginator
+from .features.row_model import DefaultRowModel
+from .features.table_search import DefaultTableSearch
 
 __version__ = "0.0.2"
