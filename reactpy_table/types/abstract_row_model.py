@@ -1,8 +1,11 @@
-from .feature import Feature
-from .abstract_table import Table
+from typing import Protocol
 
-class RowModel(Feature):
+
+from .feature import IFeature, Updater
+from .abstract_table import ITable
+
+class IRowModel(IFeature, Protocol):
 
     @staticmethod
-    def init(table: Table) -> 'RowModel':
+    def init(table: ITable, updater:Updater) -> 'IRowModel':
         raise NotImplementedError()

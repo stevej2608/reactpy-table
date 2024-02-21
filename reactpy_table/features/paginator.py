@@ -2,19 +2,18 @@
 from typing import List, Any
 import math
 from utils.logger import log
-from ..types.abstract_table import Table
-from ..types.abstract_paginator import Paginator
-from ..types.feature import update_state
+from ..types import IPaginator, Updater, ITable
 
+from .feature_base import FeatureBase, update_state
 
 DEFAULT_PAGE_SIZE = 10
 
 
-class DefaultPaginator(Paginator):
+class DefaultPaginator(IPaginator, FeatureBase):
 
     @staticmethod
-    def init(table: Table) -> 'Paginator':
-        return DefaultPaginator(table=table, page_size=DEFAULT_PAGE_SIZE)
+    def init(table: ITable, updater:Updater) -> 'IPaginator':
+        return DefaultPaginator(table=table, updater=updater, page_size=DEFAULT_PAGE_SIZE)
 
 
     @property
@@ -33,6 +32,11 @@ class DefaultPaginator(Paginator):
     @property
     def row_count(self) -> int :
         return len(self.data.rows)
+
+
+    def __init__(self, table: ITable, updater:Updater, page_size:int):
+        super().__init__(table, updater)
+        self.page_size = page_size
 
 
     def first_page(self):

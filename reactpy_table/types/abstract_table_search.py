@@ -1,13 +1,12 @@
-from abc import abstractmethod
-from .feature import Feature
-from .abstract_table import Table
+from typing import Protocol
 
+from .feature import IFeature, Updater
+from .abstract_table import ITable
 
-class TableSearch(Feature):
+class ITableSearch(IFeature, Protocol):
 
     @staticmethod
-    def init(table: Table) -> 'TableSearch':
+    def init(table: ITable, updater:Updater) -> 'ITableSearch':
         raise NotImplementedError()
 
-    @abstractmethod
     def table_search(self, text:str): ...

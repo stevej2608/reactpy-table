@@ -1,10 +1,10 @@
 from typing import Union, Callable, cast
 from types import FunctionType
-from reactpy import component, html
+from reactpy import component, html, run
 from reactpy.core.component import Component
 from reactpy.backend.fastapi import Options
 
-from utils.fast_server import run
+# from utils.fast_server import run
 from utils.css_links import PICO_CSS
 
 PICO_OPTIONS = Options(
@@ -38,4 +38,5 @@ def pico_run(app: Union[Component, Callable[..., Component]], options:Options=PI
             )
         )
 
-    run(AppMain, options=options)
+    # run(AppMain, options=options)
+    run(AppMain)

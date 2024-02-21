@@ -1,17 +1,15 @@
-from abc import abstractmethod
-from .feature import Feature
+from typing import Protocol
 from .table_data import Column
-from .abstract_table import Table
 
-class ColumnSort(Feature):
+from .feature import IFeature, Updater
+from .abstract_table import ITable
+
+class IColumnSort(IFeature, Protocol):
 
     @staticmethod
-    def init(table: Table) -> 'ColumnSort':
+    def init(table: ITable, updater:Updater) -> 'IColumnSort':
         raise NotImplementedError()
 
-
-    @abstractmethod
     def toggle_sort(self, col:Column) -> bool: ...
 
-    @abstractmethod
     def is_sort_reverse(self, col:Column) -> bool: ...

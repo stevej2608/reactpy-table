@@ -1,7 +1,7 @@
 from typing import List, Callable, Dict, Any
 from reactpy import component, html, use_state, use_memo, event
 from reactpy.core.component import Component
-from reactpy_table import use_reactpy_table, Column, Columns, Table, Options, Paginator, TableSearch, DefaultPaginator
+from reactpy_table import use_reactpy_table, Column, Columns, Options, IPaginator, ITableSearch, Table
 from utils.logger import log, logging
 from utils.pico_run import pico_run
 from utils.reactpy_helpers import For
@@ -12,7 +12,7 @@ from .data.sp500 import get_sp500, CompanyModel, COLS
 
 
 @component
-def TablePaginator(paginator: Paginator):
+def TablePaginator(paginator: IPaginator):
 
     @component
     def Button(id:str, text:str, action: Callable[...,None], disabled: bool=False):
@@ -90,7 +90,7 @@ def Text(*children: List[Component]):
 
 
 @component
-def Search(search: TableSearch):
+def Search(search: ITableSearch):
 
     @event
     def on_change(event: Dict[str, Any]):
@@ -165,10 +165,9 @@ def AppMain():
 
     table_data = use_memo(get_sp500)
 
-    table = use_reactpy_table(Options(
+    table = use_reactpy_table(options=Options(
         rows=table_data,
-        cols = COLS,
-        paginator = DefaultPaginator
+        cols = COLS
     ))
 
 

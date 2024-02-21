@@ -1,15 +1,12 @@
-from ..types.table_data import Column
-from ..types.feature import update_state
-from ..types.abstract_table import Table
-from ..types.abstract_table import TableSearch
+from ..types import Column, ITable, Updater, ITableSearch
+from .feature_base import FeatureBase, update_state
 
-
-class DefaultTableSearch(TableSearch):
+class DefaultTableSearch(ITableSearch, FeatureBase):
 
 
     @staticmethod
-    def init(table: Table) -> 'TableSearch':
-        search = DefaultTableSearch(table=table)
+    def init(table: ITable, updater:Updater) -> 'ITableSearch':
+        search = DefaultTableSearch(table=table, updater=updater)
         return search
 
 
@@ -28,5 +25,5 @@ class DefaultTableSearch(TableSearch):
             return text in element_text
 
 
-        result = filter(_filter, self.initial_values)
+        result = filter(_filter, self.initial_values.cols)
         self.data.rows = list(result)
