@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 Updater = Callable[[], None]
 
-RowData = List[Any]
+RowData = BaseModel | Any
 
 class Column(BaseModel):
     name: str
@@ -14,10 +14,18 @@ class Column(BaseModel):
     width: str = ""
 
 
-
 Columns = List[Column]
 
 class TableData(BaseModel):
-    rows: RowData = []
+    rows: List[RowData] = []
     cols: Columns = []
 
+
+# TBaseModel = TypeVar('TBaseModel', bound=BaseModel)
+
+# class Table(BaseModel, Generic[TBaseModel]):
+#     rows: List[TBaseModel]
+
+# class TableData(BaseModel, Generic[TBaseModel]):
+#     rows: List[TBaseModel] = []
+#     cols: Columns = []

@@ -1,4 +1,4 @@
-from typing import Protocol, Callable, TypeVar, Any, cast
+from typing import Protocol, Callable, TypeVar, Any, cast, List
 from .table_data import TableData, RowData
 from .abstract_table import ITable
 
@@ -13,7 +13,7 @@ class IFeature(Protocol) :
     def data(self) -> TableData: ...
 
     @property
-    def initial_values(self) -> RowData: ...
+    def initial_values(self) -> List[RowData]: ...
 
 
 class FeatureBase(IFeature):
@@ -21,14 +21,14 @@ class FeatureBase(IFeature):
     table: ITable
     updater: Updater
 
-    _initial_values: RowData
+    _initial_values: List[RowData]
 
     @property
     def data(self) -> TableData:
         return self.table.data
 
     @property
-    def initial_values(self) -> RowData:
+    def initial_values(self) -> List[RowData]:
         return self._initial_values
 
     def __init__(self,table: ITable, updater: Updater):
