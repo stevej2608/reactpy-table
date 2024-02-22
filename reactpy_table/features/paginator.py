@@ -2,17 +2,15 @@
 from typing import List, Any
 import math
 from utils.logger import log
-from ..types import IPaginator, Updater, ITable
-
-from .feature_base import FeatureBase, update_state
+from ..types import Paginator, Updater, ITable, update_state
 
 DEFAULT_PAGE_SIZE = 10
 
 
-class DefaultPaginator(IPaginator, FeatureBase):
+class DefaultPaginator(Paginator):
 
     @staticmethod
-    def init(table: ITable, updater:Updater) -> 'IPaginator':
+    def init(table: ITable, updater:Updater) -> Paginator:
         return DefaultPaginator(table=table, updater=updater, page_size=DEFAULT_PAGE_SIZE)
 
 

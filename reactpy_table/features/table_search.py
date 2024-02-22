@@ -1,11 +1,10 @@
-from ..types import Column, ITable, Updater, ITableSearch
-from .feature_base import FeatureBase, update_state
+from ..types import Column, ITable, TableSearch, Updater, update_state
 
-class DefaultTableSearch(ITableSearch, FeatureBase):
+class DefaultTableSearch(TableSearch):
 
 
     @staticmethod
-    def init(table: ITable, updater:Updater) -> 'ITableSearch':
+    def init(table: ITable, updater:Updater) -> TableSearch:
         search = DefaultTableSearch(table=table, updater=updater)
         return search
 

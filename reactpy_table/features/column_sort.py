@@ -1,21 +1,18 @@
 from typing import Dict, Any
 from pydantic import BaseModel
 
-from ..types.abstract_column_sort import IColumnSort
-from ..types import Column, ITable, Updater
-
-from .feature_base import FeatureBase, update_state
+from ..types import Column, ITable, Updater, ColumnSort, update_state
 
 class ColumnState(BaseModel):
     reverse: bool = False
 
 
-class DefaultColumnSort(IColumnSort, FeatureBase):
+class DefaultColumnSort(ColumnSort):
 
     state: Dict[str, ColumnState]
 
     @staticmethod
-    def init(table: ITable, updater:Updater) -> "DefaultColumnSort":
+    def init(table: ITable, updater:Updater) -> ColumnSort:
 
         state: Dict[str, ColumnState] = {}
         for col in table.data.cols:

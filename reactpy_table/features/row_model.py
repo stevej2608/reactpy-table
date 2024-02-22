@@ -1,9 +1,8 @@
-from ..types import IRowModel, Updater, ITable
-from .feature_base import FeatureBase
+from ..types import RowModel, Updater, ITable
 
 
-class DefaultRowModel(IRowModel, FeatureBase):
+class DefaultRowModel(RowModel):
 
     @staticmethod
-    def init(table: ITable, updater:Updater) -> IRowModel:
+    def init(table: ITable, updater:Updater) -> RowModel:
         return DefaultRowModel(table=table, updater=updater)

@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from reactpy import use_state
 from utils.logger import log
 
-from ..types import IColumnSort, IPaginator, ITableSearch, ITable, TableData, IRowModel, Updater
+from ..types import IColumnSort, ColumnSort, IPaginator, Paginator, ITableSearch, TableSearch, IRowModel, RowModel, ITable, TableData, Updater
 from ..features import DefaultColumnSort, DefaultTableSearch, DefaultRowModel, DefaultPaginator
 
 class IFeatureSet(Protocol):
@@ -14,10 +14,10 @@ class IFeatureSet(Protocol):
     row_model: IRowModel
 
 class Features(BaseModel):
-    paginator: Type[IPaginator]
-    sort: Type[IColumnSort]
-    search: Type[ITableSearch]
-    row_model: Type[IRowModel]
+    paginator: Type[Paginator]
+    sort: Type[ColumnSort]
+    search: Type[TableSearch]
+    row_model: Type[RowModel]
 
 
 class Table(ITable, IFeatureSet, Protocol):
@@ -33,12 +33,12 @@ class ReactpyTable(Table):
         self.row_model = features.row_model.init(self, updater=updater)
 
 
-type TypeFeature[T] = Type[T] | None
+type TFeature[T] = Type[T] | None
 
 class Options(TableData):
-    paginator: TypeFeature[IPaginator] = None
-    sort: TypeFeature[IColumnSort] = None
-    search: TypeFeature[ITableSearch] = None
+    paginator: TFeature[Paginator] = None
+    sort: TFeature[ColumnSort] = None
+    search: TFeature[TableSearch] = None
 
 
 def use_reactpy_table(options: Options = Options()) -> ReactpyTable:
@@ -63,9 +63,9 @@ def use_reactpy_table(options: Options = Options()) -> ReactpyTable:
             data=table_data,
             updater = state_updater,
             features = Features(
-                paginator = options.paginator or DefaultPaginator,
-                sort = options.sort or DefaultColumnSort,
-                search = options.search or DefaultTableSearch,
+                paginator = DefaultPaginator,
+                sort = DefaultColumnSort,
+                search = DefaultTableSearch,
                 row_model = DefaultRowModel
                 )
             )

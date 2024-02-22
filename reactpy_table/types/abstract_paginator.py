@@ -1,7 +1,7 @@
 from typing import Any, List, Protocol
 from abc import abstractmethod
 
-from .feature import IFeature, Updater
+from .feature import IFeature, FeatureBase, Updater
 from .abstract_table import ITable
 
 class IPaginator(IFeature, Protocol):
@@ -10,10 +10,6 @@ class IPaginator(IFeature, Protocol):
     """Page index [0..n]"""
 
     page_size: int
-
-    @staticmethod
-    def init(table: ITable, updater:Updater) -> 'IPaginator':
-        raise NotImplementedError()
 
     @property
     @abstractmethod
@@ -45,3 +41,10 @@ class IPaginator(IFeature, Protocol):
     def can_get_next_page(self) -> bool: ...
 
     def set_page_size(self, page_size:int): ...
+
+
+class Paginator(IPaginator, FeatureBase):
+
+    @staticmethod
+    def init(table: ITable, updater:Updater) -> IPaginator:
+        raise NotImplementedError()
