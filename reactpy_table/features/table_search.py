@@ -24,5 +24,5 @@ class DefaultTableSearch(TableSearch):
             return text in element_text
 
 
-        result = filter(_filter, self.initial_values.cols)
+        result = filter(_filter, self.initial_values)
         self.data.rows = list(result)

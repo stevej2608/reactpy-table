@@ -1,5 +1,5 @@
 from typing import Protocol, Callable, TypeVar, Any, cast
-from .table_data import TableData
+from .table_data import TableData, RowData
 from .abstract_table import ITable
 
 Updater = Callable[[ITable], None]
@@ -13,7 +13,7 @@ class IFeature(Protocol) :
     def data(self) -> TableData: ...
 
     @property
-    def initial_values(self) -> TableData: ...
+    def initial_values(self) -> RowData: ...
 
 
 class FeatureBase(IFeature):
@@ -21,17 +21,20 @@ class FeatureBase(IFeature):
     table: ITable
     updater: Updater
 
+    _initial_values: RowData
+
     @property
     def data(self) -> TableData:
         return self.table.data
 
     @property
-    def initial_values(self) -> TableData:
-        return self.table.data
-    
+    def initial_values(self) -> RowData:
+        return self._initial_values
+
     def __init__(self,table: ITable, updater: Updater):
         self.table = table
         self.updater = updater
+        self._initial_values = table.data.rows
 
 
 Func = TypeVar("Func", bound=Callable[..., Any])

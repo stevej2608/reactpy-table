@@ -1,6 +1,6 @@
 from typing import Callable, Any, Union, Type, Protocol
 from pydantic import BaseModel
-
+from copy import deepcopy
 from reactpy import use_state
 from utils.logger import log
 
@@ -53,7 +53,7 @@ def use_reactpy_table(options: Options = Options()) -> ReactpyTable:
             log.info('Update table')
             try:
                 assert set_table is not None
-                set_table(self)
+                set_table(deepcopy(self))
             except Exception as ex:
                 log.info('Update model failed %s', ex)
 
@@ -63,9 +63,9 @@ def use_reactpy_table(options: Options = Options()) -> ReactpyTable:
             data=table_data,
             updater = state_updater,
             features = Features(
-                paginator = DefaultPaginator,
-                sort = DefaultColumnSort,
-                search = DefaultTableSearch,
+                paginator = options.paginator or DefaultPaginator,
+                sort = options.sort or DefaultColumnSort,
+                search = options.search or DefaultTableSearch,
                 row_model = DefaultRowModel
                 )
             )
