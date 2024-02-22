@@ -9,7 +9,7 @@ class ITableSearch(IFeature, Protocol):
     def init(table: ITable, updater:Updater) -> 'ITableSearch':
         raise NotImplementedError()
 
-    def table_search(self, text:str): ...
+    def table_search(self, search_term:str, case_sensitive:bool=False): ...
 
 
 class TableSearch(ITableSearch, FeatureBase):
