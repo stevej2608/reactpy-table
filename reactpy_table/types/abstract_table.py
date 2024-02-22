@@ -1,5 +1,5 @@
-from typing import Protocol
-from .table_data import TableData
+from typing import Protocol, Generic
+from .table_data import TableData, TRowModel
 
-class ITable(Protocol):
-    data: TableData
+class ITable(Protocol, Generic[TRowModel]):
+    data: TableData[TRowModel]

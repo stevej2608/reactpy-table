@@ -12,7 +12,7 @@ from .data.sp500 import get_sp500, CompanyModel, COLS
 
 
 @component
-def TablePaginator(paginator: IPaginator):
+def TablePaginator(paginator: IPaginator[CompanyModel]):
 
     @component
     def Button(id:str, text:str, action: Callable[...,None], disabled: bool=False):
@@ -90,7 +90,7 @@ def Text(*children: List[Component]):
 
 
 @component
-def Search(search: ITableSearch):
+def Search(search: ITableSearch[CompanyModel]):
 
     @event
     def on_change(event: Dict[str, Any]):
@@ -100,7 +100,7 @@ def Search(search: ITableSearch):
     return html.input({'id':'tbl-search', 'type': 'search', 'placeholder': 'Search', 'aria-label': 'Search', 'onchange': on_change})
 
 @component
-def THead(table: Table):
+def THead(table: Table[CompanyModel]):
 
     @component
     def text_with_arrow(col: Column):

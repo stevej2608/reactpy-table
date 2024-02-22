@@ -1,14 +1,14 @@
 from typing import Protocol
 
 from .feature import IFeature, FeatureBase, Updater
-from .abstract_table import ITable
+from .abstract_table import ITable, TRowModel
 
-class IRowModel(IFeature, Protocol):
+class IRowModel(IFeature[TRowModel], Protocol):
     pass
 
 
-class RowModel(IRowModel, FeatureBase):
+class RowModel(IRowModel[TRowModel], FeatureBase[TRowModel]):
 
     @staticmethod
-    def init(table: ITable, updater:Updater) -> IRowModel:
+    def init(table: ITable[TRowModel], updater:Updater[TRowModel]) -> IRowModel[TRowModel]:
         raise NotImplementedError()

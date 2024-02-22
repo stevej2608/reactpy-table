@@ -1,18 +1,18 @@
 from typing import Dict, Any
 from pydantic import BaseModel
 
-from ..types import Column, ITable, Updater, ColumnSort, update_state
+from ..types import Column, ITable, Updater, ColumnSort, update_state, TRowModel
 
 class ColumnState(BaseModel):
     reverse: bool = False
 
 
-class DefaultColumnSort(ColumnSort):
+class DefaultColumnSort(ColumnSort[TRowModel]):
 
     state: Dict[str, ColumnState]
 
     @staticmethod
-    def init(table: ITable, updater:Updater) -> ColumnSort:
+    def init(table: ITable[TRowModel], updater:Updater[TRowModel]) -> ColumnSort[TRowModel]:
 
         state: Dict[str, ColumnState] = {}
         for col in table.data.cols:
@@ -22,7 +22,7 @@ class DefaultColumnSort(ColumnSort):
         return DefaultColumnSort(table, updater, state=state)
 
 
-    def __init__(self, table: ITable, updater:Updater, state:Dict[str, ColumnState]):
+    def __init__(self, table: ITable[TRowModel], updater:Updater[TRowModel], state:Dict[str, ColumnState]):
         super().__init__(table, updater)
         self.state = state
 

@@ -1,4 +1,4 @@
-from typing import List, Any, Callable, Optional
+from typing import List, Any, Callable, Optional, TypeVar, Generic
 from pydantic import BaseModel
 
 
@@ -16,16 +16,13 @@ class Column(BaseModel):
 
 Columns = List[Column]
 
-class TableData(BaseModel):
-    rows: List[RowData] = []
-    cols: Columns = []
-
-
-# TBaseModel = TypeVar('TBaseModel', bound=BaseModel)
-
-# class Table(BaseModel, Generic[TBaseModel]):
-#     rows: List[TBaseModel]
-
-# class TableData(BaseModel, Generic[TBaseModel]):
-#     rows: List[TBaseModel] = []
+# class TableData(BaseModel):
+#     rows: List[RowData] = []
 #     cols: Columns = []
+
+
+TRowModel = TypeVar('TRowModel', bound=RowData)
+
+class TableData(BaseModel, Generic[TRowModel]):
+    rows: List[TRowModel] = []
+    cols: Columns = []

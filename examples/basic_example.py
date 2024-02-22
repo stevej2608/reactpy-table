@@ -10,7 +10,7 @@ from .data.sp500 import get_sp500, CompanyModel, COLS
 # Minimal example, see table_example.py for search, sort & pagination
 
 @component
-def THead(table: Table):
+def THead(table: Table[CompanyModel]):
     cols = table.data.cols
     return html.thead(
         html.th(cols[0].label),

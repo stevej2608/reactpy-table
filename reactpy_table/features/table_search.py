@@ -1,10 +1,11 @@
-from ..types import ITable, TableSearch, Updater, update_state, RowData
+from typing import cast, List
+from ..types import ITable, TableSearch, Updater, update_state, RowData, TRowModel
 
-class DefaultTableSearch(TableSearch):
+class DefaultTableSearch(TableSearch[TRowModel]):
 
 
     @staticmethod
-    def init(table: ITable, updater:Updater) -> TableSearch:
+    def init(table: ITable[TRowModel], updater:Updater[TRowModel]) -> TableSearch[TRowModel]:
         search = DefaultTableSearch(table=table, updater=updater)
         return search
 
@@ -25,4 +26,4 @@ class DefaultTableSearch(TableSearch):
 
 
         result = filter(_filter, self.initial_values)
-        self.data.rows = list(result)
+        self.data.rows = cast(List[TRowModel],list(result))
