@@ -3,9 +3,11 @@ from playwright.async_api import Browser
 from playwright.async_api import async_playwright
 from reactpy.testing import DisplayFixture, BackendFixture
 
+
 @pytest.fixture(scope="session")
 def anyio_backend():
-    return 'asyncio'
+    return "asyncio"
+
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     parser.addoption(
@@ -14,6 +16,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         action="store_true",
         help="Open a browser window when running web-based tests",
     )
+
 
 @pytest.fixture(scope="session")
 async def display(server: BackendFixture, browser: Browser):

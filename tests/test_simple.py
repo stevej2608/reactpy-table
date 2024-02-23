@@ -38,10 +38,12 @@ async def test_basic_usage():
     @component
     def TestComponent():
         nonlocal table
-        table = use_reactpy_table(Options(
-            rows=make_data(100),
-            cols = COLS,
-        ))
+        table = use_reactpy_table(
+            Options(
+                rows=make_data(100),
+                cols=COLS,
+            )
+        )
         return html.div()
 
     async with Layout(TestComponent()) as layout:
