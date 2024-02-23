@@ -1,4 +1,4 @@
-from ..types import ITable, TableSearch, Updater, update_state, RowData, TData
+from ..types import ITable, TableSearch, Updater, update_state, TData
 
 class DefaultTableSearch(TableSearch[TData]):
 
@@ -15,7 +15,7 @@ class DefaultTableSearch(TableSearch[TData]):
         if not case_sensitive:
             search_term = search_term.lower()
 
-        def _filter(row: RowData):
+        def _filter(row: TData):
             row_text = ' '.join([str(val)  for val in row.model_dump().values()])
 
             if not case_sensitive:
