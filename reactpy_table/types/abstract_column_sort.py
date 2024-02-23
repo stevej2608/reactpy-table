@@ -1,8 +1,8 @@
 from typing import Protocol
 from .table_data import Column
 
-from .feature import IFeature, FeatureBase, Updater
-from .abstract_table import ITable, TData
+from .feature import IFeature, FeatureBase
+from .abstract_table import TData
 
 
 class IColumnSort(IFeature[TData], Protocol):
@@ -14,6 +14,4 @@ class IColumnSort(IFeature[TData], Protocol):
 
 
 class ColumnSort(IColumnSort[TData], FeatureBase[TData]):
-    @staticmethod
-    def init(table: ITable[TData], updater: Updater[TData]) -> IColumnSort[TData]:
-        raise NotImplementedError()
+    pass

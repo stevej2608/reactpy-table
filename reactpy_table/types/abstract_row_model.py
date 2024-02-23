@@ -1,7 +1,7 @@
 from typing import Protocol
 
-from .feature import IFeature, FeatureBase, Updater
-from .abstract_table import ITable, TData
+from .feature import IFeature, FeatureBase
+from .abstract_table import TData
 
 
 class IRowModel(IFeature[TData], Protocol):
@@ -9,6 +9,4 @@ class IRowModel(IFeature[TData], Protocol):
 
 
 class RowModel(IRowModel[TData], FeatureBase[TData]):
-    @staticmethod
-    def init(table: ITable[TData], updater: Updater[TData]) -> IRowModel[TData]:
-        raise NotImplementedError()
+    pass

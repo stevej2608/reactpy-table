@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Callable
 from pydantic import BaseModel
 
 from ..types import Column, ITable, Updater, ColumnSort, update_state, TData
@@ -10,15 +10,6 @@ class ColumnState(BaseModel):
 
 class DefaultColumnSort(ColumnSort[TData]):
     state: Dict[str, ColumnState]
-
-    @staticmethod
-    def init(table: ITable[TData], updater: Updater[TData]) -> ColumnSort[TData]:
-        state: Dict[str, ColumnState] = {}
-        for col in table.data.cols:
-            name = col if isinstance(col, str) else col.name
-            state[name] = ColumnState()
-
-        return DefaultColumnSort(table, updater, state=state)
 
     def __init__(self, table: ITable[TData], updater: Updater[TData], state: Dict[str, ColumnState]):
         super().__init__(table, updater)
@@ -43,3 +34,15 @@ class DefaultColumnSort(ColumnSort[TData]):
 
     def get_state(self, col: Column):
         return self.state[col.name]
+
+
+def getDefaultColumnSort() -> Callable[[ITable[TData], Updater[TData]], ColumnSort[TData]]:
+
+    def wrapper(table: ITable[TData], updater: Updater[TData]) -> ColumnSort[TData]:
+        state: Dict[str, ColumnState] = {}
+        for col in table.data.cols:
+            name = col if isinstance(col, str) else col.name
+            state[name] = ColumnState()
+        return DefaultColumnSort(table=table, updater=updater, state=state)
+
+    return wrapper

@@ -5,9 +5,6 @@ from .updater import Updater
 
 
 class IFeature(Protocol, Generic[TData]):
-    @staticmethod
-    def init(table: ITable[TData], updater: Updater[TData]) -> "IFeature[TData]":
-        ...
 
     @property
     def data(self) -> TableData[TData]:

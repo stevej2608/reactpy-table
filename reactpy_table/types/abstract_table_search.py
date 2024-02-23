@@ -1,7 +1,7 @@
 from typing import Protocol
 
-from .feature import IFeature, FeatureBase, Updater
-from .abstract_table import ITable, TData
+from .feature import IFeature, FeatureBase
+from .abstract_table import TData
 
 
 class ITableSearch(IFeature[TData], Protocol):
@@ -10,6 +10,4 @@ class ITableSearch(IFeature[TData], Protocol):
 
 
 class TableSearch(ITableSearch[TData], FeatureBase[TData]):
-    @staticmethod
-    def init(table: ITable[TData], updater: Updater[TData]) -> ITableSearch[TData]:
-        raise NotImplementedError()
+    pass

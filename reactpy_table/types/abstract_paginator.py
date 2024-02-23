@@ -1,11 +1,10 @@
 from typing import Any, List, Protocol
-from abc import abstractmethod
 
-from .feature import IFeature, FeatureBase, Updater
-from .abstract_table import ITable
+from .feature import IFeature, FeatureBase
 
 from .table_data import TData
 
+# pyright: reportReturnType=false
 
 class IPaginator(IFeature[TData], Protocol):
     page_index: int = 0
@@ -14,19 +13,18 @@ class IPaginator(IFeature[TData], Protocol):
     page_size: int
 
     @property
-    @abstractmethod
     def rows(self) -> List[Any]:
         """Return rows in current page"""
 
     @property
-    @abstractmethod
     def page_count(self) -> int:
         """Return number of pages"""
 
+
     @property
-    @abstractmethod
     def row_count(self) -> int:
         """Return total number of rows"""
+
 
     def first_page(self):
         ...
@@ -54,6 +52,4 @@ class IPaginator(IFeature[TData], Protocol):
 
 
 class Paginator(IPaginator[TData], FeatureBase[TData]):
-    @staticmethod
-    def init(table: ITable[TData], updater: Updater[TData]) -> IPaginator[TData]:
-        raise NotImplementedError()
+    pass

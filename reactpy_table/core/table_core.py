@@ -1,10 +1,10 @@
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Callable, Generic, Type, Union
+from typing import Any, Callable, Generic, Union
 from reactpy import use_state
 from utils.logger import log
 
-from ..features import DefaultColumnSort, DefaultPaginator, DefaultRowModel, DefaultTableSearch
+from ..features import getDefaultColumnSort, getDefaultPaginator, getDefaultRowModel, getDefaultTableSearch
 from ..types import ColumnSort, ITable, Paginator, RowModel, TableData, TableSearch, TData, Updater
 
 from .options import Options
@@ -12,20 +12,20 @@ from .table import Table
 
 
 @dataclass
-class Features(Generic[TData]):
-    paginator: Type[Paginator[TData]]
-    sort: Type[ColumnSort[TData]]
-    search: Type[TableSearch[TData]]
-    row_model: Type[RowModel[TData]]
+class _FeatureFactories(Generic[TData]):
+    paginator: Callable[[ITable[TData], Updater[TData]], Paginator[TData]]
+    sort: Callable[[ITable[TData], Updater[TData]], ColumnSort[TData]]
+    search: Callable[[ITable[TData], Updater[TData]], TableSearch[TData]]
+    row_model: Callable[[ITable[TData], Updater[TData]], RowModel[TData]]
 
 
 class _ReactpyTable(Table[TData], Generic[TData]):
-    def __init__(self, data: TableData[TData], updater: Updater[TData], features: Features[TData]):
+    def __init__(self, data: TableData[TData], updater: Updater[TData], features: _FeatureFactories[TData]):
         self.data = data
-        self.paginator = features.paginator.init(self, updater=updater)
-        self.sort = features.sort.init(self, updater=updater)
-        self.search = features.search.init(self, updater=updater)
-        self.row_model = features.row_model.init(self, updater=updater)
+        self.paginator = features.paginator(self, updater)
+        self.sort = features.sort(self, updater)
+        self.search = features.search(self, updater)
+        self.row_model = features.row_model(self, updater)
 
 
 def use_reactpy_table(options: Options[TData]) -> Table[TData]:
@@ -47,11 +47,11 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
         table = _ReactpyTable(
             data=table_data,
             updater=state_updater,
-            features=Features[TData](
-                paginator=options.paginator or DefaultPaginator,
-                sort=options.sort or DefaultColumnSort,
-                search=options.search or DefaultTableSearch,
-                row_model=DefaultRowModel,
+            features=_FeatureFactories[TData](
+                paginator=options.paginator or getDefaultPaginator(),
+                sort=options.sort or getDefaultColumnSort(),
+                search=options.search or getDefaultTableSearch(),
+                row_model=getDefaultRowModel(),
             ),
         )
 

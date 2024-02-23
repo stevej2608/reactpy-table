@@ -1,4 +1,4 @@
-from typing import List, Any
+from typing import List, Any, Callable
 import math
 from utils.logger import log
 from ..types import Paginator, Updater, ITable, update_state, TData
@@ -7,9 +7,10 @@ DEFAULT_PAGE_SIZE = 10
 
 
 class DefaultPaginator(Paginator[TData]):
-    @staticmethod
-    def init(table: ITable[TData], updater: Updater[TData]) -> Paginator[TData]:
-        return DefaultPaginator(table=table, updater=updater, page_size=DEFAULT_PAGE_SIZE)
+
+    def __init__(self, table: ITable[TData], updater: Updater[TData], page_size: int):
+        super().__init__(table, updater)
+        self.page_size = page_size
 
     @property
     def rows(self) -> List[Any]:
@@ -25,10 +26,6 @@ class DefaultPaginator(Paginator[TData]):
     @property
     def row_count(self) -> int:
         return len(self.data.rows)
-
-    def __init__(self, table: ITable[TData], updater: Updater[TData], page_size: int):
-        super().__init__(table, updater)
-        self.page_size = page_size
 
     def first_page(self):
         self.set_page_index(0)
@@ -69,3 +66,19 @@ class DefaultPaginator(Paginator[TData]):
         #     return False
 
         return self.page_index < page_count - 1
+
+
+def getDefaultPaginator(page_size: int=DEFAULT_PAGE_SIZE) -> Callable[[ITable[TData], Updater[TData]], Paginator[TData]]:
+    """Return a wrapped function that when called creates a DefaultPaginator instance
+
+    Args:
+        page_size (int, optional): The default page size. Defaults to DEFAULT_PAGE_SIZE.
+
+    Returns:
+        Callable[[ITable[TData], Updater[TData]], Paginator[TData]]: A function that creates the default paginator
+    """
+
+    def wrapper(table: ITable[TData], updater: Updater[TData]) -> Paginator[TData]:
+        return DefaultPaginator(table=table, updater=updater, page_size=page_size)
+
+    return wrapper

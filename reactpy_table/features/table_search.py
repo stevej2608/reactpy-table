@@ -1,11 +1,8 @@
+from typing import Callable
 from ..types import ITable, TableSearch, Updater, update_state, TData
 
 
 class DefaultTableSearch(TableSearch[TData]):
-    @staticmethod
-    def init(table: ITable[TData], updater: Updater[TData]) -> TableSearch[TData]:
-        search = DefaultTableSearch(table=table, updater=updater)
-        return search
 
     @update_state
     def table_search(self, search_term: str, case_sensitive: bool = False):
@@ -22,3 +19,11 @@ class DefaultTableSearch(TableSearch[TData]):
 
         result = filter(_filter, self.initial_values)
         self.data.rows = list(result)
+
+
+def getDefaultTableSearch() -> Callable[[ITable[TData], Updater[TData]], TableSearch[TData]]:
+
+    def wrapper(table: ITable[TData], updater: Updater[TData]) -> TableSearch[TData]:
+        return DefaultTableSearch(table=table, updater=updater)
+
+    return wrapper
