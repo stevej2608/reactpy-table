@@ -6,10 +6,6 @@ from .abstract_table import ITable, TData
 
 class IColumnSort(IFeature[TData], Protocol):
 
-    @staticmethod
-    def init(table: ITable[TData], updater:Updater[TData]) -> 'IColumnSort[TData]':
-        raise NotImplementedError()
-
     def toggle_sort(self, col:Column) -> bool: ...
 
     def is_sort_reverse(self, col:Column) -> bool: ...

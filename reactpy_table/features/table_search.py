@@ -1,4 +1,3 @@
-from typing import cast, List
 from ..types import ITable, TableSearch, Updater, update_state, RowData, TData
 
 class DefaultTableSearch(TableSearch[TData]):
@@ -26,4 +25,4 @@ class DefaultTableSearch(TableSearch[TData]):
 
 
         result = filter(_filter, self.initial_values)
-        self.data.rows = cast(List[TData],list(result))
+        self.data.rows = list(result)

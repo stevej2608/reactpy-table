@@ -9,14 +9,14 @@ from ..types import Columns, ColumnSort, Paginator, RowModel, TableData, TableSe
 
 from ..features import DefaultColumnSort, DefaultTableSearch, DefaultRowModel, DefaultPaginator
 
-class IFeatureSet[TData](Protocol):
+class IFeatureSet(Protocol, Generic[TData]):
     paginator: IPaginator[TData]
     sort: IColumnSort[TData]
     search: ITableSearch[TData]
     row_model: IRowModel[TData]
 
 @dataclass
-class Features[TData]:
+class Features(Generic[TData]):
     paginator: Type[Paginator[TData]]
     sort: Type[ColumnSort[TData]]
     search: Type[TableSearch[TData]]
@@ -26,7 +26,7 @@ class Features[TData]:
 class Table(ITable[TData], IFeatureSet[TData], Protocol):
     pass
 
-class ReactpyTable[TData](Table[TData]):
+class ReactpyTable(Table[TData], Generic[TData]):
 
     def __init__(self, data: TableData[TData], updater: Updater[TData], features: Features[TData]):
         self.data = data
@@ -59,7 +59,7 @@ class Options(TableData[TData], Generic[TData]):
         self.search = search
 
 
-def use_reactpy_table[TData](options: Options[TData]) -> ReactpyTable[TData]:
+def use_reactpy_table(options: Options[TData]) -> ReactpyTable[TData]:
 
     log.info('use_reactpy_table')
 

@@ -1,28 +1,29 @@
-from typing import List, Any, Callable, Optional, TypeVar, Generic
+from typing import List, Callable, Optional, TypeVar, Generic, Protocol, Dict, Any
 from pydantic import BaseModel
 
 
-Updater = Callable[[], None]
+class IBaseModel(Protocol):
+    '''By default the row data supplied by the user will be derived from
+    the pydantic BaseModel class. Other row data types will need to 
+    implement IBaseModel protocol    
+    '''
 
-RowData = BaseModel | Any
+    def model_dump(self) -> Dict[str, Any]: ...
+
+RowData = BaseModel | IBaseModel
 
 class Column(BaseModel):
+    """Column definitions"""
     name: str
     label: str
     style: Optional[str] = None
     sort : Optional[Callable[['Column'], None]] = None
     width: str = ""
 
-
 Columns = List[Column]
-
-# class TableData(BaseModel):
-#     rows: List[RowData] = []
-#     cols: Columns = []
 
 
 TData = TypeVar('TData', bound=RowData)
-
 
 class TableData(Generic[TData]):
     rows: List[TData] = []

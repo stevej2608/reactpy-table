@@ -1,6 +1,7 @@
 # pyright: reportUnusedImport=false
 
-from .feature  import IFeature, FeatureBase, Updater, update_state
+from .feature  import IFeature, FeatureBase, update_state
+from .updater import Updater
 
 from .abstract_paginator import IPaginator, Paginator
 from .abstract_column_sort import IColumnSort, ColumnSort

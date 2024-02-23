@@ -5,10 +5,6 @@ from .abstract_table import ITable, TData
 
 class ITableSearch(IFeature[TData], Protocol):
 
-    @staticmethod
-    def init(table: ITable[TData], updater:Updater[TData]) -> 'ITableSearch[TData]':
-        raise NotImplementedError()
-
     def table_search(self, search_term:str, case_sensitive:bool=False): ...
 
 
