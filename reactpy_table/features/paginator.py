@@ -13,19 +13,16 @@ class DefaultPaginator(Paginator[TData]):
     def init(table: ITable[TData], updater:Updater[TData]) -> Paginator[TData]:
         return DefaultPaginator(table=table, updater=updater, page_size=DEFAULT_PAGE_SIZE)
 
-
     @property
     def rows(self) -> List[Any]:
         low = self.page_size * self.page_index
         high = min(low + self.page_size, len(self.data.rows))
         return self.data.rows[low:high]
 
-
     @property
     def page_count(self) -> int:
         row_count = len(self.data.rows)
         return math.ceil(row_count / self.page_size)
-
 
     @property
     def row_count(self) -> int :
@@ -76,10 +73,10 @@ class DefaultPaginator(Paginator[TData]):
     def can_get_next_page(self) -> bool:
         page_count = self.page_count
 
-        if page_count == -1:
-            return True
+        # if page_count == -1:
+        #     return True
 
-        if page_count == 0:
-            return False
+        # if page_count == 0:
+        #     return False
 
         return self.page_index < page_count - 1
