@@ -4,7 +4,9 @@ from typing import Callable, Any, Union, Type, Protocol, Generic, List
 from reactpy import use_state
 from utils.logger import log
 
-from ..types import IColumnSort, ColumnSort, IPaginator, Paginator, ITableSearch, TableSearch, IRowModel, RowModel, ITable, TableData, TData, Updater, Columns
+from ..types import IColumnSort, IPaginator,IRowModel, ITable, ITableSearch
+from ..types import Columns, ColumnSort, Paginator, RowModel, TableData, TableSearch, TData, Updater
+
 from ..features import DefaultColumnSort, DefaultTableSearch, DefaultRowModel, DefaultPaginator
 
 class IFeatureSet[TData](Protocol):
@@ -34,21 +36,20 @@ class ReactpyTable[TData](Table[TData]):
         self.row_model = features.row_model.init(self, updater=updater)
 
 
-type TFeature[T] = Type[T] | None
-
+type FeatureType[T] = Type[T] | None
 
 class Options(TableData[TData], Generic[TData]):
 
-    paginator: TFeature[Paginator[TData]] = None
-    sort: TFeature[ColumnSort[TData]] = None
-    search: TFeature[TableSearch[TData]] = None
+    paginator: FeatureType[Paginator[TData]] = None
+    sort: FeatureType[ColumnSort[TData]] = None
+    search: FeatureType[TableSearch[TData]] = None
 
     def __init__(self,
             rows: List[TData],
             cols: Columns,
-            paginator: TFeature[Paginator[TData]] = None,
-            sort: TFeature[ColumnSort[TData]] = None,
-            search: TFeature[TableSearch[TData]] = None
+            paginator: FeatureType[Paginator[TData]] = None,
+            sort: FeatureType[ColumnSort[TData]] = None,
+            search: FeatureType[TableSearch[TData]] = None
             ):
 
         super().__init__(rows=rows, cols=cols)
