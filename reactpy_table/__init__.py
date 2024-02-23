@@ -1,4 +1,5 @@
 # pyright: reportUnusedImport=false
+# ruff: noqa: F401
 
 from .types import IPaginator, ITableSearch, Column, Columns
 from .core.table_core import Table, use_reactpy_table, Options

@@ -1,4 +1,5 @@
 # pyright: reportUnusedImport=false
+# ruff: noqa: F401
 
 from .feature  import IFeature, FeatureBase, update_state
 from .updater import Updater
