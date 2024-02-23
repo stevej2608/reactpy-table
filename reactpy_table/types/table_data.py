@@ -23,6 +23,11 @@ Columns = List[Column]
 
 TData = TypeVar('TData', bound=RowData)
 
-class TableData(BaseModel, Generic[TData]):
+
+class TableData(Generic[TData]):
     rows: List[TData] = []
     cols: Columns = []
+
+    def __init__(self, rows:List[TData], cols: Columns):
+        self.rows = rows
+        self.cols = cols
