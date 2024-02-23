@@ -4,9 +4,9 @@ from abc import abstractmethod
 from .feature import IFeature, FeatureBase, Updater
 from .abstract_table import ITable
 
-from .table_data import TRowModel
+from .table_data import TData
 
-class IPaginator(IFeature[TRowModel], Protocol):
+class IPaginator(IFeature[TData], Protocol):
 
     page_index: int = 0
     """Page index [0..n]"""
@@ -45,8 +45,8 @@ class IPaginator(IFeature[TRowModel], Protocol):
     def set_page_size(self, page_size:int): ...
 
 
-class Paginator(IPaginator[TRowModel], FeatureBase[TRowModel]):
+class Paginator(IPaginator[TData], FeatureBase[TData]):
 
     @staticmethod
-    def init(table: ITable[TRowModel], updater:Updater[TRowModel]) -> IPaginator[TRowModel]:
+    def init(table: ITable[TData], updater:Updater[TData]) -> IPaginator[TData]:
         raise NotImplementedError()

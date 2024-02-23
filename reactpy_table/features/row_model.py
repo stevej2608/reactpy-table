@@ -1,8 +1,8 @@
-from ..types import RowModel, Updater, ITable, TRowModel
+from ..types import RowModel, Updater, ITable, TData
 
 
-class DefaultRowModel(RowModel[TRowModel]):
+class DefaultRowModel(RowModel[TData]):
 
     @staticmethod
-    def init(table: ITable[TRowModel], updater:Updater[TRowModel]) -> RowModel[TRowModel]:
+    def init(table: ITable[TData], updater:Updater[TData]) -> RowModel[TData]:
         return DefaultRowModel(table=table, updater=updater)

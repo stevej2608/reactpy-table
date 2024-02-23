@@ -2,15 +2,15 @@
 from typing import List, Any
 import math
 from utils.logger import log
-from ..types import Paginator, Updater, ITable, update_state, TRowModel
+from ..types import Paginator, Updater, ITable, update_state, TData
 
 DEFAULT_PAGE_SIZE = 10
 
 
-class DefaultPaginator(Paginator[TRowModel]):
+class DefaultPaginator(Paginator[TData]):
 
     @staticmethod
-    def init(table: ITable[TRowModel], updater:Updater[TRowModel]) -> Paginator[TRowModel]:
+    def init(table: ITable[TData], updater:Updater[TData]) -> Paginator[TData]:
         return DefaultPaginator(table=table, updater=updater, page_size=DEFAULT_PAGE_SIZE)
 
 
@@ -32,7 +32,7 @@ class DefaultPaginator(Paginator[TRowModel]):
         return len(self.data.rows)
 
 
-    def __init__(self, table: ITable[TRowModel], updater:Updater[TRowModel], page_size:int):
+    def __init__(self, table: ITable[TData], updater:Updater[TData], page_size:int):
         super().__init__(table, updater)
         self.page_size = page_size
 

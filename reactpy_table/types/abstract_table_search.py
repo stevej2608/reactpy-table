@@ -1,19 +1,19 @@
 from typing import Protocol
 
 from .feature import IFeature, FeatureBase, Updater
-from .abstract_table import ITable, TRowModel
+from .abstract_table import ITable, TData
 
-class ITableSearch(IFeature[TRowModel], Protocol):
+class ITableSearch(IFeature[TData], Protocol):
 
     @staticmethod
-    def init(table: ITable[TRowModel], updater:Updater[TRowModel]) -> 'ITableSearch[TRowModel]':
+    def init(table: ITable[TData], updater:Updater[TData]) -> 'ITableSearch[TData]':
         raise NotImplementedError()
 
     def table_search(self, search_term:str, case_sensitive:bool=False): ...
 
 
-class TableSearch(ITableSearch[TRowModel], FeatureBase[TRowModel]):
+class TableSearch(ITableSearch[TData], FeatureBase[TData]):
 
     @staticmethod
-    def init(table: ITable[TRowModel], updater:Updater[TRowModel]) -> ITableSearch[TRowModel]:
+    def init(table: ITable[TData], updater:Updater[TData]) -> ITableSearch[TData]:
         raise NotImplementedError()

@@ -21,8 +21,8 @@ Columns = List[Column]
 #     cols: Columns = []
 
 
-TRowModel = TypeVar('TRowModel', bound=RowData)
+TData = TypeVar('TData', bound=RowData)
 
-class TableData(BaseModel, Generic[TRowModel]):
-    rows: List[TRowModel] = []
+class TableData(BaseModel, Generic[TData]):
+    rows: List[TData] = []
     cols: Columns = []

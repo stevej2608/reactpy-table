@@ -2,12 +2,12 @@ from typing import Protocol
 from .table_data import Column
 
 from .feature import IFeature, FeatureBase, Updater
-from .abstract_table import ITable, TRowModel
+from .abstract_table import ITable, TData
 
-class IColumnSort(IFeature[TRowModel], Protocol):
+class IColumnSort(IFeature[TData], Protocol):
 
     @staticmethod
-    def init(table: ITable[TRowModel], updater:Updater[TRowModel]) -> 'IColumnSort[TRowModel]':
+    def init(table: ITable[TData], updater:Updater[TData]) -> 'IColumnSort[TData]':
         raise NotImplementedError()
 
     def toggle_sort(self, col:Column) -> bool: ...
@@ -15,8 +15,8 @@ class IColumnSort(IFeature[TRowModel], Protocol):
     def is_sort_reverse(self, col:Column) -> bool: ...
 
 
-class ColumnSort(IColumnSort[TRowModel], FeatureBase[TRowModel]):
+class ColumnSort(IColumnSort[TData], FeatureBase[TData]):
 
     @staticmethod
-    def init(table: ITable[TRowModel], updater:Updater[TRowModel]) -> IColumnSort[TRowModel]:
+    def init(table: ITable[TData], updater:Updater[TData]) -> IColumnSort[TData]:
         raise NotImplementedError()

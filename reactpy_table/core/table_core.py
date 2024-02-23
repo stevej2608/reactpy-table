@@ -4,28 +4,28 @@ from pydantic import BaseModel
 from reactpy import use_state
 from utils.logger import log
 
-from ..types import IColumnSort, ColumnSort, IPaginator, Paginator, ITableSearch, TableSearch, IRowModel, RowModel, ITable, TableData, TRowModel, Updater
+from ..types import IColumnSort, ColumnSort, IPaginator, Paginator, ITableSearch, TableSearch, IRowModel, RowModel, ITable, TableData, TData, Updater
 from ..features import DefaultColumnSort, DefaultTableSearch, DefaultRowModel, DefaultPaginator
 
-class IFeatureSet[TRowModel](Protocol):
-    paginator: IPaginator[TRowModel]
-    sort: IColumnSort[TRowModel]
-    search: ITableSearch[TRowModel]
-    row_model: IRowModel[TRowModel]
+class IFeatureSet[TData](Protocol):
+    paginator: IPaginator[TData]
+    sort: IColumnSort[TData]
+    search: ITableSearch[TData]
+    row_model: IRowModel[TData]
 
-class Features[TRowModel](BaseModel):
-    paginator: Type[Paginator[TRowModel]]
-    sort: Type[ColumnSort[TRowModel]]
-    search: Type[TableSearch[TRowModel]]
-    row_model: Type[RowModel[TRowModel]]
+class Features[TData](BaseModel):
+    paginator: Type[Paginator[TData]]
+    sort: Type[ColumnSort[TData]]
+    search: Type[TableSearch[TData]]
+    row_model: Type[RowModel[TData]]
 
 
-class Table(ITable[TRowModel], IFeatureSet[TRowModel], Protocol):
+class Table(ITable[TData], IFeatureSet[TData], Protocol):
     pass
 
-class ReactpyTable[TRowModel](Table[TRowModel]):
+class ReactpyTable[TData](Table[TData]):
 
-    def __init__(self, data: TableData[TRowModel], updater: Updater[TRowModel], features: Features[TRowModel]):
+    def __init__(self, data: TableData[TData], updater: Updater[TData], features: Features[TData]):
         self.data = data
         self.paginator = features.paginator.init(self, updater=updater)
         self.sort = features.sort.init(self, updater=updater)
@@ -35,21 +35,21 @@ class ReactpyTable[TRowModel](Table[TRowModel]):
 
 type TFeature[T] = Type[T] | None
 
-class Options[TRowModel](TableData[TRowModel]):
-    paginator: TFeature[Paginator[TRowModel]] = None
-    sort: TFeature[ColumnSort[TRowModel]] = None
-    search: TFeature[TableSearch[TRowModel]] = None
+class Options[TData](TableData[TData]):
+    paginator: TFeature[Paginator[TData]] = None
+    sort: TFeature[ColumnSort[TData]] = None
+    search: TFeature[TableSearch[TData]] = None
 
 
-def use_reactpy_table[TRowModel](options: Options[TRowModel] = Options[TRowModel]()) -> ReactpyTable[TRowModel]:
+def use_reactpy_table[TData](options: Options[TData] = Options[TData]()) -> ReactpyTable[TData]:
 
     log.info('use_reactpy_table')
 
     set_table: Union[Callable[[Union[Any, Callable[[Any], Any]]], None], None]  = None
 
-    def _create_table() -> ReactpyTable[TRowModel]:
+    def _create_table() -> ReactpyTable[TData]:
 
-        def state_updater(self: ITable[TRowModel]) -> None:
+        def state_updater(self: ITable[TData]) -> None:
             log.info('Update table')
             try:
                 assert set_table is not None
