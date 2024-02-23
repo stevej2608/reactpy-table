@@ -1,6 +1,6 @@
-from typing import Type, Generic, List
-from ..types import Columns, ColumnSort, Paginator, TableData, TableSearch, TData
+from typing import Generic, List, Type
 
+from ..types import Columns, ColumnSort, Paginator, TableData, TableSearch, TData
 
 type FeatureType[T] = Type[T] | None
 

@@ -1,8 +1,12 @@
-from typing import Protocol
+from typing import Protocol, Generic
 
-from ..types import ITable, TData
+from ..types import IColumnSort, IPaginator,IRowModel, ITableSearch, ITable, TData
 
-from .feature_set import IFeatureSet
+class IFeatureSet(Generic[TData], Protocol):
+    paginator: IPaginator[TData]
+    sort: IColumnSort[TData]
+    search: ITableSearch[TData]
+    row_model: IRowModel[TData]
 
-class Table(ITable[TData], IFeatureSet[TData], Protocol):
-    pass
+
+class Table(ITable[TData], IFeatureSet[TData], Protocol): ...

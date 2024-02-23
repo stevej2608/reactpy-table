@@ -1,15 +1,22 @@
 from copy import deepcopy
-from typing import Callable, Any, Union, Generic
+from dataclasses import dataclass
+from typing import Any, Callable, Generic, Type, Union
 from reactpy import use_state
 from utils.logger import log
 
-from ..types import ITable, TableData, TData, Updater
-from ..features import DefaultColumnSort, DefaultTableSearch, DefaultRowModel, DefaultPaginator
+from ..features import DefaultColumnSort, DefaultPaginator, DefaultRowModel,DefaultTableSearch
+from ..types import ColumnSort, ITable, Paginator, RowModel, TableData, TableSearch, TData, Updater
 
-from .feature_set import Features
 from .options import Options
 from .table import Table
 
+
+@dataclass
+class Features(Generic[TData]):
+    paginator: Type[Paginator[TData]]
+    sort: Type[ColumnSort[TData]]
+    search: Type[TableSearch[TData]]
+    row_model: Type[RowModel[TData]]
 
 class _ReactpyTable(Table[TData], Generic[TData]):
 
