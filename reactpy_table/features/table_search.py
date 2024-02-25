@@ -1,5 +1,4 @@
-from typing import Callable
-from ..types import ITable, TableSearch, Updater, update_state, TData
+from ..types import ITable, TableSearch, Updater, update_state, TData, TCommonFeature
 
 
 class DefaultTableSearch(TableSearch[TData]):
@@ -21,7 +20,7 @@ class DefaultTableSearch(TableSearch[TData]):
         self.data.rows = list(result)
 
 
-def getDefaultTableSearch() -> Callable[[ITable[TData], Updater[TData]], TableSearch[TData]]:
+def getDefaultTableSearch() -> TCommonFeature[TData, TableSearch[TData]]:
 
     def wrapper(table: ITable[TData], updater: Updater[TData]) -> TableSearch[TData]:
         return DefaultTableSearch(table=table, updater=updater)

@@ -3,6 +3,8 @@ from .table_data import TableData, TData
 from .abstract_table import ITable
 from .updater import Updater
 
+TFeature = TypeVar("TFeature")
+TCommonFeature = Callable[[ITable[TData], Updater[TData]], TFeature]
 
 class IFeature(Protocol, Generic[TData]):
 

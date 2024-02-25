@@ -1,7 +1,7 @@
-from typing import Dict, Any, Callable
+from typing import Dict, Any
 from pydantic import BaseModel
 
-from ..types import Column, ITable, Updater, ColumnSort, update_state, TData
+from ..types import Column, ITable, Updater, ColumnSort, update_state, TData, TCommonFeature
 
 
 class ColumnState(BaseModel):
@@ -36,7 +36,7 @@ class DefaultColumnSort(ColumnSort[TData]):
         return self.state[col.name]
 
 
-def getDefaultColumnSort() -> Callable[[ITable[TData], Updater[TData]], ColumnSort[TData]]:
+def getDefaultColumnSort() -> TCommonFeature[TData, ColumnSort[TData]]:
 
     def wrapper(table: ITable[TData], updater: Updater[TData]) -> ColumnSort[TData]:
         state: Dict[str, ColumnState] = {}
