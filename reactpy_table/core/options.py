@@ -1,6 +1,6 @@
 from typing import Generic, List, Callable
 
-from ..types import Columns, ColumnSort, Paginator, TableData, TableSearch, TData, ITable, Updater, TCommonFeature
+from ..types import Columns, ColumnSort, Paginator, TableData, TableSearch, TData, ITable, Updater, TFeatureFactory
 
 
 PaginatorType = Callable[[ITable[TData], Updater[TData]], Paginator[TData]] | None
@@ -10,17 +10,17 @@ TableSearchType = Callable[[ITable[TData], Updater[TData]], TableSearch[TData]] 
 
 
 class Options(TableData[TData], Generic[TData]):
-    paginator: TCommonFeature[TData, Paginator[TData]] | None = None
-    sort: TCommonFeature[TData, ColumnSort[TData]] | None = None
-    search: TCommonFeature[TData, TableSearch[TData]] | None = None
+    paginator: TFeatureFactory[TData, Paginator[TData]] | None = None
+    sort: TFeatureFactory[TData, ColumnSort[TData]] | None = None
+    search: TFeatureFactory[TData, TableSearch[TData]] | None = None
 
     def __init__(
         self,
         rows: List[TData],
         cols: Columns,
-        paginator: TCommonFeature[TData, Paginator[TData]] | None = None,
-        sort: TCommonFeature[TData, ColumnSort[TData]] | None = None,
-        search: TCommonFeature[TData, TableSearch[TData]] | None = None,
+        paginator: TFeatureFactory[TData, Paginator[TData]] | None = None,
+        sort: TFeatureFactory[TData, ColumnSort[TData]] | None = None,
+        search: TFeatureFactory[TData, TableSearch[TData]] | None = None,
     ):
         super().__init__(rows=rows, cols=cols)
 

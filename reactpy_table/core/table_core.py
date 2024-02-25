@@ -5,7 +5,7 @@ from reactpy import use_state
 from utils.logger import log
 
 from ..features import getDefaultColumnSort, getDefaultPaginator, getDefaultRowModel, getDefaultTableSearch
-from ..types import ITable, TableData, TData, Updater, Paginator, ColumnSort, RowModel, TableSearch, TCommonFeature
+from ..types import ITable, TableData, TData, Updater, Paginator, ColumnSort, RowModel, TableSearch, TFeatureFactory
 
 from .options import Options
 from .table import Table
@@ -14,10 +14,10 @@ from .table import Table
 @dataclass
 class _FeatureFactories(Generic[TData]):
 
-    paginator: TCommonFeature[TData, Paginator[TData]]
-    sort: TCommonFeature[TData, ColumnSort[TData]]
-    search: TCommonFeature[TData, TableSearch[TData]]
-    row_model: TCommonFeature[TData, RowModel[TData]]
+    paginator: TFeatureFactory[TData, Paginator[TData]]
+    sort: TFeatureFactory[TData, ColumnSort[TData]]
+    search: TFeatureFactory[TData, TableSearch[TData]]
+    row_model: TFeatureFactory[TData, RowModel[TData]]
 
 
 class _ReactpyTable(Table[TData], Generic[TData]):

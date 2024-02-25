@@ -3,8 +3,6 @@ from .table_data import TableData, TData
 from .abstract_table import ITable
 from .updater import Updater
 
-TFeature = TypeVar("TFeature")
-TCommonFeature = Callable[[ITable[TData], Updater[TData]], TFeature]
 
 class IFeature(Protocol, Generic[TData]):
 
@@ -37,9 +35,30 @@ class FeatureBase(IFeature[TData], Generic[TData]):
         self._initial_values = table.data.rows
 
 
+TFeature= TypeVar("TFeature")
+TFeatureFactory = Callable[[ITable[TData], Updater[TData]], TFeature]
+"""Generic signature of a Callable that returns a Feature instance
+
+Returns:
+    TFeature: When called returns an instantiated feature
+
+Example Usage:
+```
+def getMyRowModel(<custom parameters>) -> TFeatureFactory[TData, RowModel[TData]]:
+
+    # < Any persistent data/refs here>
+
+    def wrapper(table: ITable[TData], updater: Updater[TData]) -> RowModel[TData]:
+    
+        # <Any pre-initialization code here>
+
+        return MyRowModel(table=table, updater=updater, <Any Additional Args>)
+
+    return wrapper
+```
+"""
+
 Func = TypeVar("Func", bound=Callable[..., Any])
-
-
 def update_state(func: Func) -> Func:
     def wrapper(self: FeatureBase[TData], *args: Any, **kwargs: Any) -> Any:
         result = func(self, *args, **kwargs)

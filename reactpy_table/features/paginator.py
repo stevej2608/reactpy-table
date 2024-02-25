@@ -1,7 +1,7 @@
 from typing import List, Any
 import math
 from utils.logger import log
-from ..types import Paginator, Updater, ITable, update_state, TData, TCommonFeature
+from ..types import Paginator, Updater, ITable, update_state, TData, TFeatureFactory
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -68,7 +68,7 @@ class DefaultPaginator(Paginator[TData]):
         return self.page_index < page_count - 1
 
 
-def getDefaultPaginator(page_size: int=DEFAULT_PAGE_SIZE) -> TCommonFeature[TData, Paginator[TData]]:
+def getDefaultPaginator(page_size: int=DEFAULT_PAGE_SIZE) -> TFeatureFactory[TData, Paginator[TData]]:
     """Return a wrapped function that when called creates a DefaultPaginator instance
 
     Args:

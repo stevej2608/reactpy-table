@@ -1,7 +1,7 @@
 # pyright: reportUnusedImport=false
 # ruff: noqa: F401
 
-from .feature  import IFeature, FeatureBase, update_state, TFeature, TCommonFeature
+from .feature  import IFeature, FeatureBase, update_state, TFeature, TFeatureFactory
 from .updater import Updater
 
 from .abstract_paginator import IPaginator, Paginator
