@@ -1,8 +1,8 @@
 from typing import Protocol
-from .table_data import Column
 
-from .feature import IFeature, FeatureBase
 from .abstract_table import TData
+from .feature import FeatureBase, IFeature
+from .table_data import Column
 
 
 class IColumnSort(IFeature[TData], Protocol):

@@ -1,4 +1,4 @@
-from ..types import RowModel, Updater, ITable, TData, TFeatureFactory
+from ..types import ITable, RowModel, TData, TFeatureFactory, Updater
 
 
 class DefaultRowModel(RowModel[TData]):

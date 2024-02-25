@@ -1,7 +1,8 @@
-from typing import Dict, Any
+from typing import Any, Dict
+
 from pydantic import BaseModel
 
-from ..types import Column, ITable, Updater, ColumnSort, update_state, TData, TFeatureFactory
+from ..types import Column, ColumnSort, ITable, TData, TFeatureFactory, Updater, update_state
 
 
 class ColumnState(BaseModel):

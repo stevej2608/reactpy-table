@@ -1,6 +1,7 @@
-from typing import Protocol, Callable, TypeVar, Any, cast, List, Generic
-from .table_data import TableData, TData
+from typing import Any, Callable, Generic, List, Protocol, TypeVar, cast
+
 from .abstract_table import ITable
+from .table_data import TableData, TData
 from .updater import Updater
 
 

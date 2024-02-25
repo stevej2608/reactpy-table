@@ -1,12 +1,14 @@
 from typing import List
+
 from reactpy import component, html, use_memo
-from reactpy_table import use_reactpy_table, Table, Options
+
+from reactpy_table import Options, Table, use_reactpy_table
 from reactpy_table.features import getDefaultPaginator
 from utils.logger import log, logging
 from utils.pico_run import pico_run
 from utils.reactpy_helpers import For
 
-from .data.sp500 import get_sp500, CompanyModel, COLS
+from .data.sp500 import COLS, CompanyModel, get_sp500
 
 # Minimal example, see table_example.py for search, sort & pagination
 

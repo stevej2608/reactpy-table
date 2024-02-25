@@ -1,7 +1,7 @@
 from typing import Protocol
 
-from .feature import IFeature, FeatureBase
 from .abstract_table import TData
+from .feature import FeatureBase, IFeature
 
 
 class ITableSearch(IFeature[TData], Protocol):

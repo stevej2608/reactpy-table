@@ -1,7 +1,9 @@
-from typing import List, Any
 import math
+from typing import Any, List
+
 from utils.logger import log
-from ..types import Paginator, Updater, ITable, update_state, TData, TFeatureFactory
+
+from ..types import ITable, Paginator, TData, TFeatureFactory, Updater, update_state
 
 DEFAULT_PAGE_SIZE = 10
 

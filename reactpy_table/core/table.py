@@ -1,6 +1,6 @@
-from typing import Protocol, Generic
+from typing import Generic, Protocol
 
-from ..types import IColumnSort, IPaginator, IRowModel, ITableSearch, ITable, TData
+from ..types import IColumnSort, IPaginator, IRowModel, ITable, ITableSearch, TData
 
 
 class IFeatureSet(Generic[TData], Protocol):

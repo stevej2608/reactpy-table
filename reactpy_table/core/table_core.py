@@ -1,19 +1,18 @@
 from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, Callable, Generic, Union
+
 from reactpy import use_state
 from utils.logger import log
 
 from ..features import getDefaultColumnSort, getDefaultPaginator, getDefaultRowModel, getDefaultTableSearch
-from ..types import ITable, TableData, TData, Updater, Paginator, ColumnSort, RowModel, TableSearch, TFeatureFactory
-
+from ..types import ColumnSort, ITable, Paginator, RowModel, TableData, TableSearch, TData, TFeatureFactory, Updater
 from .options import Options
 from .table import Table
 
 
 @dataclass
 class _FeatureFactories(Generic[TData]):
-
     paginator: TFeatureFactory[TData, Paginator[TData]]
     sort: TFeatureFactory[TData, ColumnSort[TData]]
     search: TFeatureFactory[TData, TableSearch[TData]]

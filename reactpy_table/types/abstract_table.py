@@ -1,4 +1,5 @@
-from typing import Protocol, Generic
+from typing import Generic, Protocol
+
 from .table_data import TableData, TData
 
 

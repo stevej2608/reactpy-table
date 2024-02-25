@@ -1,4 +1,5 @@
-from typing import List, Callable, Optional, TypeVar, Generic, Protocol, Dict, Any
+from typing import Any, Callable, Dict, Generic, List, Optional, Protocol, TypeVar
+
 from pydantic import BaseModel
 
 

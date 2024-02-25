@@ -1,12 +1,14 @@
-from typing import List, Callable, Dict, Any
-from reactpy import component, html, use_state, use_memo, event
+from typing import Any, Callable, Dict, List
+
+from reactpy import component, event, html, use_memo, use_state
 from reactpy.core.component import Component
-from reactpy_table import use_reactpy_table, Column, Columns, Options, IPaginator, ITableSearch, Table
+
+from reactpy_table import Column, Columns, IPaginator, ITableSearch, Options, Table, use_reactpy_table
 from utils.logger import log, logging
 from utils.pico_run import pico_run
 from utils.reactpy_helpers import For
 
-from .data.sp500 import get_sp500, CompanyModel, COLS
+from .data.sp500 import COLS, CompanyModel, get_sp500
 
 # Example supports search, sort & pagination
 

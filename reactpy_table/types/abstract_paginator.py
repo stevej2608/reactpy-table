@@ -1,7 +1,6 @@
 from typing import Any, List, Protocol
 
-from .feature import IFeature, FeatureBase
-
+from .feature import FeatureBase, IFeature
 from .table_data import TData
 
 # pyright: reportReturnType=false

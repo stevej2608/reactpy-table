@@ -1,4 +1,4 @@
-from ..types import ITable, TableSearch, Updater, update_state, TData, TFeatureFactory
+from ..types import ITable, TableSearch, TData, TFeatureFactory, Updater, update_state
 
 
 class DefaultTableSearch(TableSearch[TData]):
