@@ -1,3 +1,4 @@
+from ctypes import ArgumentError
 import math
 from typing import Any, List
 
@@ -12,7 +13,17 @@ class DefaultPaginator(Paginator[TData]):
 
     def __init__(self, table: ITable[TData], updater: Updater[TData], page_size: int):
         super().__init__(table, updater)
-        self.page_size = page_size
+        self._page_size = page_size
+        self._page_index = 0
+
+
+    @property
+    def page_index(self) -> int:
+        return self._page_index
+
+    @property
+    def page_size(self) -> int:
+        return self._page_size
 
     @property
     def rows(self) -> List[Any]:
@@ -48,25 +59,21 @@ class DefaultPaginator(Paginator[TData]):
     def set_page_size(self, page_size: int):
         log.info("set_page_size")
 
-        self.page_index = int((self.page_index * self.page_size) / page_size)
-        self.page_size = page_size
+        self._page_index = int((self.page_index * self.page_size) / page_size)
+        self._page_size = page_size
 
     @update_state
     def set_page_index(self, page_index: int):
-        self.page_index = page_index
+        if page_index < 0 or page_index > self.page_count-1:
+            raise ArgumentError(f'Requested page {page_index} is not in range [0..{self.page_count-1}]')
+        self._page_index = page_index
+
 
     def can_get_previous_page(self) -> bool:
         return self.page_index > 0
 
     def can_get_next_page(self) -> bool:
         page_count = self.page_count
-
-        # if page_count == -1:
-        #     return True
-
-        # if page_count == 0:
-        #     return False
-
         return self.page_index < page_count - 1
 
 
