@@ -1,22 +1,15 @@
-from typing import Union, Callable, cast
-import os
-import inspect
-from pathlib import Path
 from types import FunctionType
+from typing import Callable, Union, cast
+
 from reactpy import component, html
 from reactpy.core.component import Component
 
-from .css_links import PICO_CSS
+from .caller import calling_module
 from .fast_server import run
-from .options import ServerOptions
+from .server_options import ServerOptions, PICO_OPTIONS
 
-PICO_OPTIONS = ServerOptions(
-    head=[
-        html.link(PICO_CSS)
-    ]
-)
 
-def pico_run(app: Union[Component, Callable[..., Component]], options: ServerOptions | None=None):
+def pico_run(app: Union[Component, Callable[..., Component]], options: ServerOptions | None = None):
     """Wrap the given app in a simple container and call the FastAPI server
 
     Args:
@@ -32,17 +25,13 @@ def pico_run(app: Union[Component, Callable[..., Component]], options: ServerOpt
         children = cast(Component, app)
 
     if options is not None:
-        options.asset_folder = str(Path(inspect.stack()[1].filename).parent.relative_to(os.getcwd()))
+        options.asset_folder = calling_module()
         options = PICO_OPTIONS + options
     else:
         options = PICO_OPTIONS
 
     @component
     def AppMain():
-        return html.div({'class_name': 'container'},
-            html.section(
-                children
-            )
-        )
+        return html.div({"class_name": "container"}, html.section(children))
 
     run(AppMain, options=options)

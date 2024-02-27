@@ -230,7 +230,7 @@ def AppMain():
 
 
     return html.div(
-        ModalForm(open=False),
+        ModalForm(open=True),
         html.br(),
         html.h2('ReactPy Table Example'),
         Search(table.search),
@@ -250,6 +250,7 @@ if __name__ == "__main__":
 
     opt = ServerOptions(
         head = [
+            html.title('XXX'),
             "assets/css/modal.css"
             ]
     )

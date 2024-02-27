@@ -2,10 +2,12 @@ from mimetypes import guess_type
 from os import path
 
 from fastapi import FastAPI, Response
-from utils.options import ServerOptions
+from utils.server_options.default_options import ServerOptions
 from utils.logger import log
 
-async def _get_file(filename):
+# pyright: reportUnusedFunction=false
+
+async def get_file(filename: str):
 
     if not path.isfile(filename):
         log.warning("File '%s' is missing", filename)
@@ -24,6 +26,6 @@ def assets_api(options:ServerOptions):
     @api.get("/{rest_of_path:path}")
     async def get_assets(rest_of_path: str):
         filename = path.join(options.asset_folder, options.asset_root, rest_of_path)
-        return await _get_file(filename)
+        return await get_file(filename)
 
     return api

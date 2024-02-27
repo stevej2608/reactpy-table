@@ -1,6 +1,6 @@
 
 from reactpy import html
-from .options import ServerOptions
+from .default_options import ServerOptions
 
 
 HIGHLIGHT_JS = {
