@@ -1,74 +1,28 @@
 from typing import Callable, Any
 import sys
-import signal
-import multiprocessing
+import os
+import inspect
+from pathlib import Path
 import uvicorn
 from fastapi import FastAPI
+from reactpy import html
 from reactpy.core.component import Component
-from reactpy.backend.fastapi import configure, Options
+from reactpy.backend.fastapi import configure, Options as FastApiOptions
 
-from .logger import log, logging
-from .var_name import var_name
-from .fast_server_options import DEFAULT_OPTIONS
+from utils.logger import log, logging
+from utils.var_name import var_name
 
-app = FastAPI(description="ReactPy", version="0.1.0")
+from utils.assets import assets_api
+from utils.options import ServerOptions, DEFAULT_OPTIONS
 
 # pyright: reportDeprecated=false
 # pyright: reportUnusedFunction=false
 
-LOGS = [
-    "asgi-logger",
-    "concurrent.futures",
-    "concurrent",
-    "asyncio",
-    "uvicorn.error",
-    "uvicorn",
-    "watchfiles.watcher",
-    "watchfiles",
-    "watchfiles.main",
-    "fastapi",
-    "reactpy.backend",
-    "reactpy",
-    "reactpy._option",
-    "reactpy.core.hooks",
-    "reactpy.core",
-    "urllib3.util.retry",
-    "urllib3.util",
-    "urllib3",
-    "urllib3.connection",
-    "urllib3.response",
-    "urllib3.connectionpool",
-    "urllib3.poolmanager",
-    "charset_normalizer",
-    "requests",
-    "reactpy.web.utils",
-    "reactpy.web",
-    "reactpy.web.module",
-    "reactpy.backend.utils",
-    "reactpy.core.layout",
-    "reactpy.core.serve",
-    "reactpy.backend.starlette",
-    "uvicorn.access",
-    "starlette",
-]
-
-
-def disable_noisy_logs():
-    # Turn off noisy logging
-
-    for log_id in LOGS:
-        _log = logging.getLogger(log_id)
-        _log.setLevel(logging.ERROR)
-
-
-def handler(signum:int, frame: Any):
-    active = multiprocessing.active_children()
-    for child in active:
-        child.terminate()
+app = FastAPI(description="ReactPy", version="0.1.0")
 
 
 def run(AppMain: Callable[[], Component],
-        options:Options=DEFAULT_OPTIONS,
+        options:ServerOptions=DEFAULT_OPTIONS,
         host: str='127.0.0.1',
         port: int=8000,
         disable_server_logs: bool=False,
@@ -96,21 +50,28 @@ def run(AppMain: Callable[[], Component],
         app_str = var_name(app, globals())
         return f"{__name__}:{app_str}"
 
-    configure(app, AppMain, options=options)
+    # Mount any fastapi end points here
+
+    if options.asset_folder == 'assets':
+        asset_folder = Path(inspect.stack()[1].filename).parent.relative_to(os.getcwd())
+        options.asset_folder = str(asset_folder)
+
+    app.mount("/" + options.asset_root, assets_api(options))
+
+    opt = FastApiOptions(
+       head=html.head(*options.head)
+    )
+
+    configure(app, AppMain, options=opt)
 
     app_path = _app_path(app)
 
-    @app.on_event('startup')
-    async def fastapi_startup():
-        if disable_server_logs:
-            disable_noisy_logs()
-        log.info("Uvicorn running on  http://%s:%s (Press CTRL+C to quit)", host, port)
-
     try:
         log.setLevel(logging.INFO)
-        signal.signal(signal.SIGINT, handler)
         uvicorn.run(app_path, host=host, port=port, **kwargs)
+    except Exception as ex:
+        log.info('Uvicorn server %s\n', ex)
     finally:
-        # print('\b\b')
+        print('\b\b')
         log.info('Uvicorn server has shut down\n')
         sys.exit(0)

@@ -5,25 +5,36 @@ from reactpy.core.component import Component
 
 from reactpy_table import ColumnDef, Columns, IPaginator, ITableSearch, Options, Table, use_reactpy_table
 from utils.logger import log, logging
-from utils.pico_run import pico_run
+from utils.pico_run import pico_run, ServerOptions
 from utils.reactpy_helpers import For
 
 from .data.sp500 import COLS, CompanyModel, get_sp500
 
 # Example supports search, sort & pagination
 
+@component
+def Button(id:str, text:str, action: Callable[...,None], disabled: bool=False, table_button: bool=False):
+
+    @event
+    def onclick(event: Dict[str, Any]):
+        action()
+
+    props: Dict[str,Any] = {'id': id, 'onclick': onclick, 'disabled': disabled}
+
+    if table_button:
+    
+        props['style'] = {
+            'padding': '0px', 
+            'margin-bottom': '0px', 
+            'background-color': 'transparent', 
+            'border-color': 'transparent'
+            }
+
+    return html.button(props, text)
+
 
 @component
 def TablePaginator(paginator: IPaginator[CompanyModel]):
-
-    @component
-    def Button(id:str, text:str, action: Callable[...,None], disabled: bool=False):
-
-        @event
-        def onclick(event: Dict[str, Any]):
-            action()
-
-        return html.button({'id': id, 'onclick': onclick, 'disabled': disabled}, text)
 
     @component
     def PageSizeSelect(sizes:List[int]):
@@ -38,7 +49,6 @@ def TablePaginator(paginator: IPaginator[CompanyModel]):
             return html.option({'value': size}, f"{size}")
 
         return html.select({'id': 'dd1', 'value': sizes[0], "on_change": on_change}, For(PageOption, sizes))
-
 
     @component
     def PageInput():
@@ -105,6 +115,11 @@ def Search(search: ITableSearch[CompanyModel]):
 def THead(table: Table[CompanyModel]):
 
     @component
+    def Action():
+        return html.th('Action')
+
+
+    @component
     def text_with_arrow(col: ColumnDef):
 
         sort = table.sort
@@ -123,9 +138,11 @@ def THead(table: Table[CompanyModel]):
 
     columns = table.data.cols
 
-    return html.thead(
-        For(text_with_arrow, iterator=columns)
-    )
+    rows = For(text_with_arrow, iterator=columns)
+
+    # return html.thead(Actions(), rows)
+
+    return html.thead(html._(Action(), rows))
 
 
 @component
@@ -138,7 +155,23 @@ def TColgroup(col_widths: List[int]):
 
 @component
 def TRow(index: int, row: CompanyModel):
+
+    def delete_row():
+        log.info('delete %d', row.index)
+
+    def edit_row():
+        log.info('delete %s', row.index)
+
+    @component
+    def Actions():
+        return html.td({'class_name': 'grid', 'style': {'align-items': 'center','grid-template-columns': '0.5fr 0.5fr'}},
+            Button("row-edit", "📝", edit_row, table_button=True),
+            Button("row-edit", "❌", delete_row,  table_button=True),
+        )
+
+
     return  html.tr({'id': f"row-{index}"},
+        Actions(),
         html.td(str(row.index)),
         html.td(row.symbol),
         html.td(row.name),
@@ -162,6 +195,29 @@ def TFoot(columns: Columns):
     )
 
 
+# https://picocss.com/docs/modal
+
+@component
+def ModalForm(open: bool):
+    return html.dialog({'open': open},
+        html.article(
+            html.header(
+                html.button({'aria-label': 'Close', 'rel': 'prev'}, "✕"),
+                html.p(html.strong("🗓️ Thank You for Registering!"))
+            ),
+            html.p("""
+                   We're excited to have you join us for our upcoming event. 
+                   Please arrive at the museum  on time to check in and 
+                   get started."""),
+
+            html.ul(
+                html.li("Date: Saturday, April 15"),
+                html.li("Time: 10:00am - 12:00pm")
+            )
+        )
+    )
+
+
 @component
 def AppMain():
 
@@ -174,20 +230,28 @@ def AppMain():
 
 
     return html.div(
+        ModalForm(open=False),
         html.br(),
         html.h2('ReactPy Table Example'),
         Search(table.search),
         html.table({"role": "grid"},
-            TColgroup([80, 150, 250, 200, 300, 250, 100]),
+            TColgroup([100, 80, 150, 250, 200, 300, 250, 100]),
             THead(table),
             TBody(table.paginator.rows),
             TFoot(table.data.cols),
         ),
-        TablePaginator(table.paginator)
+        TablePaginator(table.paginator),
     )
 
 # python -m examples.table_example
 
 if __name__ == "__main__":
     log.setLevel(logging.INFO)
-    pico_run(AppMain)
+
+    opt = ServerOptions(
+        head = [
+            "assets/css/modal.css"
+            ]
+    )
+
+    pico_run(AppMain, options=opt)

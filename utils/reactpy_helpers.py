@@ -1,12 +1,11 @@
-from typing import Union, Callable, Any, List
+from typing import Union, Callable, Any
 from reactpy import component, html
-from reactpy.core.types import VdomDict
-from reactpy.core.component import Component
 
-CompConstructor = Callable[..., Component]
+IterableComponent = Union[Callable[[Any], Callable], Callable[[int, Any], Callable]]
+
 
 @component
-def For(component: CompConstructor, iterator: Union[List[str], Any]) -> VdomDict:
+def For(component: IterableComponent, iterator: Union[list, enumerate]) -> Callable:
     """Apply the iterator to the given component
 
     Usage:
@@ -23,10 +22,8 @@ def For(component: CompConstructor, iterator: Union[List[str], Any]) -> VdomDict
         For(TableRow, iterator=enumerate(users))
     ```
     """
-
-    if isinstance(iterator, List):
-        components = [component(name) for name in iterator]
+    if isinstance(iterator, enumerate):
+        return html._(*[component(index, value) for index, value in iterator])
     else:
-        components = [component(index, value) for index, value in iterator]
-
-    return html._(*components)
+        return html._(*[component(name) for name in iterator])
+    

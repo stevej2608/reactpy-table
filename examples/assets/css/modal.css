@@ -1,0 +1,85 @@
+/* 
+   This is needed to get Pico modals to render .
+   correctly. Specifically the close button in the top
+   right of the dialog. The rules were hacked out of the
+   browser.
+
+   See: https://picocss.com/docs/modal
+*/
+
+dialog article {
+    width: 100%;
+    max-height: calc(100vh - var(--pico-spacing) * 2);
+    margin: var(--pico-spacing);
+    overflow: auto
+}
+
+@media(min-width:576px) {
+    dialog article {
+        max-width: 510px
+    }
+}
+
+@media(min-width:768px) {
+    dialog article {
+        max-width: 700px
+    }
+}
+
+dialog article>header>* {
+    margin-bottom: 0
+}
+
+dialog article>header .close,
+dialog article>header :is(a,
+    button)[rel=prev] {
+    margin: 0;
+    margin-left: var(--pico-spacing);
+    padding: 0;
+    float: right
+}
+
+dialog article>footer {
+    text-align: right
+}
+
+dialog article>footer [role=button],
+dialog article>footer button {
+    margin-bottom: 0
+}
+
+dialog article>footer [role=button]:not(:first-of-type),
+dialog article>footer button:not(:first-of-type) {
+    margin-left: calc(var(--pico-spacing) * .5)
+}
+
+dialog article .close,
+dialog article :is(a,
+    button)[rel=prev] {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    margin-top: calc(var(--pico-spacing) * -1);
+    margin-bottom: var(--pico-spacing);
+    margin-left: auto;
+    border: none;
+    background-image: var(--pico-icon-close);
+    background-position: center;
+    background-size: auto 1rem;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    opacity: .5;
+    transition: opacity var(--pico-transition)
+}
+
+dialog article .close:is([aria-current]:not([aria-current=false]),
+    :hover,
+    :active,
+    :focus),
+dialog article :is(a,
+    button)[rel=prev]:is([aria-current]:not([aria-current=false]),
+    :hover,
+    :active,
+    :focus) {
+    opacity: 1
+}
