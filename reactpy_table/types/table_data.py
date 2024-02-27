@@ -2,18 +2,19 @@ from typing import Any, Callable, Dict, Generic, List, Optional, Protocol, TypeV
 
 from pydantic import BaseModel
 
+# https://tanstack.com/table/v8/docs/api/core/column-def
 
-class Column(BaseModel):
+class ColumnDef(BaseModel):
     """Column definitions"""
 
     name: str
     label: str
     style: Optional[str] = None
-    sort: Optional[Callable[["Column"], None]] = None
+    sort: Optional[Callable[["ColumnDef"], None]] = None
     width: str = ""
 
 
-Columns = List[Column]
+Columns = List[ColumnDef]
 
 
 class IBaseModel(Protocol):

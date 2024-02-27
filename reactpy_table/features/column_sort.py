@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 from pydantic import BaseModel
 
-from ..types import Column, ColumnSort, ITable, TData, TFeatureFactory, Updater, update_state
+from ..types import ColumnDef, ColumnSort, ITable, TData, TFeatureFactory, Updater, update_state
 
 
 class ColumnState(BaseModel):
@@ -17,8 +17,8 @@ class DefaultColumnSort(ColumnSort[TData]):
         self.state = state
 
     @update_state
-    def toggle_sort(self, col: Column) -> bool:
-        def _sort(col: Column, element: Any):
+    def toggle_sort(self, col: ColumnDef) -> bool:
+        def _sort(col: ColumnDef, element: Any):
             name = col if isinstance(col, str) else col.name
             return getattr(element, name)
 
@@ -29,11 +29,11 @@ class DefaultColumnSort(ColumnSort[TData]):
 
         return state.reverse
 
-    def is_sort_reverse(self, col: Column) -> bool:
+    def is_sort_reverse(self, col: ColumnDef) -> bool:
         state = self.get_state(col)
         return state.reverse
 
-    def get_state(self, col: Column):
+    def get_state(self, col: ColumnDef):
         return self.state[col.name]
 
 

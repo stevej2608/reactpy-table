@@ -11,4 +11,4 @@ from .abstract_row_model import IRowModel, RowModel
 
 from .abstract_table import ITable
 
-from .table_data import TableData, Column, Columns, TData
+from .table_data import TableData, ColumnDef, Columns, TData

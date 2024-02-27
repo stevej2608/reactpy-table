@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from reactpy_table import Column, Columns
+from reactpy_table import ColumnDef, Columns
 
 # pylint: disable=C0302
 
@@ -21,13 +21,13 @@ def get_sp500(rows:Optional[int]=None) -> List[CompanyModel]:
     return table_rows if rows is None else table_rows[0:rows]
 
 COLS: Columns = [
-    Column(name='index', label='#'),
-    Column(name='symbol', label='Symbol'),
-    Column(name='name', label='Name'),
-    Column(name='sector', label='Sector'),
-    Column(name='industry', label='Industry'),
-    Column(name='headquarters', label='Headquarters'),
-    Column(name='CIK', label='CIK')
+    ColumnDef(name='index', label='#'),
+    ColumnDef(name='symbol', label='Symbol'),
+    ColumnDef(name='name', label='Name'),
+    ColumnDef(name='sector', label='Sector'),
+    ColumnDef(name='industry', label='Industry'),
+    ColumnDef(name='headquarters', label='Headquarters'),
+    ColumnDef(name='CIK', label='CIK')
     ]
 
 # https://github.com/noahg/sp500csv/tree/master
