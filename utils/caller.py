@@ -2,7 +2,7 @@ import os
 import inspect
 from pathlib import Path
 
-def calling_module(depth:int=1) -> str:
+def calling_module_folder(depth:int=1) -> str:
     """Returns the folder path relative to program root of the calling module
 
     Args:

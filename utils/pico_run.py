@@ -4,7 +4,7 @@ from typing import Callable, Union, cast
 from reactpy import component, html
 from reactpy.core.component import Component
 
-from .caller import calling_module
+from .caller import calling_module_folder
 from .fast_server import run
 from .server_options import ServerOptions, PICO_OPTIONS
 
@@ -25,7 +25,7 @@ def pico_run(app: Union[Component, Callable[..., Component]], options: ServerOpt
         children = cast(Component, app)
 
     if options is not None:
-        options.asset_folder = calling_module()
+        options.asset_folder = calling_module_folder()
         options = PICO_OPTIONS + options
     else:
         options = PICO_OPTIONS
