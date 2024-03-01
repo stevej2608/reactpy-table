@@ -8,8 +8,18 @@ from examples.table_example import AppMain
 # https://playwright.dev/python/docs/next/other-locators#xpath-locator
 
 
+async def get_cell_text(display:DisplayFixture, row:int, cell:int) -> str:
+    text = await display.page.locator(f"id=row-{row}").all_inner_texts()
+    return text[0].split('\t')[cell]
+
+async def get_row_index(display:DisplayFixture, row:int) -> int:
+    text = await display.page.locator(f"id=row-{row}").all_inner_texts()
+    return int(text[0].split('\t')[1])
+
+
 @pytest.mark.anyio
 async def test_paginator(display: DisplayFixture):
+
     await display.show(AppMain)
 
     h2 = await display.page.wait_for_selector("h2")
@@ -20,11 +30,11 @@ async def test_paginator(display: DisplayFixture):
 
     # Confirm first row, last row, number of rows  and page display
 
-    text = await display.page.locator("id=row-0").all_inner_texts()
-    assert text[0].startswith("1")
+    index = await get_row_index(display, 0)
+    assert index == 1
 
-    text = await display.page.locator("id=row-9").all_inner_texts()
-    assert text[0].startswith("10")
+    index = await get_row_index(display, 9)
+    assert index == 10
 
     rows = await display.page.locator("tr").count()
     assert rows == 10
@@ -38,11 +48,11 @@ async def test_paginator(display: DisplayFixture):
 
     # Confirm first row, last row, number of rows and page display
 
-    text = await display.page.locator("id=row-0").all_inner_texts()
-    assert text[0].startswith("1")
+    index = await get_row_index(display, 0)
+    assert index == 1
 
-    text = await display.page.locator("id=row-19").all_inner_texts()
-    assert text[0].startswith("20")
+    index = await get_row_index(display, 19)
+    assert index == 20
 
     rows = await display.page.locator("tr").count()
     assert rows == 20
@@ -60,11 +70,11 @@ async def test_paginator(display: DisplayFixture):
     rows = await display.page.locator("tr").count()
     assert rows == 20
 
-    text = await display.page.locator("id=row-0").all_inner_texts()
-    assert text[0].startswith("21")
+    index = await get_row_index(display, 0)
+    assert index == 21
 
-    text = await display.page.locator("id=row-19").all_inner_texts()
-    assert text[0].startswith("40")
+    index = await get_row_index(display, 19)
+    assert index == 40
 
     text = await display.page.locator("id=pg-pages").all_inner_texts()
     assert text[0] == "Page 2 of 26"
@@ -79,8 +89,9 @@ async def test_paginator(display: DisplayFixture):
 
     # Confirm last row and page display
 
-    text = await display.page.locator("id=row-4").all_inner_texts()
-    assert text[0].startswith("505")
+    index = await get_row_index(display, 4)
+    assert index == 505
+
 
     text = await display.page.locator("id=pg-pages").all_inner_texts()
     assert text[0] == "Page 26 of 26"
@@ -114,15 +125,15 @@ async def test_sort(display: DisplayFixture):
     search = display.page.locator("id=tbl-sort-#")
 
     await search.click()
-    text = await display.page.locator("id=row-0").all_inner_texts()
-    assert text[0].startswith("505")
+    index = await get_row_index(display, 0)
+    assert index == 505
 
     await search.click()
-    text = await display.page.locator("id=row-0").all_inner_texts()
-    assert text[0].startswith("1")
+    index = await get_row_index(display, 0)
+    assert index == 1
 
     search = display.page.locator("id=tbl-sort-sector")
-    await search.click()
 
-    text = await display.page.locator("id=row-0").all_inner_texts()
-    assert text[0].startswith("11")
+    await search.click()
+    index = await get_row_index(display, 0)
+    assert index == 11

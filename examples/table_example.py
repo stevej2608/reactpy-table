@@ -22,7 +22,7 @@ def Button(id:str, text:str, action: Callable[...,None], disabled: bool=False, t
     props: Dict[str,Any] = {'id': id, 'onclick': onclick, 'disabled': disabled}
 
     if table_button:
-    
+
         props['style'] = {
             'padding': '0px', 
             'margin-bottom': '0px', 
@@ -44,7 +44,7 @@ def TablePaginator(paginator: IPaginator[CompanyModel]):
             page_size = int(event['currentTarget']['value'])
             paginator.set_page_size(page_size)
 
-        @component
+
         def PageOption(size:int):
             return html.option({'value': size}, f"{size}")
 
@@ -119,7 +119,6 @@ def THead(table: Table[CompanyModel]):
         return html.th('Action')
 
 
-    @component
     def text_with_arrow(col: ColumnDef):
 
         sort = table.sort
@@ -153,7 +152,6 @@ def TColgroup(col_widths: List[int]):
     )
 
 
-@component
 def TRow(index: int, row: CompanyModel):
 
     def delete_row():
@@ -230,7 +228,7 @@ def AppMain():
 
 
     return html.div(
-        ModalForm(open=True),
+        # ModalForm(open=True),
         html.br(),
         html.h2('ReactPy Table Example'),
         Search(table.search),

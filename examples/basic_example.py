@@ -22,7 +22,7 @@ def THead(table: Table[CompanyModel]):
         html.th(cols[3].label)
     )
 
-@component
+
 def TRow(index: int, row: CompanyModel):
     return  html.tr(
         html.td(str(row.index)),
