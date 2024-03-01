@@ -1,6 +1,10 @@
-from typing import List, Any
-from pydantic import BaseModel, validator, ValidationError
+from typing import Any, List, Self
+
+from pydantic import BaseModel, ValidationError, validator
 from reactpy import html
+from reactpy.core.types import VdomDict
+
+
 
 class ServerOptions(BaseModel):
     """options to be passed to the web server
@@ -11,36 +15,35 @@ class ServerOptions(BaseModel):
         asset_folder (str): path to assets folder relative to application root
 
     """
-    head: List[Any] = []
-    asset_root: str = 'assets'
-    asset_folder: str = 'assets'
 
+    head: List[Any] = []
+    asset_root: str = "assets"
+    asset_folder: str = "assets"
 
     @validator("head")
     @classmethod
-    def validate_head(cls, value):
-        vals = []
+    def validate_head(cls, value: List[str | VdomDict]):
+        vals: List[VdomDict] = []
         for v in value:
             if isinstance(v, str):
-                if v.endswith('.css'):
-                    link = html.link({ "rel": "stylesheet", "href": v})
+                if v.endswith(".css"):
+                    link = html.link({"rel": "stylesheet", "href": v})
                     vals.append(link)
-                elif v.endswith('.js'):
-                    script = html.script({ "src": v})
+                elif v.endswith(".js"):
+                    script = html.script({"src": v})
                     vals.append(script)
                 else:
                     raise ValidationError("Invalid asset extension expected [.css|.js]")
 
-            elif isinstance(v, dict):
-                if v['tagName'] in ['link', 'script', 'meta', 'title']:
+            else:
+                if v["tagName"] in ["link", "script", "meta", "title"]:
                     vals.append(v)
                 else:
                     raise ValidationError(f"Type {v['tagName'] } cannot be included in header")
 
         return vals
 
-
-    def __add__(self, other):
+    def __add__(self, other: Self):
         model = self.model_copy()
         model.head += other.head
 
@@ -51,4 +54,3 @@ class ServerOptions(BaseModel):
             model.asset_folder = other.asset_folder
 
         return model
-

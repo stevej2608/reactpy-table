@@ -1,29 +1,24 @@
-from typing import Union, Callable, Any
-from reactpy import component, html
+from typing import Callable, Any, Union, cast, List, overload
 
-IterableComponent = Union[Callable[[Any], Callable], Callable[[int, Any], Callable]]
+from reactpy import html
+from reactpy.core.types import VdomDict
+
+ListCallable = Callable[[Any], VdomDict]
+EnumerateCallable = Callable[[int, Any], VdomDict]
+
+@overload
+def For(component: EnumerateCallable, iterator: enumerate[Any]) -> VdomDict:
+    ...
+
+@overload
+def For(component: ListCallable, iterator: list[Any]) -> VdomDict:
+    ...
 
 
-@component
-def For(component: IterableComponent, iterator: Union[list, enumerate]) -> Callable:
-    """Apply the iterator to the given component
-
-    Usage:
-
-    ```
-        users = ["Test User", "Real User 1", "Real User 2"]
-
-        For(html.h2, iterator=users)
-
-        @component
-        def TableRow(index:int, row:Any):
-            ...
-
-        For(TableRow, iterator=enumerate(users))
-    ```
-    """
+def For(component: Union[ListCallable, EnumerateCallable], iterator: Union[List[Any], enumerate[Any]]) -> VdomDict:
     if isinstance(iterator, enumerate):
+        component = cast(EnumerateCallable, component)
         return html._(*[component(index, value) for index, value in iterator])
     else:
-        return html._(*[component(name) for name in iterator])
-    
+        component = cast(ListCallable, component)
+        return html._(*[component(value) for value in iterator])

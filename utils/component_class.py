@@ -1,11 +1,13 @@
-from typing import Type
+from typing import Type, Any, cast
 from reactpy.core.component import Component
+
+NONE = cast(Any, None)
 
 
 class ComponentClass(Component):
 
     def __init__(self):
-        super().__init__(None, None, None, None, None)
+        super().__init__(NONE, NONE, NONE, NONE, NONE)
 
 
 def class_component(comp: Type[ComponentClass]):
@@ -29,7 +31,7 @@ def class_component(comp: Type[ComponentClass]):
     ```
     """
 
-    def create_component(*argv, **kwargs):
+    def create_component(*argv: Any, **kwargs: Any):
         return comp(*argv, **kwargs)
 
     return create_component
