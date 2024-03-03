@@ -1,4 +1,5 @@
 import inspect
+from types import FunctionType
 import os
 import sys
 from pathlib import Path
@@ -22,8 +23,22 @@ from utils.var_name import var_name
 app = FastAPI(description="ReactPy", version="0.1.0")
 
 
+
+def extract_wrapped(decorated: Callable[..., Component]) -> FunctionType:
+    """Return the FunctionType object for the functions wrapped by @component"""
+
+    # https://stackoverflow.com/a/43506509/489239
+
+    closure = (c.cell_contents for c in decorated.__closure__)  # type: ignore
+    func = next((c for c in closure if isinstance(c, FunctionType)), None)
+
+    if func is None:
+        raise AssertionError('Unable to extract function reference from wrapper')
+
+    return func
+
 def run(
-    AppMain: Callable[[], Component],
+    app_main: Callable[[], Component],
     options: ServerOptions = DEFAULT_OPTIONS,
     host: str = "127.0.0.1",
     port: int = 8000,
@@ -33,7 +48,7 @@ def run(
     """Called once to run reactpy application on the fastapi server
 
     Args:
-        AppMain (Callable[[], Component]): Function that returns a reactpy Component
+        app_main (Callable[[], Component]): Function that returns a reactpy Component
         options (Options, optional): Server options. Defaults to DASHBOARD_OPTIONS.
 
     Usage:
@@ -55,20 +70,21 @@ def run(
     # Mount any fastapi end points here
 
     if options.asset_folder == "assets":
-        asset_folder = Path(inspect.stack()[1].filename).parent.relative_to(os.getcwd())
+        func = extract_wrapped(app_main)
+        asset_folder = Path(inspect.getfile(func)).parent.relative_to(os.getcwd())
         options.asset_folder = str(asset_folder)
 
     app.mount("/" + options.asset_root, assets_api(options))
 
     opt = FastApiOptions(head=html.head(*options.head))
 
-    configure(app, AppMain, options=opt)
+    configure(app, app_main, options=opt)
 
     app_path = _app_path(app)
 
     try:
         log.setLevel(logging.INFO)
-        uvicorn.run(app_path, host=host, port=port, **kwargs)
+        uvicorn.run(app_path, host=host, port=port, **kwargs) # type: ignore
     except Exception as ex:
         log.info("Uvicorn server %s\n", ex)
     finally:

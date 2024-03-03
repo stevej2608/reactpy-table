@@ -1,4 +1,3 @@
-
 from typing import  Any, Dict
 
 def var_name(obj: Any, namespace: Dict[str, Any]) -> str:
