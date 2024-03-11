@@ -1,6 +1,6 @@
 ## reactpy-table
 
-![](./docs/img/screenshot.png)
+![](https://raw.githubusercontent.com/stevej2608/reactpy-table/master/docs/img/screenshot.png)
 
 Headless UI for building powerful tables with [ReactPy]. The project 
 takes its design ideas from the hugely popular, ReactJS based, [TanStack Table].
