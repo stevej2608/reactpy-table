@@ -3,7 +3,6 @@ from typing import List
 from reactpy import component, html, use_memo
 
 from reactpy_table import Options, Table, use_reactpy_table
-from reactpy_table.features import getDefaultPaginator
 from utils.logger import log, logging
 from utils.pico_run import pico_run
 from utils.reactpy_helpers import For
@@ -42,8 +41,7 @@ def AppMain():
     table_data = use_memo(lambda:get_sp500(rows=50))
     table = use_reactpy_table(Options(
         rows=table_data,
-        cols = COLS,
-        paginator=getDefaultPaginator()
+        cols = COLS
     ))
 
     return html.div(
@@ -55,7 +53,7 @@ def AppMain():
         ),
     )
 
-# python -m examples.table_basic_example
+# python -m examples.basic_example
 
 if __name__ == "__main__":
     log.setLevel(logging.INFO)
