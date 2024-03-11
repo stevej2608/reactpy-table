@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "reactpy-table"
-version = "0.0.10"
+version = "0.0.11"
 description = "Headless UI for building powerful tables"
 authors = ["Steve Jones <jonesst2608@gmail.com>"]
 readme = "README.md"
 license = "MIT"
-homepage = "https://github.com/stevej2608/reactpy-tablet/blob/master/README.md"
-repository = "https://github.com/stevej2608/reactpy-tablet"
+homepage = "https://github.com/stevej2608/reactpy-table/blob/master/README.md"
+repository = "https://github.com/stevej2608/reactpy-table"
 include = ["reactpy-tablet/*.py"]
 
 
