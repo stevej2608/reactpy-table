@@ -52,7 +52,7 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
                 paginator=options.paginator or getDefaultPaginator(),
                 sort=options.sort or getDefaultColumnSort(),
                 search=options.search or getDefaultTableSearch(),
-                row_model=getDefaultRowModel(),
+                row_model=options.row_model or getDefaultRowModel(),
             ),
         )
 

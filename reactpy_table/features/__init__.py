@@ -1,7 +1,7 @@
 # pyright: reportUnusedImport=false
 # ruff: noqa: F401
 
-from .column_sort import getDefaultColumnSort
-from .paginator import getDefaultPaginator
-from .row_model import getDefaultRowModel
-from .table_search import getDefaultTableSearch
+from .column_sort import getDefaultColumnSort, DefaultColumnSort
+from .paginator import getDefaultPaginator, DefaultPaginator
+from .row_model import getDefaultRowModel, DefaultRowModel
+from .table_search import getDefaultTableSearch, DefaultTableSearch
