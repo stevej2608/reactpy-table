@@ -26,6 +26,10 @@ class DefaultPaginator(Paginator[TData]):
         return self._page_size
 
     @property
+    def page_base(self) -> int:
+        return self.page_size * self.page_index + 1
+
+    @property
     def rows(self) -> List[Any]:
         low = self.page_size * self.page_index
         high = min(low + self.page_size, len(self.data.rows))

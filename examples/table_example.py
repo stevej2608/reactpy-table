@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, List
 from reactpy import component, event, html, use_memo, use_state
 from reactpy.core.component import Component
 
-from reactpy_table import ColumnDef, Columns, IPaginator, ITableSearch, Options, Table, use_reactpy_table
+from reactpy_table import ColumnDef, IPaginator, ITableSearch, Options, Table, use_reactpy_table
 from utils.logger import log, logging
 from utils.pico_run import pico_run, ServerOptions
 from utils.reactpy_helpers import For
@@ -152,20 +152,15 @@ def TColgroup(col_widths: List[int]):
         [html.col({'style': {'width':f"{width}px"}}) for width in col_widths]
     )
 
+Action = Callable[[int], None]
 
-def TRow(index: int, row: CompanyModel):
-
-    def delete_row():
-        log.info('delete %d', row.index)
-
-    def edit_row():
-        log.info('delete %s', row.index)
+def TRow(index: int, row: CompanyModel, edit_row: Action, delete_row: Action):
 
     @component
     def Actions():
         return html.td({'class_name': 'grid', 'style': {'align-items': 'center','grid-template-columns': '0.5fr 0.5fr'}},
-            Button("row-edit", "📝", edit_row, table_button=True),
-            Button("row-edit", "❌", delete_row,  table_button=True),
+            Button("row-edit", "📝", lambda : edit_row(index), table_button=True),
+            Button("row-edit", "❌", lambda : delete_row(index),  table_button=True),
         )
 
 
@@ -181,14 +176,28 @@ def TRow(index: int, row: CompanyModel):
     )
 
 
-def TBody(table: List[CompanyModel]):
+def TBody(table: Table[CompanyModel]):
+
+    rows = table.paginator.rows
+    page_base = table.paginator.page_base
+
+    def delete_row(index:int):
+        table.row_model.delete_row(page_base + index)
+
+    def edit_row(index:int):
+        row = rows[index].model_copy()
+        row.industry = "XXXX"
+        table.row_model.update_row(page_base + index, row)
+
+
     return  html.tbody(
-        For(TRow, iterator=enumerate(table))
+        [TRow(index, row, edit_row, delete_row) for index, row in enumerate(rows)]
     )
 
 
 @component
-def TFoot(columns: Columns):
+def TFoot(table: Table[CompanyModel]):
+    columns = table.data.cols
     return html.tfoot(
         For(html.td, [col.label for col in columns])
     )
@@ -229,7 +238,7 @@ def AppMain():
         cols = COLS
     ))
 
-    modal_open, set_modal_open = use_state(True)
+    modal_open, set_modal_open = use_state(False)
 
 
     return html.div(
@@ -240,8 +249,8 @@ def AppMain():
         html.table({"role": "grid"},
             TColgroup([100, 80, 175, 250, 200, 300, 250, 100]),
             THead(table),
-            TBody(table.paginator.rows),
-            TFoot(table.data.cols),
+            TBody(table),
+            TFoot(table),
         ),
         TablePaginator(table.paginator),
     )

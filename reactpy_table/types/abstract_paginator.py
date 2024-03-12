@@ -19,7 +19,11 @@ class IPaginator(IFeature[TData], Protocol):
         """Current page size"""
 
     @property
-    def rows(self) -> List[Any]:
+    def page_base(self) -> int:
+        """Table index of first row in the page"""
+
+    @property
+    def rows(self) -> List[TData]:
         """Return rows in current page"""
 
     @property
