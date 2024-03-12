@@ -5,10 +5,9 @@ from reactpy import component, event, html, use_memo, use_state
 from reactpy_table import ColumnDef, Options, Table, use_reactpy_table
 from utils import EventArgs, For, ServerOptions, log, logging, pico_run
 
-from .components import Button, Search, TablePaginator, ModalForm
+from .components import Button, Search, TablePaginator, getCustomRowModel, ModalForm
 from .data.sp500 import COLS, CompanyModel, get_sp500
 
-# Example supports search, sort & pagination
 
 @component
 def THead(table: Table[CompanyModel]):
@@ -108,16 +107,16 @@ def AppMain():
 
     table = use_reactpy_table(options=Options(
         rows=table_data,
-        cols = COLS
+        cols = COLS,
+        row_model=getCustomRowModel()
     ))
 
     modal_open, set_modal_open = use_state(False)
 
-
     return html.div(
         ModalForm(open=modal_open, set_open=set_modal_open),
         html.br(),
-        html.h2('ReactPy Table Example'),
+        html.h2('ReactPy SQL Table Example'),
         Search(table.search),
         html.table({"role": "grid"},
             TColgroup([100, 80, 175, 250, 200, 300, 250, 100]),
@@ -128,10 +127,11 @@ def AppMain():
         TablePaginator(table.paginator),
     )
 
-# python -m examples.table_example
+# python -m examples.sql_table_example
 
 if __name__ == "__main__":
     log.setLevel(logging.INFO)
+
     pico_run(AppMain, options=ServerOptions(
         head = ["assets/css/modal.css"
         ]))
