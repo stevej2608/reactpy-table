@@ -7,6 +7,7 @@ from reactpy_table import ColumnDef, Columns, IPaginator, ITableSearch, Options,
 from utils.logger import log, logging
 from utils.pico_run import pico_run, ServerOptions
 from utils.reactpy_helpers import For
+from utils.types import EventArgs
 
 from .data.sp500 import COLS, CompanyModel, get_sp500
 
@@ -196,23 +197,25 @@ def TFoot(columns: Columns):
 # https://picocss.com/docs/modal
 
 @component
-def ModalForm(open: bool):
-    return html.dialog({'open': open},
+def ModalForm(open: bool, set_open: Callable[[bool], None]):
+
+    @event(prevent_default=True)
+    def close(event: EventArgs):
+        set_open(False)
+
+
+    return html.dialog({"open": open, "on_click": close},
         html.article(
             html.header(
-                html.button({'aria-label': 'Close', 'rel': 'prev'}, "✕"),
-                html.p(html.strong("🗓️ Thank You for Registering!"))
+                html.button({"aria-label": "Close", "rel": "prev"}, "✕"),
+                html.p(html.strong("🗓️ Thank You for Registering!")),
             ),
             html.p("""
                    We're excited to have you join us for our upcoming event. 
                    Please arrive at the museum  on time to check in and 
                    get started."""),
-
-            html.ul(
-                html.li("Date: Saturday, April 15"),
-                html.li("Time: 10:00am - 12:00pm")
-            )
-        )
+            html.ul(html.li("Date: Saturday, April 15"), html.li("Time: 10:00am - 12:00pm")),
+        ),
     )
 
 
@@ -226,14 +229,16 @@ def AppMain():
         cols = COLS
     ))
 
+    modal_open, set_modal_open = use_state(True)
+
 
     return html.div(
-        # ModalForm(open=True),
+        ModalForm(open=modal_open, set_open=set_modal_open),
         html.br(),
         html.h2('ReactPy Table Example'),
         Search(table.search),
         html.table({"role": "grid"},
-            TColgroup([100, 80, 150, 250, 200, 300, 250, 100]),
+            TColgroup([100, 80, 175, 250, 200, 300, 250, 100]),
             THead(table),
             TBody(table.paginator.rows),
             TFoot(table.data.cols),
