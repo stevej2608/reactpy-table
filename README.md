@@ -63,6 +63,50 @@ def AppMain():
     )
 ```
 
+## Feature Set
+
+The row data presented to the user for display is pre-processed by a
+data-pipeline of table features:
+
+    1. Search, filters the initial usr data
+    2. Sort, the search result by column (up/down)
+    3. Paginate, the sort result (if enabled)
+    4. RowOps, CRUD operations on the data
+
+Each feature presents an API to the user that directs its
+operation. Any change will, if required, recalculate the table data.
+
+A default set of features is applied by default. One or more custom
+features that will replace the default can be supplied as options 
+when the table is created.
+
+### Custom Features
+
+All features are instantiated using a strict pattern. As
+an example a custom paginator that accepts *page _size* and
+*start_page* would be created as follows:
+
+```
+def getCustomPaginator(page_size, start_page) 
+
+    def _feature_factory(table, updater):
+        return CustomPaginator(table, updater, page_size, start_page)
+    
+    return _feature_factory
+
+```
+The custom feature is passed as an option when the table is created:
+```
+table = use_reactpy_table(Options(
+    ...
+    paginator = getCustomPaginator(page_size=100, start_page=25)
+))
+```
+
+The table initialization logic calls *_feature_factory(table, updater)* to
+supply reactpy's internal *table* and *updater* to the custom factory.
+
+
 [TanStack Table]: https://tanstack.com/table/latest
 [ReactPy]: https://reactpy.dev/docs/index.html
 

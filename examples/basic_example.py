@@ -1,9 +1,7 @@
 from reactpy import component, html, use_memo
 
 from reactpy_table import Options, Table, use_reactpy_table
-from utils.logger import log, logging
-from utils.pico_run import pico_run
-from utils.reactpy_helpers import For
+from utils import log, logging, pico_run, For
 
 from .data.sp500 import COLS, CompanyModel, get_sp500
 
