@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, List
 from reactpy import component, event, html, use_memo, use_state
 
 from reactpy_table import ColumnDef, Options, Table, use_reactpy_table
-from utils import EventArgs, For, ServerOptions, log, logging, pico_run
+from utils import For, ServerOptions, log, logging, pico_run
 
 from .components import Button, Search, TablePaginator, ModalForm
 from .data.sp500 import COLS, CompanyModel, get_sp500

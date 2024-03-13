@@ -1,31 +1,17 @@
 from copy import deepcopy
-from dataclasses import dataclass
-from typing import Any, Callable, Generic, Union
+from typing import Any, Callable, Union
 
 from reactpy import use_state
+
 from utils.logger import log
 
 from ..features import getDefaultColumnSort, getDefaultPaginator, getDefaultRowModel, getDefaultTableSearch
-from ..types import ColumnSort, ITable, Paginator, RowModel, TableData, TableSearch, TData, TFeatureFactory, Updater
+from ..types import ITable, TableData, TData
+
+from .feature_factories import FeatureFactories
 from .options import Options
+from .reactpy_table import ReactpyTable
 from .table import Table
-
-
-@dataclass
-class _FeatureFactories(Generic[TData]):
-    paginator: TFeatureFactory[TData, Paginator[TData]]
-    sort: TFeatureFactory[TData, ColumnSort[TData]]
-    search: TFeatureFactory[TData, TableSearch[TData]]
-    row_model: TFeatureFactory[TData, RowModel[TData]]
-
-
-class _ReactpyTable(Table[TData], Generic[TData]):
-    def __init__(self, data: TableData[TData], updater: Updater[TData], features: _FeatureFactories[TData]):
-        self.data = data
-        self.paginator = features.paginator(self, updater)
-        self.sort = features.sort(self, updater)
-        self.search = features.search(self, updater)
-        self.row_model = features.row_model(self, updater)
 
 
 def use_reactpy_table(options: Options[TData]) -> Table[TData]:
@@ -45,10 +31,10 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
 
         table_data = TableData(rows=options.rows, cols=options.cols)
 
-        table = _ReactpyTable(
+        table = ReactpyTable(
             data=table_data,
             updater=state_updater,
-            features=_FeatureFactories[TData](
+            features=FeatureFactories[TData](
                 paginator=options.paginator or getDefaultPaginator(),
                 sort=options.sort or getDefaultColumnSort(),
                 search=options.search or getDefaultTableSearch(),

@@ -11,7 +11,7 @@ The initial release supports the following features:
 - [X] Freeform text search
 - [X] Forward/Reverse column based sort
 - [X] Pagination
-- [ ] Integration with Pandas (in progress)
+- [ ] Integration with Pandas and SQLAlchemy (in progress)
 - [ ] Remote large dataset support
 
 ## Usage
@@ -40,9 +40,10 @@ def TRow(index: int, row: CompanyModel):
     )
 
 @component
-def TBody(table: List[CompanyModel]):
+def TBody(table: Table[CompanyModel]):
+    rows = table.data.rows
     return  html.tbody(
-        For(TRow, iterator=enumerate(table))
+        For(TRow, iterator=enumerate(rows))
     )
 
 @component
@@ -58,7 +59,7 @@ def AppMain():
         html.h2('ReactPy Table Example'),
         html.table({"role": "grid"},
             THead(table),
-            TBody(table.data.rows)
+            TBody(table)
         ),
     )
 ```
