@@ -1,5 +1,5 @@
 from ctypes import ArgumentError
-from ..types import ITable, RowModel, TData, TFeatureFactory, Updater, update_state
+from ..types import ITable, RowModel, TData, TableData, TFeatureFactory, Updater, update_state
 
 class DefaultRowModel(RowModel[TData]):
 
@@ -31,6 +31,10 @@ class DefaultRowModel(RowModel[TData]):
     def update_row(self, index:int, row:TData) -> None:
         index = self.table_index(index)
         self.table.data.rows[index] = row
+
+
+    def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
+        return table_data
 
 
 def getDefaultRowModel() -> TFeatureFactory[TData, RowModel[TData]]:

@@ -15,6 +15,17 @@ class IFeature(Protocol, Generic[TData]):
     def initial_values(self) -> List[TData]:
         ...
 
+    def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
+        """Data processing pipeline
+
+        Args:
+            table_data (TableData[TData]): Upstream data to be processed
+
+        Returns:
+            TableData[TData]: processed result
+        """
+        ... # pylint: disable=unnecessary-ellipsis
+
 
 class FeatureBase(IFeature[TData], Generic[TData]):
     table: ITable[TData]
@@ -34,6 +45,8 @@ class FeatureBase(IFeature[TData], Generic[TData]):
         self.table = table
         self.updater = updater
         self._initial_values = table.data.rows
+        
+        self._pipeline_data: TableData[TData]  = TableData(rows=[], cols=[])
 
 
 TFeature= TypeVar("TFeature")

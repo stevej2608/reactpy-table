@@ -24,8 +24,8 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
         def state_updater(self: ITable[TData]) -> None:
             log.info("Update table")
             try:
-                assert set_table is not None
-                set_table(deepcopy(self))
+                if set_table is not None:
+                    set_table(deepcopy(self))
             except Exception as ex:
                 log.info("Update model failed %s", ex)
 
@@ -42,8 +42,9 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
             ),
         )
 
-        setattr(table, "updater", state_updater)
-        return table
+        # setattr(table, "updater", state_updater)
+
+        return table.refresh()
 
     table, set_table = use_state(_create_table)
 

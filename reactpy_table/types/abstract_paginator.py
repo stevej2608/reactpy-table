@@ -1,4 +1,4 @@
-from typing import List, Protocol
+from typing import Protocol
 
 from .feature import FeatureBase, IFeature
 from .table_data import TData
@@ -22,9 +22,6 @@ class IPaginator(IFeature[TData], Protocol):
     def page_base(self) -> int:
         """Table index of first row in the page"""
 
-    @property
-    def rows(self) -> List[TData]:
-        """Return rows in current page"""
 
     @property
     def page_count(self) -> int:

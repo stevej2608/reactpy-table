@@ -1,10 +1,9 @@
 from ctypes import ArgumentError
 import math
-from typing import Any, List
 
 from utils.logger import log
 
-from ..types import ITable, Paginator, TData, TFeatureFactory, Updater, update_state
+from ..types import ITable, Paginator, TableData, TData, TFeatureFactory, Updater, update_state
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -30,19 +29,13 @@ class DefaultPaginator(Paginator[TData]):
         return self.page_size * self.page_index + 1
 
     @property
-    def rows(self) -> List[Any]:
-        low = self.page_size * self.page_index
-        high = min(low + self.page_size, len(self.data.rows))
-        return self.data.rows[low:high]
-
-    @property
     def page_count(self) -> int:
-        row_count = len(self.data.rows)
+        row_count = len(self._pipeline_data.rows)
         return math.ceil(row_count / self.page_size)
 
     @property
     def row_count(self) -> int:
-        return len(self.data.rows)
+        return len(self._pipeline_data.rows)
 
     def first_page(self):
         self.set_page_index(0)
@@ -79,6 +72,22 @@ class DefaultPaginator(Paginator[TData]):
     def can_get_next_page(self) -> bool:
         page_count = self.page_count
         return self.page_index < page_count - 1
+
+
+    def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
+
+        if self._pipeline_data != table_data:
+
+            self._pipeline_data = table_data
+
+            low = self.page_size * self.page_index
+            high = min(low + self.page_size, len(self._pipeline_data.rows))
+
+            rows = self._pipeline_data.rows[low:high]
+            table_data = TableData(rows=rows, cols=table_data.cols)
+
+        return  table_data
+
 
 
 def getDefaultPaginator(page_size: int=DEFAULT_PAGE_SIZE) -> TFeatureFactory[TData, Paginator[TData]]:

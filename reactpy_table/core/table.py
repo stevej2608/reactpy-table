@@ -1,4 +1,4 @@
-from typing import Generic, Protocol
+from typing import Generic, Protocol, Self
 
 from ..types import IColumnSort, IPaginator, IRowModel, ITable, ITableSearch, TData
 
@@ -11,4 +11,6 @@ class IFeatureSet(Generic[TData], Protocol):
 
 
 class Table(ITable[TData], IFeatureSet[TData], Protocol):
-    ...
+
+    def refresh(self) -> Self:
+        ...
