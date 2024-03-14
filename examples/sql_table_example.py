@@ -75,7 +75,7 @@ def TRow(index: int, row: CompanyModel, edit_row: Action, delete_row: Action):
 
 def TBody(table: Table[CompanyModel]):
 
-    rows = table.paginator.rows
+    rows = table.data.rows
     page_base = table.paginator.page_base
 
     def delete_row(index:int):

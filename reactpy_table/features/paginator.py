@@ -1,9 +1,12 @@
+from typing import Tuple, Any
 from ctypes import ArgumentError
 import math
 
 from utils.logger import log
+from utils.memo import memo, TMemo
 
 from ..types import ITable, Paginator, TableData, TData, TFeatureFactory, Updater, update_state
+
 
 DEFAULT_PAGE_SIZE = 10
 
@@ -14,6 +17,27 @@ class DefaultPaginator(Paginator[TData]):
         super().__init__(table, updater)
         self._page_size = page_size
         self._page_index = 0
+
+        self.pipeline = memo(
+            self.get_deps,
+            self.expensive_computation,
+            {'onChange': self.on_change}
+            )
+
+
+    def get_deps(self) -> Tuple[int, int]:
+        return (1, 2)
+
+    def expensive_computation(self, a: int, b: int) -> int:
+        print("Performing expensive computation...")
+        return a + b
+
+    def on_change(self, result: int):
+        print(f"Result changed: {result}")
+
+
+    # def pipeline(self) -> TMemo:
+    #     return memo(self.get_deps, self.expensive_computation, {'onChange': self.on_change})
 
 
     @property
@@ -74,19 +98,19 @@ class DefaultPaginator(Paginator[TData]):
         return self.page_index < page_count - 1
 
 
-    def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
+    # def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
 
-        if self._pipeline_data != table_data:
+    #     if self._pipeline_data != table_data:
 
-            self._pipeline_data = table_data
+    #         self._pipeline_data = table_data
 
-            low = self.page_size * self.page_index
-            high = min(low + self.page_size, len(self._pipeline_data.rows))
+    #         low = self.page_size * self.page_index
+    #         high = min(low + self.page_size, len(self._pipeline_data.rows))
 
-            rows = self._pipeline_data.rows[low:high]
-            table_data = TableData(rows=rows, cols=table_data.cols)
+    #         rows = self._pipeline_data.rows[low:high]
+    #         table_data = TableData(rows=rows, cols=table_data.cols)
 
-        return  table_data
+    #     return  table_data
 
 
 

@@ -1,5 +1,7 @@
 from typing import Any, Callable, Generic, List, Protocol, TypeVar, cast
 
+from utils.memo import TMemo
+
 from .abstract_table import ITable
 from .table_data import TableData, TData
 from .updater import Updater
@@ -15,16 +17,18 @@ class IFeature(Protocol, Generic[TData]):
     def initial_values(self) -> List[TData]:
         ...
 
-    def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
-        """Data processing pipeline
+    # def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
+    #     """Data processing pipeline
 
-        Args:
-            table_data (TableData[TData]): Upstream data to be processed
+    #     Args:
+    #         table_data (TableData[TData]): Upstream data to be processed
 
-        Returns:
-            TableData[TData]: processed result
-        """
-        ... # pylint: disable=unnecessary-ellipsis
+    #     Returns:
+    #         TableData[TData]: processed result
+    #     """
+    #     ... # pylint: disable=unnecessary-ellipsis
+
+    def pipeline(self) -> TMemo: ...
 
 
 class FeatureBase(IFeature[TData], Generic[TData]):

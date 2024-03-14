@@ -1,6 +1,6 @@
 
 from reactpy_table.features import DefaultRowModel
-from reactpy_table.types import ITable, RowModel, TFeatureFactory, Updater, update_state
+from reactpy_table.types import ITable, RowModel, TableData, TFeatureFactory, Updater, update_state
 from ..data.sp500 import CompanyModel
 
 class CustomRowModel(DefaultRowModel[CompanyModel]):
@@ -15,6 +15,10 @@ class CustomRowModel(DefaultRowModel[CompanyModel]):
     def update_row(self, index:int, row:CompanyModel) -> None:
         index = self.table_index(index)
         self.table.data.rows[index] = row
+
+
+    def pipeline(self, table_data:TableData[CompanyModel]) -> TableData[CompanyModel]:
+        return table_data
 
 
 def getCustomRowModel() -> TFeatureFactory[CompanyModel, RowModel[CompanyModel]]:
