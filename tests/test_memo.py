@@ -29,16 +29,17 @@ def test_memo_simple():
             self.onchange_fired += 1
 
     ex = Example()
-    assert ex
+
+    # First pass
 
     res = ex.pipeline()
     assert res == 3
     assert ex.computation == 1
-
-    res = ex.pipeline()
-    assert res == 3
-    assert ex.computation == 1
-
     assert ex.onchange_fired == 1
 
+    # Second pass, nothing changes
 
+    res = ex.pipeline()
+    assert res == 3
+    assert ex.computation == 1
+    assert ex.onchange_fired == 1
