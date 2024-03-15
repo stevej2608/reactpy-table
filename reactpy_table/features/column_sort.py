@@ -1,6 +1,7 @@
-from typing import Dict, Tuple, cast, List, Any
+from typing import Dict, Tuple, Any
 
 from pydantic import BaseModel
+from utils import log
 from utils.memo import memo, MemoOpts
 
 from ..types import ColumnDef, ColumnSort, ITable, TData, TableData, TFeatureFactory, UpstreamData, update_state
@@ -35,9 +36,13 @@ class DefaultColumnSort(ColumnSort[TData]):
                 """use the column name to return the row column value"""
                 return getattr(row, col.column_name)
 
-            if active_column_state is not None:
+            if active_column_state is not None  and active_column_state.reverse:
+
+                log.info('reverse')
+
                 col = active_column_state
-                rows = cast(List[TData], table_data.rows.sort(key=lambda element: _sort(col, element), reverse=col.reverse))
+                rows = table_data.rows.copy()
+                rows.sort(key=lambda element: _sort(col, element), reverse=True)
                 return TableData(rows=rows, cols=table_data.cols)
             else:
                 return table_data
@@ -45,13 +50,10 @@ class DefaultColumnSort(ColumnSort[TData]):
         self.pipeline = memo(deps, updater, MemoOpts(name='2. DefaultColumnSort'))
 
 
-    def on_change(self, result: int):
-        print(f"Result changed: {result}")
-
-
     @update_state
     def toggle_sort(self, col: ColumnDef) -> bool:
         self._active_column_state = self.get_state(col, toggle=True)
+        log.info('toggle[%s].reverse=%s', self._active_column_state.column_name, self._active_column_state.reverse)
         return self._active_column_state.reverse
 
 
@@ -62,8 +64,9 @@ class DefaultColumnSort(ColumnSort[TData]):
 
     def get_state(self, col: ColumnDef, toggle:bool=False) -> ColumnState:
         state = self._all_columns_state[col.name]
-        state.reverse ^= toggle
-        return state
+        if toggle:
+            state.reverse = not state.reverse
+        return state.model_copy()
 
 
 def getDefaultColumnSort() -> TFeatureFactory[TData, ColumnSort[TData]]:

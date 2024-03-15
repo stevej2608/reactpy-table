@@ -2,7 +2,7 @@ from typing import Generic, Self, Callable
 
 from utils import log
 
-from ..types import TableData, TData
+from ..types import TableData, TData, EMPTY_TABLE
 from .feature_factories import FeatureFactories
 from .table import Table
 
@@ -38,7 +38,7 @@ class ReactpyTable(Table[TData], Generic[TData]):
         # from the next feature up the pipeline.
 
         def search_update() -> TableData[TData]:
-            return self._data
+            return self._initial_data
 
         def sort_update() -> TableData[TData]:
             return self.search.pipeline()
@@ -51,6 +51,7 @@ class ReactpyTable(Table[TData], Generic[TData]):
 
         log.info('<<<<<<<<<<<<<<<< ReactpyTable.__init__, rows=%s >>>>>>>>>>>>>>>>> ', len(data.rows))
 
+        self._initial_data: TableData[TData] = data
         self._data: TableData[TData] = data
         self.model_update = updater
         self.search = features.search(self, search_update)
