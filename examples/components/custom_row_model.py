@@ -1,12 +1,12 @@
 
 from reactpy_table.features import DefaultRowModel
-from reactpy_table.types import ITable, RowModel, TData, TFeatureFactory, Updater, update_state
+from reactpy_table.types import ITable, RowModel, TData, TFeatureFactory, UpstreamData, update_state
 
 
 class CustomRowModel(DefaultRowModel[TData]):
 
-    def __init__(self, table: ITable[TData], updater: Updater[TData]):
-        super().__init__(table=table, updater=updater)
+    def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData]):
+        super().__init__(table=table, upstream_data=upstream_data)
 
     @update_state
     def delete_row(self, index:int) -> None:
@@ -26,7 +26,7 @@ class CustomRowModel(DefaultRowModel[TData]):
 
 def getCustomRowModel() -> TFeatureFactory[TData, RowModel[TData]]:
 
-    def wrapper(table: ITable[TData], updater: Updater[TData]) -> RowModel[TData]:
-        return CustomRowModel(table=table, updater=updater)
+    def wrapper(table: ITable[TData], upstream_data: UpstreamData[TData]) -> RowModel[TData]:
+        return CustomRowModel(table=table, upstream_data=upstream_data)
 
     return wrapper

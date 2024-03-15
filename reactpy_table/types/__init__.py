@@ -2,7 +2,7 @@
 # ruff: noqa: F401
 
 from .feature  import IFeature, FeatureBase, update_state, TFeature, TFeatureFactory
-from .updater import Updater
+from .updater import UpstreamData
 
 from .abstract_paginator import IPaginator, Paginator
 from .abstract_column_sort import IColumnSort, ColumnSort

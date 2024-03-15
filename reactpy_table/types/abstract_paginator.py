@@ -3,7 +3,7 @@ from typing import Protocol, cast, Callable, Any
 from .abstract_table import ITable
 from .feature import FeatureBase, IFeature
 from .table_data import TData, TableData
-from .updater import Updater
+from .updater import UpstreamData
 
 # pyright: reportReturnType=false
 
@@ -60,7 +60,7 @@ class IPaginator(IFeature[TData], Protocol):
 
 class Paginator(IPaginator[TData], FeatureBase[TData]):
 
-    def __init__(self, table: ITable[TData], updater: Updater[TData]):
-        super().__init__(table=table, updater=updater)
+    def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData]):
+        super().__init__(table=table, upstream_data=upstream_data)
 
         self.upstream: Callable[[], TableData[TData]] = cast(Any, table).row_model.pipeline

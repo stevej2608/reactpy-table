@@ -1,28 +1,20 @@
 from typing import Tuple
 from ctypes import ArgumentError
 from utils.memo import memo
-from ..types import ITable, RowModel, TData, TableData, EMPTY_TABLE, TFeatureFactory, Updater, update_state
+from ..types import ITable, RowModel, TData, TableData, TFeatureFactory, UpstreamData, update_state
 
 class DefaultRowModel(RowModel[TData]):
 
-    def __init__(self, table: ITable[TData], updater: Updater[TData]):
-        super().__init__(table, updater)
+    def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData]):
+        super().__init__(table, upstream_data)
 
-        self.pipeline = memo(
-            self.get_deps,
-            self.expensive_computation,
-            {'onChange': self.on_change}
-            )
+        def deps() -> Tuple[TableData[TData]]:
+            return (upstream_data(),)
 
+        def updater(upstream_data: TableData[TData]) -> TableData[TData]:
+            return upstream_data
 
-    def get_deps(self) -> Tuple[int, int]:
-        return (1, 2)
-
-    def expensive_computation(self, a: int, b: int) -> TableData[TData]:
-        return EMPTY_TABLE
-
-    def on_change(self, result: int):
-        print(f"Result changed: {result}")
+        self.pipeline = memo(deps, updater)
 
 
     def table_index(self, index:int) -> int:
@@ -54,13 +46,9 @@ class DefaultRowModel(RowModel[TData]):
         self.table.data.rows[index] = row
 
 
-    # def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
-    #     return table_data
-
-
 def getDefaultRowModel() -> TFeatureFactory[TData, RowModel[TData]]:
 
-    def wrapper(table: ITable[TData], updater: Updater[TData]) -> RowModel[TData]:
-        return DefaultRowModel(table=table, updater=updater)
+    def wrapper(table: ITable[TData], upstream_data: UpstreamData[TData]) -> RowModel[TData]:
+        return DefaultRowModel(table=table, upstream_data=upstream_data)
 
     return wrapper

@@ -1,10 +1,10 @@
 from typing import Callable, Generic, List
 
-from ..types import Columns, ColumnSort, ITable, Paginator, TableData, TableSearch, RowModel, TData, TFeatureFactory, Updater
+from ..types import Columns, ColumnSort, ITable, Paginator, TableData, TableSearch, RowModel, TData, TFeatureFactory, UpstreamData
 
-PaginatorType = Callable[[ITable[TData], Updater[TData]], Paginator[TData]] | None
-ColumnSortType = Callable[[ITable[TData], Updater[TData]], ColumnSort[TData]] | None
-TableSearchType = Callable[[ITable[TData], Updater[TData]], TableSearch[TData]] | None
+PaginatorType = Callable[[ITable[TData], UpstreamData[TData]], Paginator[TData]] | None
+ColumnSortType = Callable[[ITable[TData], UpstreamData[TData]], ColumnSort[TData]] | None
+TableSearchType = Callable[[ITable[TData], UpstreamData[TData]], TableSearch[TData]] | None
 
 
 class Options(TableData[TData], Generic[TData]):

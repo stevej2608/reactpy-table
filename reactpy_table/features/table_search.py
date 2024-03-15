@@ -1,22 +1,47 @@
-from typing import Tuple
+from typing import Tuple, cast, List
 
 from utils.memo import memo
-from ..types import ITable, TableSearch, TableData, TData, EMPTY_TABLE, TFeatureFactory, Updater, update_state
+from ..types import ITable, TableSearch, TableData, TData, EMPTY_TABLE, TFeatureFactory, UpstreamData, update_state
 
 
 
 class DefaultTableSearch(TableSearch[TData]):
 
-    def __init__(self, table: ITable[TData], updater: Updater[TData]):
-        super().__init__(table, updater)
+    def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData]):
+        super().__init__(table, upstream_data)
         self.search_term: str = ''
         self.case_sensitive: bool = False
-        self.pipeline = memo(
-            self.get_deps,
-            self.expensive_computation,
-            {'onChange': self.on_change}
+
+        def deps() -> Tuple[TableData[TData], str, bool]:
+            return (
+                upstream_data(),
+                self.search_term,
+                self.case_sensitive
             )
 
+        def updater(upstream_data: TableData[TData],
+                   search_term: str, case_sensitive:bool
+                   ) -> TableData[TData]:
+
+            def _filter(row: TData) -> bool:
+
+                row_text = " ".join([str(val) for val in row.model_dump().values()])
+
+                if not self.case_sensitive:
+                    row_text = row_text.lower()
+
+                return self.search_term in row_text
+
+            table_data = upstream_data
+
+            if self.search_term:
+                rows = cast(List[TData], filter(_filter, table_data.rows))
+                return TableData(rows=rows, cols=table_data.cols)
+            else:
+                return table_data
+
+
+        self.pipeline = memo(deps, updater)
 
     def get_deps(self) -> Tuple[int, int]:
         return (1, 2)
@@ -38,28 +63,9 @@ class DefaultTableSearch(TableSearch[TData]):
             self.search_term = search_term
 
 
-    # def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
-
-    #     def _filter(row: TData) -> bool:
-
-    #         row_text = " ".join([str(val) for val in row.model_dump().values()])
-
-    #         if not self.case_sensitive:
-    #             row_text = row_text.lower()
-
-    #         return self.search_term in row_text
-
-
-    #     if self.search_term:
-    #         rows = cast(List[TData], filter(_filter, table_data.rows))
-    #         return TableData(rows=rows, cols=table_data.cols)
-    #     else:
-    #         return table_data
-
-
 def getDefaultTableSearch() -> TFeatureFactory[TData, TableSearch[TData]]:
 
-    def wrapper(table: ITable[TData], updater: Updater[TData]) -> TableSearch[TData]:
-        return DefaultTableSearch(table=table, updater=updater)
+    def wrapper(table: ITable[TData], updater: UpstreamData[TData]) -> TableSearch[TData]:
+        return DefaultTableSearch(table=table, upstream_data=updater)
 
     return wrapper

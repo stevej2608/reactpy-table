@@ -5,4 +5,4 @@ from .table_data import TData
 
 
 # Updater = Callable[[ITable[TData]], None]
-Updater = Callable[[], TableData[TData]]
+UpstreamData = Callable[[], TableData[TData]]

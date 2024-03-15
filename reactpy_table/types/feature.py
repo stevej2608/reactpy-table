@@ -1,14 +1,8 @@
 from typing import Any, Callable, Generic, List, Protocol, TypeVar, cast
 
-from utils.memo import TMemoResult
-
 from .abstract_table import ITable
 from .table_data import TableData, TData
-from .updater import Updater
-
-
-class IPipeline(Protocol, Generic[TMemoResult]):
-    pipeline: Callable[[], TMemoResult]
+from .updater import UpstreamData
 
 
 class IFeature(Protocol, Generic[TData]):
@@ -24,9 +18,9 @@ class IFeature(Protocol, Generic[TData]):
     pipeline: Callable[[], TableData[TData]]
 
 
-class FeatureBase(IPipeline[TableData[TData]], IFeature[TData], Generic[TData]):
+class FeatureBase(IFeature[TData], Generic[TData]):
     table: ITable[TData]
-    updater: Updater[TData]
+    # updater: UpstreamData[TData]
 
     _initial_values: List[TData]
 
@@ -50,16 +44,16 @@ class FeatureBase(IPipeline[TableData[TData]], IFeature[TData], Generic[TData]):
     #     """
     #     ... # pylint: disable=unnecessary-ellipsis
 
-    def __init__(self, table: ITable[TData], updater: Updater[TData]):
+    def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData]):
         self.table = table
-        self.updater = updater
+        # self.updater = upstream_data
         self._initial_values = table.data.rows
 
-        self._pipeline_data: TableData[TData] = TableData(rows=[], cols=[])
+        # self._pipeline_data: TableData[TData] = TableData(rows=[], cols=[])
 
 
 TFeature= TypeVar("TFeature")
-TFeatureFactory = Callable[[ITable[TData], Updater[TData]], TFeature]
+TFeatureFactory = Callable[[ITable[TData], UpstreamData[TData]], TFeature]
 """Generic signature of a Callable that returns a Feature instance
 
 Returns:

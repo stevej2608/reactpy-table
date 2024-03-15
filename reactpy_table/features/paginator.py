@@ -5,7 +5,7 @@ import math
 from utils.logger import log
 from utils.memo import memo
 
-from ..types import ITable, Paginator, TableData, TData, EMPTY_TABLE, TFeatureFactory, Updater, update_state
+from ..types import ITable, Paginator, TableData, TData, TFeatureFactory, UpstreamData, update_state
 
 
 DEFAULT_PAGE_SIZE = 10
@@ -13,30 +13,30 @@ DEFAULT_PAGE_SIZE = 10
 
 class DefaultPaginator(Paginator[TData]):
 
-    def __init__(self, table: ITable[TData], updater: Updater[TData], page_size: int):
-        super().__init__(table, updater)
+    def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData], page_size: int):
+        super().__init__(table, upstream_data)
         self._page_size = page_size
         self._page_index = 0
 
-        self.pipeline = memo(
-            self.get_deps,
-            self.expensive_computation,
-            {'onChange': self.on_change}
+        def deps() -> Tuple[TableData[TData], int, int]:
+            return (
+                upstream_data(),
+                self._page_size,
+                self._page_index
             )
 
+        def updater(upstream_data: TableData[TData],
+                   page_size: int, page_index:int
+                   ) -> TableData[TData]:
 
-    def get_deps(self) -> Tuple[int, int]:
-        return (1, 2)
+            low = page_size * page_index
+            high = min(low + page_size, len(upstream_data.rows))
 
-    def expensive_computation(self, a: int, b: int) -> TableData[TData]:
-        return EMPTY_TABLE
+            rows = upstream_data.rows[low:high]
+            table_data = TableData(rows=rows, cols=upstream_data.cols)
+            return table_data
 
-    def on_change(self, result: int):
-        print(f"Result changed: {result}")
-
-
-    # def pipeline(self) -> TMemo:
-    #     return memo(self.get_deps, self.expensive_computation, {'onChange': self.on_change})
+        self.pipeline = memo(deps, updater)
 
 
     @property
@@ -53,12 +53,12 @@ class DefaultPaginator(Paginator[TData]):
 
     @property
     def page_count(self) -> int:
-        row_count = len(self._pipeline_data.rows)
+        row_count = len(self.pipeline().rows)
         return math.ceil(row_count / self.page_size)
 
     @property
     def row_count(self) -> int:
-        return len(self._pipeline_data.rows)
+        return len(self.pipeline().rows)
 
     def first_page(self):
         self.set_page_index(0)
@@ -97,22 +97,6 @@ class DefaultPaginator(Paginator[TData]):
         return self.page_index < page_count - 1
 
 
-    # def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
-
-    #     if self._pipeline_data != table_data:
-
-    #         self._pipeline_data = table_data
-
-    #         low = self.page_size * self.page_index
-    #         high = min(low + self.page_size, len(self._pipeline_data.rows))
-
-    #         rows = self._pipeline_data.rows[low:high]
-    #         table_data = TableData(rows=rows, cols=table_data.cols)
-
-    #     return  table_data
-
-
-
 def getDefaultPaginator(page_size: int=DEFAULT_PAGE_SIZE) -> TFeatureFactory[TData, Paginator[TData]]:
     """Return a wrapped function that when called creates a DefaultPaginator instance
 
@@ -123,7 +107,7 @@ def getDefaultPaginator(page_size: int=DEFAULT_PAGE_SIZE) -> TFeatureFactory[TDa
         Callable[[ITable[TData], Updater[TData]], Paginator[TData]]: A function that creates the default paginator
     """
 
-    def wrapper(table: ITable[TData], updater: Updater[TData]) -> Paginator[TData]:
-        return DefaultPaginator(table=table, updater=updater, page_size=page_size)
+    def wrapper(table: ITable[TData], upstream_data: UpstreamData[TData]) -> Paginator[TData]:
+        return DefaultPaginator(table=table, upstream_data=upstream_data, page_size=page_size)
 
     return wrapper
