@@ -6,7 +6,7 @@ from reactpy import use_state
 from utils.logger import log
 
 from ..features import getDefaultColumnSort, getDefaultPaginator, getDefaultRowModel, getDefaultTableSearch
-from ..types import ITable, TableData, TData
+from ..types import TableData, TData
 
 from .feature_factories import FeatureFactories
 from .options import Options
@@ -21,7 +21,7 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
 
     def _create_table() -> Table[TData]:
 
-        def state_updater(self: ITable[TData]) -> None:
+        def state_updater(self: ReactpyTable[TData]) -> None:
             log.info("Update table")
             try:
                 if set_table is not None:

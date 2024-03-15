@@ -1,24 +1,19 @@
 
-from typing import Callable, Any, TypeVar, Tuple, Dict, Protocol, Generic
+from typing import Callable, Any, TypeVar, Tuple, Dict
 
-T = TypeVar('T')
 TDeps = TypeVar('TDeps', bound=Tuple[Any, ...])
-TResult = TypeVar('TResult')
-
-
-class ITest(Protocol, Generic[T]):
-    pipeline: Callable[[], T]
+TMemoResult = TypeVar('TMemoResult')
 
 
 def memo(get_deps: Callable[[], TDeps],
-         fn: Callable[..., TResult],
-         opts: Dict[str, Any] | None = None) -> Callable[[], TResult]:
+         fn: Callable[..., TMemoResult],
+         opts: Dict[str, Any] | None = None) -> Callable[[], TMemoResult]:
 
 
     deps: TDeps = [] # type: ignore
-    result: TResult = None # type: ignore
+    result: TMemoResult = None # type: ignore
 
-    def memoized_fn() -> TResult:
+    def memoized_fn() -> TMemoResult:
         nonlocal deps, result
 
         new_deps = get_deps()
@@ -26,8 +21,6 @@ def memo(get_deps: Callable[[], TDeps],
 
         if not deps_changed:
             return result
-
-        print('memo: DEPS CHANGED')
 
         deps = new_deps
         result = fn(*new_deps)

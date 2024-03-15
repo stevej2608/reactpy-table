@@ -1,8 +1,9 @@
-from typing import Any, Dict, cast, List
+from typing import Dict, Tuple
 
 from pydantic import BaseModel
+from utils.memo import memo
 
-from ..types import ColumnDef, ColumnSort, ITable, TableData, TData, TFeatureFactory, Updater, update_state
+from ..types import ColumnDef, ColumnSort, ITable, TData, TableData, EMPTY_TABLE, TFeatureFactory, Updater, update_state
 
 
 class ColumnState(BaseModel):
@@ -16,6 +17,24 @@ class DefaultColumnSort(ColumnSort[TData]):
         super().__init__(table, updater)
         self._all_columns_state = state
         self._active_column_state: ColumnState | None = None
+
+
+        self.pipeline = memo(
+            self.get_deps,
+            self.expensive_computation,
+            {'onChange': self.on_change}
+            )
+
+
+    def get_deps(self) -> Tuple[int, int]:
+        return (1, 2)
+
+    def expensive_computation(self, a: int, b: int) -> TableData[TData]:
+        print("Performing expensive computation...")
+        return EMPTY_TABLE
+
+    def on_change(self, result: int):
+        print(f"Result changed: {result}")
 
 
     @update_state
@@ -35,18 +54,18 @@ class DefaultColumnSort(ColumnSort[TData]):
         return state
 
 
-    def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
+    # def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
 
-        def _sort(col: ColumnState, row: Any):
-            """use the column name to return the row column value"""
-            return getattr(row, col.column_name)
+    #     def _sort(col: ColumnState, row: Any):
+    #         """use the column name to return the row column value"""
+    #         return getattr(row, col.column_name)
 
-        if self._active_column_state is not None:
-            col = self._active_column_state
-            rows = cast(List[TData], table_data.rows.sort(key=lambda element: _sort(col, element), reverse=col.reverse))
-            return TableData(rows=rows, cols=table_data.cols)
-        else:
-            return table_data
+    #     if self._active_column_state is not None:
+    #         col = self._active_column_state
+    #         rows = cast(List[TData], table_data.rows.sort(key=lambda element: _sort(col, element), reverse=col.reverse))
+    #         return TableData(rows=rows, cols=table_data.cols)
+    #     else:
+    #         return table_data
 
 
 def getDefaultColumnSort() -> TFeatureFactory[TData, ColumnSort[TData]]:

@@ -1,7 +1,28 @@
+from typing import Tuple
 from ctypes import ArgumentError
-from ..types import ITable, RowModel, TData, TableData, TFeatureFactory, Updater, update_state
+from utils.memo import memo
+from ..types import ITable, RowModel, TData, TableData, EMPTY_TABLE, TFeatureFactory, Updater, update_state
 
 class DefaultRowModel(RowModel[TData]):
+
+    def __init__(self, table: ITable[TData], updater: Updater[TData]):
+        super().__init__(table, updater)
+
+        self.pipeline = memo(
+            self.get_deps,
+            self.expensive_computation,
+            {'onChange': self.on_change}
+            )
+
+
+    def get_deps(self) -> Tuple[int, int]:
+        return (1, 2)
+
+    def expensive_computation(self, a: int, b: int) -> TableData[TData]:
+        return EMPTY_TABLE
+
+    def on_change(self, result: int):
+        print(f"Result changed: {result}")
 
 
     def table_index(self, index:int) -> int:
@@ -33,8 +54,8 @@ class DefaultRowModel(RowModel[TData]):
         self.table.data.rows[index] = row
 
 
-    def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
-        return table_data
+    # def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
+    #     return table_data
 
 
 def getDefaultRowModel() -> TFeatureFactory[TData, RowModel[TData]]:

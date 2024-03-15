@@ -1,10 +1,14 @@
 from typing import Any, Callable, Generic, List, Protocol, TypeVar, cast
 
-from utils.memo import TMemo
+from utils.memo import TMemoResult
 
 from .abstract_table import ITable
 from .table_data import TableData, TData
 from .updater import Updater
+
+
+class IPipeline(Protocol, Generic[TMemoResult]):
+    pipeline: Callable[[], TMemoResult]
 
 
 class IFeature(Protocol, Generic[TData]):
@@ -17,21 +21,10 @@ class IFeature(Protocol, Generic[TData]):
     def initial_values(self) -> List[TData]:
         ...
 
-    # def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
-    #     """Data processing pipeline
-
-    #     Args:
-    #         table_data (TableData[TData]): Upstream data to be processed
-
-    #     Returns:
-    #         TableData[TData]: processed result
-    #     """
-    #     ... # pylint: disable=unnecessary-ellipsis
-
-    def pipeline(self) -> TMemo: ...
+    pipeline: Callable[[], TableData[TData]]
 
 
-class FeatureBase(IFeature[TData], Generic[TData]):
+class FeatureBase(IPipeline[TableData[TData]], IFeature[TData], Generic[TData]):
     table: ITable[TData]
     updater: Updater[TData]
 
@@ -45,12 +38,24 @@ class FeatureBase(IFeature[TData], Generic[TData]):
     def initial_values(self) -> List[TData]:
         return self._initial_values
 
+
+    # def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
+    #     """Data processing pipeline
+
+    #     Args:
+    #         table_data (TableData[TData]): Upstream data to be processed
+
+    #     Returns:
+    #         TableData[TData]: processed result
+    #     """
+    #     ... # pylint: disable=unnecessary-ellipsis
+
     def __init__(self, table: ITable[TData], updater: Updater[TData]):
         self.table = table
         self.updater = updater
         self._initial_values = table.data.rows
-        
-        self._pipeline_data: TableData[TData]  = TableData(rows=[], cols=[])
+
+        self._pipeline_data: TableData[TData] = TableData(rows=[], cols=[])
 
 
 TFeature= TypeVar("TFeature")
@@ -80,7 +85,7 @@ Func = TypeVar("Func", bound=Callable[..., Any])
 def update_state(func: Func) -> Func:
     def wrapper(self: FeatureBase[TData], *args: Any, **kwargs: Any) -> Any:
         result = func(self, *args, **kwargs)
-        self.updater(self.table)
+        self.table.refresh()
         return result
 
     return cast(Func, wrapper)

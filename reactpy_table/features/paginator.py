@@ -1,11 +1,11 @@
-from typing import Tuple, Any
+from typing import Tuple
 from ctypes import ArgumentError
 import math
 
 from utils.logger import log
-from utils.memo import memo, TMemo
+from utils.memo import memo
 
-from ..types import ITable, Paginator, TableData, TData, TFeatureFactory, Updater, update_state
+from ..types import ITable, Paginator, TableData, TData, EMPTY_TABLE, TFeatureFactory, Updater, update_state
 
 
 DEFAULT_PAGE_SIZE = 10
@@ -28,9 +28,8 @@ class DefaultPaginator(Paginator[TData]):
     def get_deps(self) -> Tuple[int, int]:
         return (1, 2)
 
-    def expensive_computation(self, a: int, b: int) -> int:
-        print("Performing expensive computation...")
-        return a + b
+    def expensive_computation(self, a: int, b: int) -> TableData[TData]:
+        return EMPTY_TABLE
 
     def on_change(self, result: int):
         print(f"Result changed: {result}")

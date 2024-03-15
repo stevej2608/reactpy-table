@@ -37,3 +37,5 @@ class TableData(Generic[TData]):
     def __init__(self, rows: List[TData], cols: Columns):
         self.rows = rows
         self.cols = cols
+
+EMPTY_TABLE = TableData[Any](rows=[], cols=[])

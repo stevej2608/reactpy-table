@@ -1,11 +1,14 @@
-from typing import Tuple
-from utils.memo import ITest, memo
+from typing import Tuple, Generic, Protocol, Callable
+from utils.memo import TMemoResult, memo
 
 
 
 def test_memo_simple():
 
-    class Example(ITest[int]):
+    class IPipeline(Protocol, Generic[TMemoResult]):
+        pipeline: Callable[[], TMemoResult]
+
+    class Example(IPipeline[int]):
 
         def __init__(self):
 
