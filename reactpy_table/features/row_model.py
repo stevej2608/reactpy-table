@@ -1,6 +1,6 @@
 from typing import Tuple
 from ctypes import ArgumentError
-from utils.memo import memo
+from utils.memo import memo, MemoOpts
 from ..types import ITable, RowModel, TData, TableData, TFeatureFactory, UpstreamData, update_state
 
 class DefaultRowModel(RowModel[TData]):
@@ -14,7 +14,7 @@ class DefaultRowModel(RowModel[TData]):
         def updater(upstream_data: TableData[TData]) -> TableData[TData]:
             return upstream_data
 
-        self.pipeline = memo(deps, updater)
+        self.pipeline = memo(deps, updater, MemoOpts(name='4. DefaultRowModel'))
 
 
     def table_index(self, index:int) -> int:

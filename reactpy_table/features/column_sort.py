@@ -1,7 +1,7 @@
 from typing import Dict, Tuple, cast, List, Any
 
 from pydantic import BaseModel
-from utils.memo import memo
+from utils.memo import memo, MemoOpts
 
 from ..types import ColumnDef, ColumnSort, ITable, TData, TableData, TFeatureFactory, UpstreamData, update_state
 
@@ -42,7 +42,7 @@ class DefaultColumnSort(ColumnSort[TData]):
             else:
                 return table_data
 
-        self.pipeline = memo(deps, updater)
+        self.pipeline = memo(deps, updater, MemoOpts(name='2. DefaultColumnSort'))
 
 
     def on_change(self, result: int):

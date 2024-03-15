@@ -3,7 +3,7 @@ from ctypes import ArgumentError
 import math
 
 from utils.logger import log
-from utils.memo import memo
+from utils.memo import memo, MemoOpts
 
 from ..types import ITable, Paginator, TableData, TData, TFeatureFactory, UpstreamData, update_state
 
@@ -15,6 +15,7 @@ class DefaultPaginator(Paginator[TData]):
 
     def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData], page_size: int):
         super().__init__(table, upstream_data)
+        self.upstream_data = upstream_data
         self._page_size = page_size
         self._page_index = 0
 
@@ -36,7 +37,7 @@ class DefaultPaginator(Paginator[TData]):
             table_data = TableData(rows=rows, cols=upstream_data.cols)
             return table_data
 
-        self.pipeline = memo(deps, updater)
+        self.pipeline = memo(deps, updater, MemoOpts(name='3. DefaultPaginator'))
 
 
     @property
@@ -53,12 +54,12 @@ class DefaultPaginator(Paginator[TData]):
 
     @property
     def page_count(self) -> int:
-        row_count = len(self.pipeline().rows)
+        row_count = self.row_count
         return math.ceil(row_count / self.page_size)
 
     @property
     def row_count(self) -> int:
-        return len(self.pipeline().rows)
+        return len(self.upstream_data().rows)
 
     def first_page(self):
         self.set_page_index(0)

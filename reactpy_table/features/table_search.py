@@ -1,6 +1,6 @@
 from typing import Tuple, cast, List
 
-from utils.memo import memo
+from utils.memo import memo, MemoOpts
 from ..types import ITable, TableSearch, TableData, TData, EMPTY_TABLE, TFeatureFactory, UpstreamData, update_state
 
 
@@ -41,7 +41,7 @@ class DefaultTableSearch(TableSearch[TData]):
                 return table_data
 
 
-        self.pipeline = memo(deps, updater)
+        self.pipeline = memo(deps, updater, MemoOpts(name='1. DefaultTableSearch'))
 
     def get_deps(self) -> Tuple[int, int]:
         return (1, 2)

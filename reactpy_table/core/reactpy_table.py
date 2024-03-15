@@ -1,5 +1,7 @@
 from typing import Generic, Self, Callable
 
+from utils import log
+
 from ..types import TableData, TData
 from .feature_factories import FeatureFactories
 from .table import Table
@@ -11,29 +13,18 @@ class ReactpyTable(Table[TData], Generic[TData]):
     def data(self) -> TableData[TData]:
         return self._data
 
-    # def _row_model_update(self):
-    #     #self._data = self.row_model.pipeline(self._data)
-    #     self.model_update(self)
-
-    # def _paginator_update(self):
-    #     # self._data = self.paginator.pipeline(self._data)
-    #     self._row_model_update()
-
-    # def _sort_update(self):
-    #     # self._data = self.sort.pipeline(self._data)
-    #     self._paginator_update()
-
-    # def _search_update(self):
-    #     # self._data = self.search.pipeline(self._data)
-    #     self._sort_update()
-
     def refresh(self) -> Self:
+
+        log.info('refresh - start')
 
         # The following call triggers an update of
         # the entire feature pipeline
 
         self._data = self.row_model.pipeline()
         self.model_update(self)
+
+        log.info('refresh - end')
+
         return self
 
 
@@ -56,12 +47,13 @@ class ReactpyTable(Table[TData], Generic[TData]):
             return self.sort.pipeline()
 
         def row_model_update() -> TableData[TData]:
-            return self.sort.pipeline()
+            return self.paginator.pipeline()
 
+        log.info('<<<<<<<<<<<<<<<< ReactpyTable.__init__, rows=%s >>>>>>>>>>>>>>>>> ', len(data.rows))
 
         self._data: TableData[TData] = data
         self.model_update = updater
-        self.paginator = features.paginator(self, paginator_update)
-        self.sort = features.sort(self, sort_update)
         self.search = features.search(self, search_update)
+        self.sort = features.sort(self, sort_update)
+        self.paginator = features.paginator(self, paginator_update)
         self.row_model = features.row_model(self, row_model_update)
