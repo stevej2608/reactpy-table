@@ -24,18 +24,23 @@ class DefaultTableSearch(TableSearch[TData]):
                    ) -> TableData[TData]:
 
             def _filter(row: TData) -> bool:
+                nonlocal search_term
 
                 row_text = " ".join([str(val) for val in row.model_dump().values()])
 
-                if not self.case_sensitive:
+                if not case_sensitive:
                     row_text = row_text.lower()
 
-                return self.search_term in row_text
+                return search_term in row_text
 
             table_data = upstream_data
 
-            if self.search_term:
-                rows = cast(List[TData], filter(_filter, table_data.rows))
+            if search_term:
+
+                if not case_sensitive:
+                    search_term = search_term.lower()
+
+                rows = list(filter(_filter, table_data.rows))
                 return TableData(rows=rows, cols=table_data.cols)
             else:
                 return table_data

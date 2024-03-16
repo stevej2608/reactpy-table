@@ -15,7 +15,7 @@ class IFeature(Protocol, Generic[TData]):
 
 
 class FeatureBase(IFeature[TData], Generic[TData]):
-    table: ITable[TData]
+
     # updater: UpstreamData[TData]
 
     _initial_values: List[TData]

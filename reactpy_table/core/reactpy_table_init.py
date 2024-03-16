@@ -1,6 +1,5 @@
-from copy import deepcopy
 from typing import Any, Callable, Union
-
+from copy import copy
 from reactpy import use_state
 
 from utils.logger import log
@@ -25,7 +24,7 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
             log.info("Update table")
             try:
                 if set_table is not None:
-                    set_table(deepcopy(self))
+                    set_table(copy(self))
             except Exception as ex:
                 log.info("Update model failed %s", ex)
 
