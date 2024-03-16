@@ -1,8 +1,8 @@
-from typing import Tuple, cast, List
+from typing import Tuple
 
-from utils.memo import memo, MemoOpts
-from ..types import ITable, TableSearch, TableData, TData, EMPTY_TABLE, TFeatureFactory, UpstreamData, update_state
+from utils.memo import MemoOpts, memo
 
+from ..types import ITable, TableData, TableSearch, TData, TFeatureFactory, UpstreamData, update_state
 
 
 class DefaultTableSearch(TableSearch[TData]):
@@ -48,14 +48,6 @@ class DefaultTableSearch(TableSearch[TData]):
 
         self.pipeline = memo(deps, updater, MemoOpts(name='1. DefaultTableSearch'))
 
-    def get_deps(self) -> Tuple[int, int]:
-        return (1, 2)
-
-    def expensive_computation(self, a: int, b: int) -> TableData[TData]:
-        return EMPTY_TABLE
-
-    def on_change(self, result: int):
-        print(f"Result changed: {result}")
 
     @update_state
     def table_search(self, search_term: str, case_sensitive: bool = False):

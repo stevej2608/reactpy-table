@@ -15,15 +15,11 @@ class ReactpyTable(Table[TData], Generic[TData]):
 
     def refresh(self) -> Self:
 
-        log.info('refresh - start')
-
         # The following call triggers an update of
         # the entire feature pipeline
 
         self._data = self.row_model.pipeline()
         self.model_update(self)
-
-        log.info('refresh - end')
 
         return self
 
@@ -48,8 +44,6 @@ class ReactpyTable(Table[TData], Generic[TData]):
 
         def row_model_update() -> TableData[TData]:
             return self.paginator.pipeline()
-
-        log.info('<<<<<<<<<<<<<<<< ReactpyTable.__init__, rows=%s >>>>>>>>>>>>>>>>> ', len(data.rows))
 
         self._initial_data: TableData[TData] = data
         self._data: TableData[TData] = data

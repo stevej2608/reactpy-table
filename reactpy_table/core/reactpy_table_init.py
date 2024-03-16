@@ -14,14 +14,12 @@ from .table import Table
 
 
 def use_reactpy_table(options: Options[TData]) -> Table[TData]:
-    log.info("use_reactpy_table")
 
     set_table: Union[Callable[[Union[Any, Callable[[Any], Any]]], None], None] = None
 
     def _create_table() -> Table[TData]:
 
         def state_updater(self: ReactpyTable[TData]) -> None:
-            log.info("Update table")
             try:
                 if set_table is not None:
                     set_table(copy(self))
@@ -40,8 +38,6 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
                 row_model=options.row_model or getDefaultRowModel(),
             ),
         )
-
-        # setattr(table, "updater", state_updater)
 
         return table.refresh()
 

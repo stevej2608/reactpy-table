@@ -51,8 +51,6 @@ def TablePaginator(paginator: IPaginator[CompanyModel]):
             else:
                 set_count(count_value + 1)
 
-        log.info('render new_value = %d', paginator.page_index + 1)
-
         return html._(
             Text("Go to page:"),
             html.input({'type': 'number', 'value': paginator.page_index + 1, "on_change": on_change}),
