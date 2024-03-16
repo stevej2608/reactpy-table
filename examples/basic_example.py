@@ -38,7 +38,7 @@ def AppMain():
     table_data = use_memo(lambda:get_sp500(rows=50))
     table = use_reactpy_table(Options(
         rows=table_data,
-        cols = COLS
+        cols = COLS,
     ))
 
     return html.div(

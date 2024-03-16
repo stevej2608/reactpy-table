@@ -8,15 +8,18 @@ TableSearchType = Callable[[ITable[TData], UpstreamData[TData]], TableSearch[TDa
 
 
 class Options(TableData[TData], Generic[TData]):
-    paginator: TFeatureFactory[TData, Paginator[TData]] | None = None
+    paginator: TFeatureFactory[TData, Paginator[TData]] |None = None
     row_model: TFeatureFactory[TData, RowModel[TData]] | None = None
     sort: TFeatureFactory[TData, ColumnSort[TData]] | None = None
     search: TFeatureFactory[TData, TableSearch[TData]] | None = None
+
+    pagination: bool = False
 
     def __init__(
         self,
         rows: List[TData],
         cols: Columns,
+        pagination: bool = False,
         paginator: TFeatureFactory[TData, Paginator[TData]] | None = None,
         row_model: TFeatureFactory[TData, RowModel[TData]] | None = None,
         sort: TFeatureFactory[TData, ColumnSort[TData]] | None = None,
@@ -28,3 +31,4 @@ class Options(TableData[TData], Generic[TData]):
         self.row_model = row_model
         self.sort = sort
         self.search = search
+        self.pagination = pagination

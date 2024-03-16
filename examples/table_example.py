@@ -108,7 +108,8 @@ def AppMain():
 
     table = use_reactpy_table(options=Options(
         rows=table_data,
-        cols = COLS
+        cols = COLS,
+        pagination=True
     ))
 
     modal_open, set_modal_open = use_state(False)
