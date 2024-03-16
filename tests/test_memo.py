@@ -1,5 +1,5 @@
 from typing import Tuple, Generic, Protocol, Callable
-from utils.memo import TMemoResult, memo
+from utils.memo import TMemoResult, memo, MemoOpts
 
 
 
@@ -18,7 +18,7 @@ def test_memo_simple():
             self.pipeline = memo(
                 self.get_deps,
                 self.expensive_computation,
-                {'onChange': self.on_change}
+                MemoOpts(on_change=self.on_change)
                 )
 
         def get_deps(self) -> Tuple[int, int]:

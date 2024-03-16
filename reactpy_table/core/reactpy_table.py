@@ -2,7 +2,7 @@ from typing import Generic, Self, Callable
 
 from utils import log
 
-from ..types import TableData, TData, EMPTY_TABLE
+from ..types import TableData, TData
 from .feature_factories import FeatureFactories
 from .table import Table
 

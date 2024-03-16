@@ -11,6 +11,13 @@ class ColumnState(BaseModel):
     column_name: str
     reverse: bool = False
 
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return f"ColumnState[{id(self)}](column_name={self.column_name}, reverse={self.reverse})"
+
+
 
 class DefaultColumnSort(ColumnSort[TData]):
 
@@ -21,9 +28,10 @@ class DefaultColumnSort(ColumnSort[TData]):
 
 
         def deps() -> Tuple[TableData[TData], ColumnState | None]:
+            log.info('deps() active_column_state=%s', self._active_column_state)
             return (
                 upstream_data(),
-                self._active_column_state,
+                self._active_column_state.model_copy() if self._active_column_state else None
             )
 
         def updater(upstream_data: TableData[TData],
@@ -31,6 +39,8 @@ class DefaultColumnSort(ColumnSort[TData]):
                    ) -> TableData[TData]:
 
             table_data = upstream_data
+
+            log.info('active_column_state=%s', active_column_state)
 
             def _sort(col: ColumnState, row: Any):
                 """use the column name to return the row column value"""
@@ -47,13 +57,13 @@ class DefaultColumnSort(ColumnSort[TData]):
             else:
                 return table_data
 
-        self.pipeline = memo(deps, updater, MemoOpts(name='2. DefaultColumnSort'))
+        self.pipeline = memo(deps, updater, MemoOpts(name='2. DefaultColumnSort', debug=False))
 
 
     @update_state
     def toggle_sort(self, col: ColumnDef) -> bool:
         self._active_column_state = self.get_state(col, toggle=True)
-        log.info('toggle[%s].reverse=%s', self._active_column_state.column_name, self._active_column_state.reverse)
+        log.info('toggle_sort(), _active_column_state=%s', self._active_column_state)
         return self._active_column_state.reverse
 
 
@@ -66,8 +76,8 @@ class DefaultColumnSort(ColumnSort[TData]):
         state = self._all_columns_state[col.name]
         if toggle:
             state.reverse = not state.reverse
-        return state.model_copy()
-
+            log.info('get_state() state=%s', state)
+        return state
 
 def getDefaultColumnSort() -> TFeatureFactory[TData, ColumnSort[TData]]:
 

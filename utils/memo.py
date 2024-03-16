@@ -1,5 +1,6 @@
 
-from typing import Callable, Any, TypeVar, Tuple, Dict
+from typing import Callable, Any, TypeVar, Tuple
+import json
 from pydantic import BaseModel
 from utils import log
 
@@ -8,6 +9,7 @@ TMemoResult = TypeVar('TMemoResult')
 
 class MemoOpts(BaseModel):
     name: str = 'Unknown'
+    debug: bool = False
     on_change: Callable[[Any], None] | None = None
 
 NO_OPTS =  MemoOpts()
@@ -15,25 +17,28 @@ NO_OPTS =  MemoOpts()
 def memo(get_deps: Callable[[], TDeps],
          fn: Callable[..., TMemoResult],
          opts: MemoOpts = NO_OPTS) -> Callable[[], TMemoResult]:
+    
+    if opts.debug:
+        log.info('memo %s init', opts.name)
 
-    log.info('memo %s init', opts.name)
-
-    deps: TDeps = [] # type: ignore
+    deps: TDeps = () # type: ignore
     result: TMemoResult = None # type: ignore
 
     def memoized_fn() -> TMemoResult:
         nonlocal deps, result
 
-        log.info('memo %s get_deps', opts.name)
+        if opts.debug:
+            log.info('memo %s old deps %s', opts.name, deps)
 
         new_deps = get_deps()
         deps_changed = len(new_deps) != len(deps) or any(dep != deps[i] for i, dep in enumerate(new_deps))
 
-        if not deps_changed:
-            log.info('memo %s - no change', opts.name)
-            return result
+        if opts.debug:
+            log.info('memo %s new deps %s (changed=%s)', opts.name, new_deps, deps_changed)
+            assert True
 
-        log.info('memo %s - update', opts.name)
+        if not deps_changed:
+            return result
 
         deps = new_deps
         result = fn(*new_deps)

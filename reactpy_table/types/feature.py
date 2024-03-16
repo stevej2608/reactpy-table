@@ -11,10 +11,6 @@ class IFeature(Protocol, Generic[TData]):
     def data(self) -> TableData[TData]:
         ...
 
-    @property
-    def initial_values(self) -> List[TData]:
-        ...
-
     pipeline: Callable[[], TableData[TData]]
 
 
@@ -26,33 +22,18 @@ class FeatureBase(IFeature[TData], Generic[TData]):
 
     @property
     def data(self) -> TableData[TData]:
-        return self.table.data
+        return self._table.data
 
     @property
-    def initial_values(self) -> List[TData]:
-        return self._initial_values
-
-
-    # def pipeline(self, table_data:TableData[TData]) -> TableData[TData]:
-    #     """Data processing pipeline
-
-    #     Args:
-    #         table_data (TableData[TData]): Upstream data to be processed
-
-    #     Returns:
-    #         TableData[TData]: processed result
-    #     """
-    #     ... # pylint: disable=unnecessary-ellipsis
+    def table(self) -> ITable[TData]:
+        return self._table
 
     def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData]):
-        self.table = table
-        # self.updater = upstream_data
-        self._initial_values = table.data.rows
-
-        # self._pipeline_data: TableData[TData] = TableData(rows=[], cols=[])
+        self._table = table
 
 
 TFeature= TypeVar("TFeature")
+
 TFeatureFactory = Callable[[ITable[TData], UpstreamData[TData]], TFeature]
 """Generic signature of a Callable that returns a Feature instance
 

@@ -38,4 +38,7 @@ class TableData(Generic[TData]):
         self.rows = rows
         self.cols = cols
 
+    def __repr__(self):
+        return f"TableData(rows({len(self.rows)}), cols({len(self.cols)})"
+
 EMPTY_TABLE = TableData[Any](rows=[], cols=[])
