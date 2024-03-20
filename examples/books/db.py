@@ -1,10 +1,20 @@
-from typing import Optional
 from datetime import datetime as dt
-from faker import Faker
+from typing import Optional, List
+
 import sqlalchemy as db
+from faker import Faker
+from sqlmodel import Field, Session, SQLModel, col, select  # type:ignore
 
-from sqlmodel import col, Field, Session, SQLModel, select
+from reactpy_table import ColumnDef, Columns
 
+COLS: Columns = [
+    ColumnDef(name='id', label='#'),
+    ColumnDef(name='title', label='Title'),
+    ColumnDef(name='author', label='Author'),
+    ColumnDef(name='publication_date', label='Date'),
+    ColumnDef(name='genre', label='Genre'),
+    ColumnDef(name='rating', label='Rating'),
+    ]
 
 engine = db.create_engine('sqlite:///books.db')
 
@@ -29,7 +39,7 @@ def generate_fake_books(num_records:int):
                 author=fake.name(),
                 publication_date=fake.date_between(start_date='-50y', end_date='today'),
                 genre=fake.word(ext_word_list=['Fiction', 'Non-fiction', 'Mystery', 'Science Fiction', 'Romance']),
-                rating=fake.pyfloat(min_value=1, max_value=5, right_digits=1)
+                rating=fake.pyint(min_value=1, max_value=5)
             )
             session.add(book)
         session.commit()
@@ -67,7 +77,7 @@ def create_book(title:str, author:str, publication_date: dt, genre: str, rating:
 
 def update_book(book_id:int, title:str, author:str, publication_date: dt, genre:str, rating:int):
     with Session(engine) as session:
-        statement = select(Book).where(col(Book.id) == id)
+        statement = select(Book).where(col(Book.id) == book_id) # type: ignore
         book = session.exec(statement).one()
         if book:
             book.title = title
@@ -77,9 +87,18 @@ def update_book(book_id:int, title:str, author:str, publication_date: dt, genre:
             book.rating = rating
             session.commit()
 
+
+def all_books() -> List[Book]:
+    with Session(engine) as session:
+        statement = select(Book)
+        books = session.exec(statement).all()
+        return list(books)
+
+
+
 def delete_book(book_id:int):
     with Session(engine) as session:
-        statement = select(Book).where(col(Book.id) == id)
+        statement = select(Book).where(col(Book.id) == book_id)
         book = session.exec(statement).one()
         session.delete(book)
         session.commit()

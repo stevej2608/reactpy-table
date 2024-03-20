@@ -5,12 +5,12 @@ from reactpy import component, event, html, use_memo, use_state
 from reactpy_table import ColumnDef, Options, Table, use_reactpy_table
 from utils import For, ServerOptions, log, logging, pico_run
 
-from .components import Button, Search, TablePaginator, getCustomRowModel, ModalForm
-from .data.sp500 import COLS, CompanyModel, get_sp500
+from ..components import Button, Search, TablePaginator, getCustomRowModel, ModalForm
+from .db import COLS, Book, all_books
 
 
 @component
-def THead(table: Table[CompanyModel]):
+def THead(table: Table[Book]):
 
     @component
     def Action():
@@ -51,7 +51,7 @@ def TColgroup(col_widths: List[int]):
 
 Action = Callable[[int], None]
 
-def TRow(index: int, row: CompanyModel, edit_row: Action, delete_row: Action):
+def TRow(index: int, row: Book, edit_row: Action, delete_row: Action):
 
     @component
     def Actions():
@@ -63,17 +63,16 @@ def TRow(index: int, row: CompanyModel, edit_row: Action, delete_row: Action):
 
     return  html.tr({'id': f"row-{index}"},
         Actions(),
-        html.td(str(row.index)),
-        html.td(row.symbol),
-        html.td(row.name),
-        html.td(row.sector),
-        html.td(row.industry),
-        html.td(row.headquarters),
-        html.td(row.CIK),
+        html.td(str(row.id)),
+        html.td(row.title),
+        html.td(row.author),
+        html.td(row.publication_date.strftime("%Y-%m-%d")),
+        html.td(row.genre),
+        html.td(str(row.rating)),
     )
 
 
-def TBody(table: Table[CompanyModel]):
+def TBody(table: Table[Book]):
 
     rows = table.data.rows
     page_base = table.paginator.page_base
@@ -83,7 +82,7 @@ def TBody(table: Table[CompanyModel]):
 
     def edit_row(index:int):
         row = rows[index].model_copy()
-        row.industry = "XXXX"
+        row.author = "XXXX"
         table.row_model.update_row(page_base + index, row)
 
 
@@ -93,7 +92,7 @@ def TBody(table: Table[CompanyModel]):
 
 
 @component
-def TFoot(table: Table[CompanyModel]):
+def TFoot(table: Table[Book]):
     columns = table.data.cols
     return html.tfoot(
         For(html.td, [col.label for col in columns])
@@ -103,23 +102,20 @@ def TFoot(table: Table[CompanyModel]):
 @component
 def AppMain():
 
-    table_data = use_memo(get_sp500)
+    table_data = use_memo(all_books)
 
     table = use_reactpy_table(options=Options(
         rows=table_data,
         cols = COLS,
-        row_model=getCustomRowModel()
+        pagination=True
     ))
 
-    modal_open, set_modal_open = use_state(False)
-
     return html.div(
-        ModalForm(open=modal_open, set_open=set_modal_open),
         html.br(),
         html.h2('ReactPy SQL Table Example'),
         Search(table.search),
         html.table({"role": "grid"},
-            TColgroup([100, 80, 175, 250, 200, 300, 250, 100]),
+            TColgroup([100, 80, 450, 250, 200, 300]),
             THead(table),
             TBody(table),
             TFoot(table),
@@ -131,7 +127,4 @@ def AppMain():
 
 if __name__ == "__main__":
     log.setLevel(logging.INFO)
-
-    pico_run(AppMain, options=ServerOptions(
-        head = ["assets/css/modal.css"
-        ]))
+    pico_run(AppMain)

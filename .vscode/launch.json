@@ -37,6 +37,22 @@
     },
 
     {
+      "name": "1c examples/books/books_example.py",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "examples.books.books_example",
+      "justMyCode": false,
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "serverReadyAction": {
+        "pattern": "Uvicorn running on\\s+(https?://\\S+)",
+        "uriFormat": "%s/",
+        "action": "debugWithChrome",
+        "killOnServerStop": true
+      }
+    },
+
+    {
       "name": "2a. PyTest (tests/test_example_app.py)",
       "type": "debugpy",
       "request": "launch",
