@@ -21,7 +21,7 @@ ColumnSortType = Callable[[ITable[TData], UpstreamData[TData]], ColumnSort[TData
 TableSearchType = Callable[[ITable[TData], UpstreamData[TData]], TableSearch[TData]] | None
 
 
-class Options(TableData[TData], ICoreTableOptions, Generic[TData]):
+class Options(TableData[TData], ICoreTableOptions[TData], Generic[TData]):
     paginator: TFeatureFactory[TData, Paginator[TData]] |None = None
     row_model: TFeatureFactory[TData, RowModel[TData]] | None = None
     sort: TFeatureFactory[TData, ColumnSort[TData]] | None = None

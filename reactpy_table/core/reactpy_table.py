@@ -20,13 +20,13 @@ class ReactpyTable(Table[TData], Generic[TData]):
     @property
     def data(self) -> TableData[TData]:
         return self._data
-    
+
     @property
     def initial_data(self) -> TableData[TData]:
         return self._initial_data
 
     @property
-    def table_options(self) -> CoreTableOptions:
+    def table_options(self) -> CoreTableOptions[TData]:
         return self._table_options
 
     @property
@@ -56,20 +56,22 @@ class ReactpyTable(Table[TData], Generic[TData]):
         return self
 
 
-    def set_options(self, table_options: CoreTableOptions) -> None:
+    def set_options(self, table_options: CoreTableOptions[TData], refresh:bool = True) -> None:
+
+        data = TableData(rows = table_options.rows, cols=table_options.cols)
+
+        self._initial_data: TableData[TData] = data
+        self._data: TableData[TData] = data
+
         self._table_options = table_options
-        self.refresh()
+
+        if refresh:
+            self.refresh()
 
 
-    def set_table_data(self, data:TableData[TData]) -> None:
-        self._initial_data = data
-        log.info('_initial_data %s', str(self._initial_data.rows[0])[0:50])
-        self.refresh()
-
-
-    def __init__(self, data: TableData[TData],
+    def __init__(self,
                  updater: Callable[['ReactpyTable[TData]'], None],
-                 table_options: CoreTableOptions,
+                 table_options: CoreTableOptions[TData],
                  features: FeatureFactories[TData]):
 
         # Daisy chain the feature pipeline. Each of
@@ -90,9 +92,8 @@ class ReactpyTable(Table[TData], Generic[TData]):
         def row_model_update() -> TableData[TData]:
             return self.paginator.pipeline()
 
+        self.set_options(table_options=table_options, refresh=False)
 
-        self._initial_data: TableData[TData] = data
-        self._data: TableData[TData] = data
         self._updater = updater,
         self._table_options = table_options
         self._unique_sequence = unique_id()

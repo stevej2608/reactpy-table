@@ -1,11 +1,10 @@
-from typing import Any, Callable, Union
-from copy import copy
+from typing import Callable
 from reactpy import use_state, use_memo
 
 from utils import log
 
 from ..features import getDefaultColumnSort, getDefaultPaginator, getDefaultRowModel, getDefaultTableSearch
-from ..types import TableData, TData
+from ..types import TData
 
 from .feature_factories import FeatureFactories
 from .core_options import CoreTableOptions
@@ -18,7 +17,7 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
 
 
     core_options = use_memo(lambda: CoreTableOptions(options), [options])
-    table_data = use_memo(lambda: TableData(rows=options.rows, cols=options.cols), [options.rows, options.cols])
+    # table_data = use_memo(lambda: TableData(rows=options.rows, cols=options.cols), [options.rows, options.cols])
 
     def create_table() -> Table[TData]:
 
@@ -30,7 +29,6 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
 
         def _create_table() -> Table[TData]:
             table =  ReactpyTable(
-                data=table_data,
                 updater=state_updater,
                 table_options = core_options,
                 features=FeatureFactories[TData](
@@ -56,8 +54,6 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
     if core_options != table.table_options:
         table.set_options(core_options)
 
-    if table_data != table.initial_data:
-        table.set_table_data(table_data)
 
 
     return table

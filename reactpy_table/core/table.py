@@ -16,7 +16,7 @@ class Table(ITable[TData], IFeatureSet[TData], Protocol):
     def refresh(self) -> Self:
         ...
 
-    def set_options(self, table_options: CoreTableOptions) -> None:
+    def set_options(self, table_options: CoreTableOptions[TData]) -> None:
         ...
 
     @property

@@ -17,7 +17,7 @@ class ITable(Generic[TData], Protocol):
         ... # pylint: disable=unnecessary-ellipsis
 
     @property
-    def table_options(self) -> CoreTableOptions:
+    def table_options(self) -> CoreTableOptions[TData]:
         """Return the table options"""
         ... # pylint: disable=unnecessary-ellipsis
 
@@ -26,9 +26,6 @@ class ITable(Generic[TData], Protocol):
         """Force refresh of the table"""
         ... # pylint: disable=unnecessary-ellipsis
 
-
-    def set_table_data(self, data:TableData[TData]) -> None:
-        """Set new table data"""
 
 class IPipeline(Protocol, Generic[TMemoResult]):
     pipeline: Callable[[], TMemoResult]
