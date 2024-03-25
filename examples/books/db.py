@@ -1,11 +1,14 @@
 from datetime import datetime as dt
-from typing import Optional, List
+from typing import Optional, List, Tuple
 
 import sqlalchemy as db
+
 from faker import Faker
 from sqlmodel import Field, Session, SQLModel, col, select  # type:ignore
 
 from reactpy_table import ColumnDef, Columns
+
+from utils import log
 
 COLS: Columns = [
     ColumnDef(name='id', label='#'),
@@ -61,11 +64,19 @@ def filter_books_by_genre(genre:str):
 
 # https://sqlmodel.tiangolo.com/tutorial/fastapi/limit-and-offset
 
-def get_paginated_books(page:int, per_page:int):
-    offset = page * per_page
+def get_paginated_books(skip:int, limit:int) -> Tuple[List[Book], int]:
+
+    log.info('get_paginated_books(skip=%d, limit=%d)', skip, limit)
+
+    def get_total_records(session: Session) -> int:
+        rows = session.query(Book).count() # type: ignore
+        return rows
+
     with Session(engine) as session:
-        heroes = session.exec(select(Book).offset(offset).limit(per_page)).all()
-        return heroes
+        page_count = int(get_total_records(session) / limit)
+        books = session.exec(select(Book).offset(skip).limit(limit)).all()
+        return list(books), page_count
+
 
 
 def create_book(title:str, author:str, publication_date: dt, genre: str, rating:int):

@@ -1,12 +1,13 @@
 from typing import Any, Callable, Dict, List
 
-from reactpy import component, event, html, use_memo, use_state
+from reactpy import component, event, html, use_memo
 
 from reactpy_table import ColumnDef, Options, Table, use_reactpy_table
-from utils import For, ServerOptions, log, logging, pico_run
+from utils import For, log, logging, pico_run
 
-from ..components import Button, Search, TablePaginator, getCustomRowModel, ModalForm
-from .db import COLS, Book, all_books
+from ..components import Button, Search, TablePaginator, use_pagination
+from .db import COLS, Book, get_paginated_books
+
 
 
 @component
@@ -102,13 +103,23 @@ def TFoot(table: Table[Book]):
 @component
 def AppMain():
 
-    table_data = use_memo(all_books)
+    skip, limit, _, pagination_change = use_pagination()
+
+    log.info('skip=%d, limit=%d', skip, limit)
+
+    table_data, page_count = use_memo(lambda: get_paginated_books(skip, limit), [skip,limit])
 
     table = use_reactpy_table(options=Options(
         rows=table_data,
         cols = COLS,
-        pagination=True
+        manual_pagination=True,
+        on_pagination_change = pagination_change,
+        page_count = page_count
+        # pagination=True
     ))
+
+
+    log.info('refresh UI')
 
     return html.div(
         html.br(),

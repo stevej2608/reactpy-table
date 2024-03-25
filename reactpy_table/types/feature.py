@@ -32,6 +32,11 @@ class FeatureBase(IFeature[TData], Generic[TData]):
         self._table = table
 
 
+    def refresh(self):
+        self.table.refresh()
+
+
+
 TFeature= TypeVar("TFeature")
 
 TFeatureFactory = Callable[[ITable[TData], UpstreamData[TData]], TFeature]

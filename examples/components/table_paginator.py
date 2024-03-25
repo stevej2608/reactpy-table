@@ -1,15 +1,28 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 from reactpy import component, event, html, use_state
 
 from reactpy_table import IPaginator
-from utils.logger import log
-from utils.reactpy_helpers import For
+from reactpy_table.types.paginator_state import PaginatorState, PaginatorCallback
+from utils import For, log
 
 from ..data.sp500 import CompanyModel
-
-from .text import Text
 from .button import Button
+from .text import Text
+
+
+def use_pagination(initial_size: int = 10) -> Tuple[int,int, PaginatorState, PaginatorCallback]:
+    pagination, set_pagination = use_state(PaginatorState(page_index=0, page_size=initial_size))
+
+    def set_page(state: PaginatorState) -> None:
+        log.info('set_page(state=%s)', state)
+        set_pagination(state)
+
+
+    skip = pagination.page_size * pagination.page_index
+    limit = pagination.page_size
+
+    return (skip, limit, pagination, set_page)
 
 
 @component

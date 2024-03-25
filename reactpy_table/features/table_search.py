@@ -46,7 +46,7 @@ class DefaultTableSearch(TableSearch[TData]):
                 return table_data
 
 
-        self.pipeline = memo(deps, updater, MemoOpts(name='1. DefaultTableSearch'))
+        self.pipeline = memo(deps, updater, MemoOpts(name='        4. DefaultTableSearch', debug=True))
 
 
     @update_state

@@ -1,8 +1,7 @@
 from typing import Generic, Protocol, Callable, Self
 from utils.memo import TMemoResult
 from .table_data import TableData, TData
-
-
+from ..core.core_options import CoreTableOptions
 
 
 class ITable(Generic[TData], Protocol):
@@ -12,9 +11,24 @@ class ITable(Generic[TData], Protocol):
         """Return data for presentation by the user"""
         ... # pylint: disable=unnecessary-ellipsis
 
+    @property
+    def initial_data(self) -> TableData[TData]:
+        """Return data for presentation by the user"""
+        ... # pylint: disable=unnecessary-ellipsis
+
+    @property
+    def table_options(self) -> CoreTableOptions:
+        """Return the table options"""
+        ... # pylint: disable=unnecessary-ellipsis
+
+
     def refresh(self) -> Self:
         """Force refresh of the table"""
         ... # pylint: disable=unnecessary-ellipsis
+
+
+    def set_table_data(self, data:TableData[TData]) -> None:
+        """Set new table data"""
 
 class IPipeline(Protocol, Generic[TMemoResult]):
     pipeline: Callable[[], TMemoResult]

@@ -51,7 +51,7 @@ class DefaultColumnSort(ColumnSort[TData]):
             else:
                 return table_data
 
-        self.pipeline = memo(deps, updater, MemoOpts(name='2. DefaultColumnSort'))
+        self.pipeline = memo(deps, updater, MemoOpts(name='      3. DefaultColumnSort', debug=True))
 
 
     @update_state

@@ -48,7 +48,7 @@ class DefaultRowModel(RowModel[TData]):
             return TableData(rows=rows, cols=upstream_data.cols)
 
 
-        self.pipeline = memo(deps, updater, MemoOpts(name='4. DefaultRowModel'))
+        self.pipeline = memo(deps, updater, MemoOpts(name='  1. DefaultRowModel', debug=True))
 
 
     def table_index(self, index:int) -> int:
