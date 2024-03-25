@@ -3,7 +3,7 @@ from typing import Protocol, Generic, List, cast, Any
 from ..types.paginator_state import PaginatorCallback
 from ..types.table_data import TData, Columns
 
-class ICoreTableOptions(Protocol, Generic[TData]):
+class ITableState(Protocol, Generic[TData]):
     pagination: bool
     manual_pagination: bool
     on_pagination_change: PaginatorCallback | None
@@ -13,9 +13,9 @@ class ICoreTableOptions(Protocol, Generic[TData]):
     cols: Columns
 
 
-class CoreTableOptions(ICoreTableOptions[TData], Generic[TData]):
+class TableState(ITableState[TData], Generic[TData]):
 
-    def __init__(self, options: ICoreTableOptions[TData]):
+    def __init__(self, options: ITableState[TData]):
         self.pagination = options.pagination
         self.manual_pagination = options.manual_pagination
         self.on_pagination_change = options.on_pagination_change
@@ -26,10 +26,10 @@ class CoreTableOptions(ICoreTableOptions[TData], Generic[TData]):
 
     def __eq__(self, value: object) -> bool:
 
-        if not isinstance(value, CoreTableOptions):
+        if not isinstance(value, TableState):
             return False
 
-        val: CoreTableOptions[TData] = cast(CoreTableOptions[TData], value)
+        val: TableState[TData] = cast(TableState[TData], value)
 
         if self.pagination != val.pagination:
             return False

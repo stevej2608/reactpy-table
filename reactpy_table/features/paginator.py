@@ -16,7 +16,7 @@ DEFAULT_PAGE_SIZE = 10
 class DefaultPaginator(Paginator[TData]):
 
     def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData], page_size: int):
-        super().__init__(table, upstream_data)
+        super().__init__(table)
         self.upstream_data = upstream_data
         self._paginator_state = PaginatorState(page_index=0, page_size=page_size)
 
@@ -26,7 +26,7 @@ class DefaultPaginator(Paginator[TData]):
                 upstream_data(),
                 self.page_size,
                 self.page_index,
-                self.table.table_options.pagination
+                self.table.table_state.pagination
             )
 
         def updater(upstream_data: TableData[TData],
@@ -46,10 +46,10 @@ class DefaultPaginator(Paginator[TData]):
             return table_data
 
 
-        if self.table.table_options.manual_pagination:
+        if self.table.table_state.manual_pagination:
             self.pipeline = null_updater(upstream_data=upstream_data)
-        elif self.table.table_options.pagination:
-            self.pipeline = memo(deps, updater, MemoOpts(name='    2. DefaultPaginator', debug=True))
+        elif self.table.table_state.pagination:
+            self.pipeline = memo(deps, updater, MemoOpts(name='    2. DefaultPaginator', debug=False))
         else:
             ...
 
@@ -68,7 +68,7 @@ class DefaultPaginator(Paginator[TData]):
 
     @property
     def page_count(self) -> int:
-        pages = self.table.table_options.page_count
+        pages = self.table.table_state.page_count
         if pages is None:
             pages = math.ceil(self.row_count / self.page_size)
         return pages
@@ -114,9 +114,9 @@ class DefaultPaginator(Paginator[TData]):
 
             self._paginator_state = new_state
 
-            if self.table.table_options.on_pagination_change:
+            if self.table.table_state.on_pagination_change:
                 log.info('>>>>>>>>>> Refresh')
-                self.table.table_options.on_pagination_change(new_state)
+                self.table.table_state.on_pagination_change(new_state)
 
             self.refresh()
 

@@ -5,7 +5,7 @@ from ..types import TableData, TData
 from .feature_factories import FeatureFactories
 from .table import Table
 
-from .core_options import CoreTableOptions
+from .core_options import TableState
 
 
 def unique_id():
@@ -26,8 +26,8 @@ class ReactpyTable(Table[TData], Generic[TData]):
         return self._initial_data
 
     @property
-    def table_options(self) -> CoreTableOptions[TData]:
-        return self._table_options
+    def table_state(self) -> TableState[TData]:
+        return self._table_state
 
     @property
     def UID(self) -> int:
@@ -36,18 +36,15 @@ class ReactpyTable(Table[TData], Generic[TData]):
 
     def refresh(self) -> Self:
 
-        # The following call triggers an update of
-        # the entire feature pipeline
-
         try:
+            # The following call triggers an update of
+            # the entire feature pipeline
+
             self._data = self.row_model.pipeline()
 
             log.info('refresh data=%s', str(self._data.rows[0])[0:50])
 
-            # TODO: Why has this become a tuple???
-
-            self._updater[0](self)
-
+            self._updater(self)
 
             return self
         except Exception as ex:
@@ -56,14 +53,14 @@ class ReactpyTable(Table[TData], Generic[TData]):
         return self
 
 
-    def set_options(self, table_options: CoreTableOptions[TData], refresh:bool = True) -> None:
+    def set_options(self, table_options: TableState[TData], refresh:bool = True) -> None:
 
         data = TableData(rows = table_options.rows, cols=table_options.cols)
 
         self._initial_data: TableData[TData] = data
         self._data: TableData[TData] = data
 
-        self._table_options = table_options
+        self._table_state = table_options
 
         if refresh:
             self.refresh()
@@ -71,7 +68,7 @@ class ReactpyTable(Table[TData], Generic[TData]):
 
     def __init__(self,
                  updater: Callable[['ReactpyTable[TData]'], None],
-                 table_options: CoreTableOptions[TData],
+                 table_options: TableState[TData],
                  features: FeatureFactories[TData]):
 
         # Daisy chain the feature pipeline. Each of
@@ -92,10 +89,14 @@ class ReactpyTable(Table[TData], Generic[TData]):
         def row_model_update() -> TableData[TData]:
             return self.paginator.pipeline()
 
+
+        self._initial_data = cast(TableData[TData], None)
+        self._data = cast(TableData[TData], None)
+
         self.set_options(table_options=table_options, refresh=False)
 
-        self._updater = updater,
-        self._table_options = table_options
+        self._updater = updater
+        self._table_state = table_options
         self._unique_sequence = unique_id()
         self.search = features.search(self, search_update)
         self.sort = features.sort(self, sort_update)

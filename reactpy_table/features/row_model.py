@@ -20,7 +20,7 @@ NO_ACTION = RowAction()
 class DefaultRowModel(RowModel[TData]):
 
     def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData]):
-        super().__init__(table, upstream_data)
+        super().__init__(table)
 
         self.row_actions: List[RowAction[TData]] = []
 
@@ -48,7 +48,7 @@ class DefaultRowModel(RowModel[TData]):
             return TableData(rows=rows, cols=upstream_data.cols)
 
 
-        self.pipeline = memo(deps, updater, MemoOpts(name='  1. DefaultRowModel', debug=True))
+        self.pipeline = memo(deps, updater, MemoOpts(name='  1. DefaultRowModel', debug=False))
 
 
     def table_index(self, index:int) -> int:

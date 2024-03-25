@@ -7,7 +7,7 @@ from ..features import getDefaultColumnSort, getDefaultPaginator, getDefaultRowM
 from ..types import TData
 
 from .feature_factories import FeatureFactories
-from .core_options import CoreTableOptions
+from .core_options import TableState
 from .options import Options
 from .reactpy_table import ReactpyTable
 from .table import Table
@@ -16,7 +16,7 @@ from .table import Table
 def use_reactpy_table(options: Options[TData]) -> Table[TData]:
 
 
-    core_options = use_memo(lambda: CoreTableOptions(options), [options])
+    core_options = use_memo(lambda: TableState(options), [options])
     # table_data = use_memo(lambda: TableData(rows=options.rows, cols=options.cols), [options.rows, options.cols])
 
     def create_table() -> Table[TData]:
@@ -51,7 +51,7 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
 
     log.info('table=%s', id(table))
 
-    if core_options != table.table_options:
+    if core_options != table.table_state:
         table.set_options(core_options)
 
 

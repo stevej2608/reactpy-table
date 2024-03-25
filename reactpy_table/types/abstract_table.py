@@ -1,7 +1,7 @@
 from typing import Generic, Protocol, Callable, Self
 from utils.memo import TMemoResult
 from .table_data import TableData, TData
-from ..core.core_options import CoreTableOptions
+from ..core.core_options import TableState
 
 
 class ITable(Generic[TData], Protocol):
@@ -17,7 +17,7 @@ class ITable(Generic[TData], Protocol):
         ... # pylint: disable=unnecessary-ellipsis
 
     @property
-    def table_options(self) -> CoreTableOptions[TData]:
+    def table_state(self) -> TableState[TData]:
         """Return the table options"""
         ... # pylint: disable=unnecessary-ellipsis
 

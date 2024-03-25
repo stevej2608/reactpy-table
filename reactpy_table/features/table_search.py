@@ -8,7 +8,7 @@ from ..types import ITable, TableData, TableSearch, TData, TFeatureFactory, Upst
 class DefaultTableSearch(TableSearch[TData]):
 
     def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData]):
-        super().__init__(table, upstream_data)
+        super().__init__(table)
         self.search_term: str = ''
         self.case_sensitive: bool = False
 
@@ -46,7 +46,7 @@ class DefaultTableSearch(TableSearch[TData]):
                 return table_data
 
 
-        self.pipeline = memo(deps, updater, MemoOpts(name='        4. DefaultTableSearch', debug=True))
+        self.pipeline = memo(deps, updater, MemoOpts(name='        4. DefaultTableSearch', debug=False))
 
 
     @update_state

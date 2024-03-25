@@ -14,14 +14,14 @@ from ..types import (
     UpstreamData,
 )
 
-from .core_options import ICoreTableOptions
+from .core_options import ITableState
 
 PaginatorType = Callable[[ITable[TData], UpstreamData[TData]], Paginator[TData]] | None
 ColumnSortType = Callable[[ITable[TData], UpstreamData[TData]], ColumnSort[TData]] | None
 TableSearchType = Callable[[ITable[TData], UpstreamData[TData]], TableSearch[TData]] | None
 
 
-class Options(TableData[TData], ICoreTableOptions[TData], Generic[TData]):
+class Options(TableData[TData], ITableState[TData], Generic[TData]):
     paginator: TFeatureFactory[TData, Paginator[TData]] |None = None
     row_model: TFeatureFactory[TData, RowModel[TData]] | None = None
     sort: TFeatureFactory[TData, ColumnSort[TData]] | None = None

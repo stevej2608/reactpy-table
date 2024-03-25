@@ -16,10 +16,6 @@ class IFeature(Protocol, Generic[TData]):
 
 class FeatureBase(IFeature[TData], Generic[TData]):
 
-    # updater: UpstreamData[TData]
-
-    _initial_values: List[TData]
-
     @property
     def data(self) -> TableData[TData]:
         return self._table.data
@@ -28,7 +24,7 @@ class FeatureBase(IFeature[TData], Generic[TData]):
     def table(self) -> ITable[TData]:
         return self._table
 
-    def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData]):
+    def __init__(self, table: ITable[TData]):
         self._table = table
 
 

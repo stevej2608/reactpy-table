@@ -20,7 +20,7 @@ class ColumnState(BaseModel):
 class DefaultColumnSort(ColumnSort[TData]):
 
     def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData], state: Dict[str, ColumnState]):
-        super().__init__(table, upstream_data)
+        super().__init__(table)
         self._all_columns_state = state
         self._active_column_state: ColumnState | None = None
 
@@ -51,7 +51,7 @@ class DefaultColumnSort(ColumnSort[TData]):
             else:
                 return table_data
 
-        self.pipeline = memo(deps, updater, MemoOpts(name='      3. DefaultColumnSort', debug=True))
+        self.pipeline = memo(deps, updater, MemoOpts(name='      3. DefaultColumnSort', debug=False))
 
 
     @update_state
