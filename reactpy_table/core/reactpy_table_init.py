@@ -16,36 +16,40 @@ from .table import Table
 
 def use_reactpy_table(options: Options[TData]) -> Table[TData]:
 
-    set_refresh: Callable[[int], None] | None = None
 
     core_options = use_memo(lambda: CoreTableOptions(options), [options])
     table_data = use_memo(lambda: TableData(rows=options.rows, cols=options.cols), [options.rows, options.cols])
 
-    def _create_table() -> Table[TData]:
+    def create_table() -> Table[TData]:
+
+        set_refresh: Callable[[int], None] | None = None
 
         def state_updater(table: ReactpyTable[TData]) -> None:
             if set_refresh:
                 set_refresh(table.UID)
 
-        table = ReactpyTable(
-            data=table_data,
-            updater=state_updater,
-            table_options = core_options,
-            features=FeatureFactories[TData](
-                paginator=options.paginator or getDefaultPaginator(),
-                sort=options.sort or getDefaultColumnSort(),
-                search=options.search or getDefaultTableSearch(),
-                row_model=options.row_model or getDefaultRowModel(),
-            ),
-        )
+        def _create_table() -> Table[TData]:
+            table =  ReactpyTable(
+                data=table_data,
+                updater=state_updater,
+                table_options = core_options,
+                features=FeatureFactories[TData](
+                    paginator=options.paginator or getDefaultPaginator(),
+                    sort=options.sort or getDefaultColumnSort(),
+                    search=options.search or getDefaultTableSearch(),
+                    row_model=options.row_model or getDefaultRowModel(),
+                ),
+            )
 
-        log.info('Created table id=%s', id(table))
+            return table.refresh()
 
-        return table.refresh()
+        table, _ = use_state(_create_table)
+        _, set_refresh = use_state(table.UID)
 
-    table, _ = use_state(_create_table)
+        return table
 
-    _, set_refresh = use_state(table.UID)
+
+    table = create_table()
 
     log.info('table=%s', id(table))
 
