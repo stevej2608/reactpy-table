@@ -117,8 +117,8 @@ class DefaultPaginator(Paginator[TData]):
             if self.table.table_state.on_pagination_change:
                 log.info('>>>>>>>>>> Refresh')
                 self.table.table_state.on_pagination_change(new_state)
-
-            self.refresh()
+            else:
+                self.refresh()
 
 
     def can_get_previous_page(self) -> bool:
