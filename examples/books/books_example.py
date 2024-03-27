@@ -5,7 +5,9 @@ from reactpy import component, event, html, use_memo
 from reactpy_table import ColumnDef, Options, Table, use_reactpy_table
 from utils import For, log, logging, pico_run
 
-from ..components import Button, Search, TablePaginator, use_pagination
+from ..components import Button, Search, TablePaginator
+from ..hooks import use_pagination, use_sorting, use_api, DBQuery
+
 from .db import COLS, Book, get_paginated_books
 
 
@@ -103,19 +105,34 @@ def TFoot(table: Table[Book]):
 @component
 def AppMain():
 
-    skip, limit, _, pagination_change = use_pagination()
+    skip, limit, pagination, pagination_change = use_pagination()
+
+    sort, sorting_change = use_sorting()
 
     log.info('skip=%d, limit=%d', skip, limit)
 
-    table_data, page_count = use_memo(lambda: get_paginated_books(skip, limit), [skip,limit])
+
+    table_data, page_count, loading = use_api(
+        db='sqlite:///books.db', 
+        query=DBQuery(pagination=pagination, sort=sort)
+        )
+
+    # table_data, page_count = use_memo(
+    #     lambda: get_paginated_books(skip, limit), [skip,limit]
+    #     )
 
     table = use_reactpy_table(options=Options(
         rows=table_data,
         cols = COLS,
+
         manual_pagination=True,
         on_pagination_change = pagination_change,
-        page_count = page_count
-        # pagination=True
+        page_count = page_count,
+
+        manual_sorting = True,
+        on_sorting_change = sorting_change,
+        # sorting = sorting
+
     ))
 
 
