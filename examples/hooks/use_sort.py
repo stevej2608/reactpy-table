@@ -2,7 +2,7 @@ from typing import Tuple
 
 from reactpy import use_state
 
-from reactpy_table.types.sort_state import SortCallback, SortState
+from reactpy_table.types.sort_state import SortCallback, SortState, SQL_DIRECTION
 from utils import log
 
 
@@ -20,7 +20,7 @@ from utils import log
 # }
 
 
-def use_sorting(initial_field:str = "id", initial_order:str = "ASC") -> Tuple[SortState, SortCallback]:
+def use_sorting(initial_field:str = "id", initial_order:SQL_DIRECTION = "ASC") -> Tuple[SortState, SortCallback]:
 
     sorting, set_sorting = use_state(SortState(id=initial_field, desc=initial_order))
 

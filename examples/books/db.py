@@ -1,10 +1,11 @@
 from datetime import datetime as dt
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, Any
 
 import sqlalchemy as db
 
 from faker import Faker
 from sqlmodel import Field, Session, SQLModel, col, select  # type:ignore
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from reactpy_table import ColumnDef, Columns
 
@@ -64,19 +65,27 @@ def filter_books_by_genre(genre:str):
 
 # https://sqlmodel.tiangolo.com/tutorial/fastapi/limit-and-offset
 
-def get_paginated_books(skip:int, limit:int) -> Tuple[List[Book], int]:
+def get_paginated_books(skip:int, limit:int, col_id:str, desc:str) -> Tuple[List[Book], int]:
 
     log.info('get_paginated_books(skip=%d, limit=%d)', skip, limit)
 
     def get_total_records(session: Session) -> int:
         rows = session.query(Book).count() # type: ignore
         return rows
-
+    
     with Session(engine) as session:
         page_count = int(get_total_records(session) / limit)
-        books = session.exec(select(Book).offset(skip).limit(limit)).all()
-        return list(books), page_count
 
+        column_ref: InstrumentedAttribute[Any] = Book.__dict__[col_id]
+
+        if desc=='ASC':
+            stmt = select(Book).order_by(col(column_ref).asc()).offset(skip).limit(limit)
+        else:
+            stmt = select(Book).order_by(col(column_ref).desc()).offset(skip).limit(limit)
+
+
+        books = session.exec(stmt).all()
+        return list(books), page_count
 
 
 def create_book(title:str, author:str, publication_date: dt, genre: str, rating:int):

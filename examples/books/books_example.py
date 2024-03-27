@@ -1,6 +1,6 @@
 from typing import Any, Callable, Dict, List
 
-from reactpy import component, event, html, use_memo
+from reactpy import component, event, html
 
 from reactpy_table import ColumnDef, Options, Table, use_reactpy_table
 from utils import For, log, logging, pico_run
@@ -8,7 +8,7 @@ from utils import For, log, logging, pico_run
 from ..components import Button, Search, TablePaginator
 from ..hooks import use_pagination, use_sorting, use_api, DBQuery
 
-from .db import COLS, Book, get_paginated_books
+from .db import COLS, Book
 
 
 
@@ -113,7 +113,7 @@ def AppMain():
 
 
     table_data, page_count, loading = use_api(
-        db='sqlite:///books.db', 
+        db='sqlite:///books.db',
         query=DBQuery(pagination=pagination, sort=sort)
         )
 
@@ -130,7 +130,7 @@ def AppMain():
         page_count = page_count,
 
         manual_sorting = True,
-        on_sorting_change = sorting_change,
+        on_sort_change = sorting_change,
         # sorting = sorting
 
     ))

@@ -3,8 +3,9 @@ from typing import Dict, Tuple, Any
 from pydantic import BaseModel
 from utils.memo import memo, MemoOpts
 
-from ..types import ColumnDef, ColumnSort, ITable, TData, TableData, TFeatureFactory, UpstreamData, update_state
+from ..types import ColumnDef, ColumnSort,SortState, ITable, TData, TableData, TFeatureFactory, UpstreamData, update_state
 
+from .null_updater import null_updater
 
 class ColumnState(BaseModel):
     column_name: str
@@ -51,13 +52,27 @@ class DefaultColumnSort(ColumnSort[TData]):
             else:
                 return table_data
 
-        self.pipeline = memo(deps, updater, MemoOpts(name='      3. DefaultColumnSort', debug=False))
 
+        if self.table.table_state.manual_sort:
+            self.pipeline = null_updater(upstream_data=upstream_data)
+        elif self.table.table_state.sort:
+            self.pipeline = memo(deps, updater, MemoOpts(name='      3. DefaultColumnSort', debug=False))
+        else:
+            ...
 
     @update_state
-    def toggle_sort(self, col: ColumnDef) -> bool:
+    def toggle_sort(self, col: ColumnDef) -> None:
         self._active_column_state = self.get_state(col, toggle=True)
-        return self._active_column_state.reverse
+        if self.table.table_state.on_sort_change:
+
+            new_state= SortState(
+                id=self._active_column_state.column_name,
+                desc= 'DESC' if self._active_column_state.reverse else 'ASC'
+                )
+
+            self.table.table_state.on_sort_change(new_state)
+        else:
+            self.refresh()
 
 
     def is_sort_reverse(self, col: ColumnDef) -> bool:

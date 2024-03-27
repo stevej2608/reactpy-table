@@ -6,7 +6,7 @@ from .table_data import ColumnDef
 
 
 class IColumnSort(IFeature[TData], Protocol):
-    def toggle_sort(self, col: ColumnDef) -> bool:
+    def toggle_sort(self, col: ColumnDef) -> None:
         ...
 
     def is_sort_reverse(self, col: ColumnDef) -> bool:

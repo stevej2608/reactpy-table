@@ -33,7 +33,10 @@ def use_api(db:str, query:DBQuery) -> Tuple[BookList, int, bool]:
         skip = query.pagination.page_size * query.pagination.page_index
         limit = query.pagination.page_size
 
-        table_data, page_count = get_paginated_books(skip, limit)
+        col = query.sort.id
+        desc = query.sort.desc
+
+        table_data, page_count = get_paginated_books(skip, limit, col, desc)
 
         set_data(table_data)
         set_count(page_count)

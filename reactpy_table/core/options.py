@@ -72,7 +72,7 @@ class Options(TableData[TData],
         # Sort
 
         manual_sorting: bool  = False,
-        on_sorting_change: SortCallback | None = None,
+        on_sort_change: SortCallback | None = None,
         sorter: TFeatureFactory[TData, ColumnSort[TData]] | None = None,
         sorting: SortState | None = None,
 
@@ -98,7 +98,7 @@ class Options(TableData[TData],
 
         self.sorter = sorter
         self.manual_sorting = manual_sorting,
-        self.on_sorting_change = manual_pagination
+        self.on_sort_change = on_sort_change
         self.sorting = sorting
 
         # Row model
