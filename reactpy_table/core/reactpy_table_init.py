@@ -33,7 +33,7 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
                 table_options = core_options,
                 features=FeatureFactories[TData](
                     paginator=options.paginator or getDefaultPaginator(),
-                    sort=options.sort or getDefaultColumnSort(),
+                    sort=options.sorter or getDefaultColumnSort(),
                     search=options.search or getDefaultTableSearch(),
                     row_model=options.row_model or getDefaultRowModel(),
                 ),

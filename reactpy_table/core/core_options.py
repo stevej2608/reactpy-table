@@ -1,4 +1,4 @@
-from typing import Protocol, Generic, List, cast, Any
+from typing import Protocol, Generic, List, cast
 
 from ..types.paginator_state import PaginatorCallback
 from ..types.table_data import TData, Columns
@@ -54,4 +54,3 @@ class TableState(ITableState[TData], Generic[TData]):
 
     def __ne__(self, value: object) -> bool:
         return not self.__eq__(value=value)
-

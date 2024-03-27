@@ -1,4 +1,4 @@
-from typing import Generic, Self, Callable, Protocol, cast, Any, Generator
+from typing import Generic, Self, Callable, cast
 import random
 from utils import log
 from ..types import TableData, TData

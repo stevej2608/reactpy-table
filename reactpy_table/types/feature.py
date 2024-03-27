@@ -1,4 +1,4 @@
-from typing import Any, Callable, Generic, List, Protocol, TypeVar, cast
+from typing import Any, Callable, Generic, Protocol, TypeVar, cast
 
 from .abstract_table import ITable
 from .table_data import TableData, TData
