@@ -1,10 +1,11 @@
-from typing import List, Optional, Any, Tuple, cast
+from typing import Any, List, Optional, Tuple
+
 from faker import Faker
-from sqlalchemy import inspect, text, create_engine, Column, Integer, String, Connection, select
-from sqlalchemy.orm import sessionmaker, declarative_base, Session
+from sqlalchemy import inspect, Column, Integer, String, create_engine, select, text, Table
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
-from utils import log, logging, DT
+from utils import DT, log, logging
 
 Base = declarative_base()
 
@@ -16,6 +17,7 @@ class BookFTS(Base):
     publication_date = Column(String)
     genre = Column(String)
     rating = Column(Integer)
+
 
 class Book(Base):
     __tablename__ = 'book'
@@ -31,28 +33,27 @@ class BookDatabase:
     def __init__(self, db_url: str):
         self.engine = create_engine(db_url)
 
-        inspector = inspect(self.engine)
-
         # Create the FTS table using SQL statements
+
+        inspector = inspect(self.engine)
 
         if not inspector.has_table('book_fts'):
             with self.engine.connect() as connection:
                 connection.execute(text(f"CREATE VIRTUAL TABLE {BookFTS.__tablename__} USING fts5(title, author, publication_date, genre, rating)"))
 
+        Base.metadata.create_all(self.engine)
+
         # Create the books table if needed
-                
-        if not inspector.has_table('book'):
-            Base.metadata.create_all(self.engine)
-            self._generate_fake_books(100000)
+
+        if self.get_row_count(Book) == 0:
+                self._generate_fake_books(100000)
 
         self.session = sessionmaker(bind=self.engine)
 
         # Populate the FTS table if it's empty
 
-        with Session(self.engine) as session:
-            rows = session.query(BookFTS).count() # type: ignore
-            if rows == 0:
-                self._populate_fts_index()
+        if self.get_row_count(BookFTS) == 0:
+            self._populate_fts_index()
 
         # Keep the count of the records
 
@@ -107,18 +108,24 @@ class BookDatabase:
             session.commit()
 
 
-    def get_total_records(self) -> int:
-        with self.session() as session:
-            rows = session.query(Book).count()
+    def get_row_count(self, table:Table) -> int:
+        with Session(self.engine) as session:
+            rows = session.query(table).count()
             return rows
 
 
+    def get_total_records(self) -> int:
+        return self.get_row_count(Book)
+
+
     def create_book(self, book: Book) -> None:
+
         with self.session() as session:
             session.add(book)
             session.commit()
-            self._update_fts_index(session, book)
-            self.total_rows += 1
+
+        self._update_fts_index(session, book)
+        self.total_rows += 1
 
 
     def read_book(self, book_id: int) -> Optional[Book]:
@@ -128,11 +135,13 @@ class BookDatabase:
 
 
     def update_book(self, book: Book) -> None:
+
         with self.session() as session:
             session.merge(book)
             session.commit()
-            self._update_fts_index(session, book)
-            session.close()
+
+        self._update_fts_index(session, book)
+        session.close()
 
 
     def delete_book(self, book_id: int) -> None:
