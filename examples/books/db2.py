@@ -1,4 +1,4 @@
-from typing import List, Optional, Any, Tuple
+from typing import List, Optional, Any, Tuple, cast
 
 from sqlalchemy import inspect, text, create_engine, Column, Integer, String, Connection, select
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
@@ -49,6 +49,9 @@ class BookDatabase:
 
         self.session = sessionmaker(bind=self.engine)
 
+        with Session(self.engine) as session:
+            self.total_rows = session.query(Book).count() # type: ignore
+
 
     def _populate_fts_index(self, connection: Connection) -> None:
         log.info('Populating FTS table...')
@@ -74,71 +77,115 @@ class BookDatabase:
 
 
     def create_book(self, book: Book) -> None:
-        session = self.session()
-        session.add(book)
-        session.commit()
-        self._update_fts_index(session, book)
-        session.close()
+        with self.session() as session:
+            session.add(book)
+            session.commit()
+            self._update_fts_index(session, book)
+            self.total_rows += 1
+
 
     def read_book(self, book_id: int) -> Optional[Book]:
-        session = self.session()
-        book = session.query(Book).filter_by(id=book_id).first()
-        session.close()
-        return book
+        with self.session() as session:
+            book = session.query(Book).filter_by(id=book_id).first()
+            return book
+
 
     def update_book(self, book: Book) -> None:
-        session = self.session()
-        session.merge(book)
-        session.commit()
-        self._update_fts_index(session, book)
-        session.close()
+        with self.session() as session:
+            session.merge(book)
+            session.commit()
+            self._update_fts_index(session, book)
+            session.close()
+
 
     def delete_book(self, book_id: int) -> None:
-        session = self.session()
-        book = session.query(Book).filter_by(id=book_id).first()
-        if book:
-            session.delete(book)
-            session.commit()
-            self._delete_from_fts_index(session, book_id)
-        session.close()
+        with self.session() as session:
+            book = session.query(Book).filter_by(id=book_id).first()
+            if book:
+                session.delete(book)
+                session.commit()
+                self._delete_from_fts_index(session, book_id)
+                self.total_rows -= 1
+
 
     def list_books(self) -> List[Book]:
-        session = self.session()
-        books = session.query(Book).all()
-        session.close()
-        return books
+        with self.session() as session:
+            books = session.query(Book).all()
+            return books
 
 
     def get_paginated_books(self, skip:int, limit:int, col_id:str='id', desc:str='ASC') -> Tuple[List[Book], int]:
+        """Return a page of books together with the total number of books in the database
 
-        def get_total_records(session: Session) -> int:
-            rows = session.query(Book).count() # type: ignore
-            return rows
+        Args:
+            skip (int, optional): Skip n rows. Defaults to 0.
+            limit (int, optional): Return n rows. Defaults to 20.
+            col_id (str, optional): Sort returned rows on given column. Defaults to 'id'.
+            desc (str, optional): Sort rows ASC or DESC. Defaults to 'ASC'.
+
+        Returns:
+            Tuple[List[Book], int]: Books and count of total books
+        """
 
         with Session(self.engine) as session:
-            page_count = int(get_total_records(session) / limit)
 
             column_ref: InstrumentedAttribute[Any] = Book.__dict__[col_id]
+            order = column_ref.asc() if desc=='ASC' else column_ref.desc()
 
-            if desc=='ASC':
-                stmt = select(Book).order_by(column_ref.asc()).offset(skip).limit(limit)
-            else:
-                stmt = select(Book).order_by(column_ref.desc()).offset(skip).limit(limit)
+            stmt = select(Book).order_by(order).offset(skip).limit(limit)
 
             books = [row[0] for row in session.execute(stmt).all()]
-            return list(books), page_count
+            return list(books), self.total_rows
 
 
+    def get_books(self, query: str="", skip:int=0, limit:int=20, col_id:str='id', desc:str='ASC') -> Tuple[List[Book], int]:
+        """Get filtered, sorted and paginated rows of books
 
-    def search_books(self, query: str) -> List[Book]:
-        session = self.session()
+        Args:
+            query (str): Query string for full text search
+            skip (int, optional): Skip n rows. Defaults to 0.
+            limit (int, optional): Return n rows. Defaults to 20.
+            col_id (str, optional): Sort returned rows on given column. Defaults to 'id'.
+            desc (str, optional): Sort rows ASC or DESC. Defaults to 'ASC'.
 
-        book_ids = session.execute(text(f"SELECT rowid FROM {BookFTS.__tablename__} WHERE {BookFTS.__tablename__} MATCH '{query}'"))
+        Returns:
+            Tuple[List[Book], int]: Books and count of total matching rows
+        """
 
-        book_ids = [book_id[0] for book_id in book_ids]
-        books = session.query(Book).filter(Book.id.in_(book_ids)).all()
-        session.close()
-        return books
+        with self.session() as session:
+            if query:
+
+                # Get the book IDs that match the query from the FTS table
+
+                cursor = session.execute(text(f"""
+                                SELECT rowid FROM {BookFTS.__tablename__} 
+                                WHERE {BookFTS.__tablename__} 
+                                MATCH '{query}'
+                                """))
+                if cursor:
+
+                    # Get query matching book ids
+
+                    book_ids = [row[0] for row in cursor]
+                    total_count = len(book_ids)
+
+                    # Column to sort on and sort direction
+
+                    column_ref: InstrumentedAttribute[Any] = Book.__dict__[col_id]
+                    order = column_ref.asc() if desc=='ASC' else column_ref.desc()
+
+                    # Get the books from the main table
+
+                    stmt = select(Book).filter(Book.id.in_(book_ids)).order_by(order).offset(skip).limit(limit)
+                    books = [row[0] for row in session.execute(stmt).all()]
+
+                    return books, total_count
+                else:
+                    return [], 0
+            else:
+                return self.get_paginated_books(skip=skip, limit=limit, col_id=col_id, desc=desc)
+
+
 
     def _update_fts_index(self, session: Session, book: Book) -> None:
         session.execute(BookFTS.__table__.insert().values(
@@ -162,14 +209,14 @@ if __name__ == "__main__":
 
     dt = DT()
 
-    books = db.search_books('Nice')
-    print(f"Found {len(books)} books in {dt()} ms")
+    books, count  = db.get_books(query='Nice')
+    print(f"Found {len(books)}/{count} books in {dt()} ms")
 
-    books = db.search_books('Boy')
-    print(f"Found {len(books)} books in {dt()} ms")
+    books, count  = db.get_books(query='Boy')
+    print(f"Found {len(books)}/{count} books in {dt()} ms")
 
-    books = db.search_books('Boy')
-    print(f"Found {len(books)} books in {dt()} ms")
+    books, count = db.get_books(query='Boy')
+    print(f"Found {len(books)}/{count} books in {dt()} ms")
 
     books, page_count = db.get_paginated_books(200, 20)
-    print(f"Paginate {len(books)} books (page 200), in {dt()} ms")
+    print(f"Paginate {len(books)} books (page 10 of 200), in {dt()} ms")

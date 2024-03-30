@@ -11,9 +11,15 @@ def test_total_records():
 
 def test_pagination():
     books, page_count = db.get_paginated_books(2, 20)
-    assert page_count == 5000
+    assert page_count == 100000
     assert len(books) == 20
 
 def test_search():
-    books = db.search_books("Nice")
-    assert len(books) == 379
+
+    books, total_count = db.get_books()
+    assert total_count == 100000
+    assert len(books) == 20
+
+    books, total_count = db.get_books("Nice", skip=20, limit=10)
+    assert total_count == 379
+    assert len(books) == 10
