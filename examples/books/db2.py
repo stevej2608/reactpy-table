@@ -1,5 +1,5 @@
 from typing import List, Optional, Any, Tuple, cast
-
+from faker import Faker
 from sqlalchemy import inspect, text, create_engine, Column, Integer, String, Connection, select
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from sqlalchemy.orm.attributes import InstrumentedAttribute
@@ -31,26 +31,51 @@ class BookDatabase:
     def __init__(self, db_url: str):
         self.engine = create_engine(db_url)
 
-        # Check if the books table exists
-
         inspector = inspect(self.engine)
-        if inspector.has_table('book'):
 
-            # The books table exists, create the books_fts5 table if it doesn't exist
+        # Create the FTS table using SQL statements
 
+        if not inspector.has_table('book_fts'):
             with self.engine.connect() as connection:
-                if not inspector.has_table('book_fts'):
-                    # connection.execute(text(f"CREATE VIRTUAL TABLE {BookFTS.__tablename__} USING fts5(title, author, publication_date, genre, rating, tokenize='porter')"))
-                    connection.execute(text(f"CREATE VIRTUAL TABLE {BookFTS.__tablename__} USING fts5(title, author, publication_date, genre, rating)"))
-                    self._populate_fts_index(connection)
-        else:
-            # If the books table doesn't exist, create all tables
+                connection.execute(text(f"CREATE VIRTUAL TABLE {BookFTS.__tablename__} USING fts5(title, author, publication_date, genre, rating)"))
+
+        # Create the books table if needed
+                
+        if not inspector.has_table('book'):
             Base.metadata.create_all(self.engine)
+            self._generate_fake_books(100000)
 
         self.session = sessionmaker(bind=self.engine)
 
+        # Populate the FTS table if it's empty
+
+        with Session(self.engine) as session:
+            rows = session.query(BookFTS).count() # type: ignore
+            if rows == 0:
+                with self.engine.connect() as connection:
+                    self._populate_fts_index(connection)
+
+        # Keep the count of the records
+
         with Session(self.engine) as session:
             self.total_rows = session.query(Book).count() # type: ignore
+
+
+    def _generate_fake_books(self,num_records:int):
+        log.info('Populating Books table...')
+        Faker.seed(4321)
+        fake = Faker()
+        with Session(self.engine) as session:
+            for _ in range(num_records):
+                book = Book(
+                    title=fake.sentence(nb_words=4),
+                    author=fake.name(),
+                    publication_date=fake.date_between(start_date='-50y', end_date='today'),
+                    genre=fake.word(ext_word_list=['Fiction', 'Non-fiction', 'Mystery', 'Science Fiction', 'Romance']),
+                    rating=fake.pyint(min_value=1, max_value=5)
+                )
+                session.add(book)
+            session.commit()
 
 
     def _populate_fts_index(self, connection: Connection) -> None:

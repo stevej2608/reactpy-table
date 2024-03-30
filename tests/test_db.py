@@ -21,5 +21,5 @@ def test_search():
     assert len(books) == 20
 
     books, total_count = db.get_books("Nice", skip=20, limit=10)
-    assert total_count == 379
+    assert total_count == 365
     assert len(books) == 10
