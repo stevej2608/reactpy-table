@@ -1,8 +1,8 @@
-from typing import List, Optional
-from sqlalchemy import inspect
-from sqlalchemy import text
-from sqlalchemy import create_engine, Column, Integer, String, Connection
+from typing import List, Optional, Any, Tuple
+
+from sqlalchemy import inspect, text, create_engine, Column, Integer, String, Connection, select
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from utils import log, logging, DT
 
@@ -47,7 +47,7 @@ class BookDatabase:
             # If the books table doesn't exist, create all tables
             Base.metadata.create_all(self.engine)
 
-        self.Session = sessionmaker(bind=self.engine)
+        self.session = sessionmaker(bind=self.engine)
 
 
     def _populate_fts_index(self, connection: Connection) -> None:
@@ -68,33 +68,33 @@ class BookDatabase:
 
 
     def get_total_records(self) -> int:
-        with self.Session() as session:
+        with self.session() as session:
             rows = session.query(Book).count()
             return rows
 
 
     def create_book(self, book: Book) -> None:
-        session = self.Session()
+        session = self.session()
         session.add(book)
         session.commit()
         self._update_fts_index(session, book)
         session.close()
 
     def read_book(self, book_id: int) -> Optional[Book]:
-        session = self.Session()
+        session = self.session()
         book = session.query(Book).filter_by(id=book_id).first()
         session.close()
         return book
 
     def update_book(self, book: Book) -> None:
-        session = self.Session()
+        session = self.session()
         session.merge(book)
         session.commit()
         self._update_fts_index(session, book)
         session.close()
 
     def delete_book(self, book_id: int) -> None:
-        session = self.Session()
+        session = self.session()
         book = session.query(Book).filter_by(id=book_id).first()
         if book:
             session.delete(book)
@@ -103,13 +103,35 @@ class BookDatabase:
         session.close()
 
     def list_books(self) -> List[Book]:
-        session = self.Session()
+        session = self.session()
         books = session.query(Book).all()
         session.close()
         return books
 
+
+    def get_paginated_books(self, skip:int, limit:int, col_id:str='id', desc:str='ASC') -> Tuple[List[Book], int]:
+
+        def get_total_records(session: Session) -> int:
+            rows = session.query(Book).count() # type: ignore
+            return rows
+
+        with Session(self.engine) as session:
+            page_count = int(get_total_records(session) / limit)
+
+            column_ref: InstrumentedAttribute[Any] = Book.__dict__[col_id]
+
+            if desc=='ASC':
+                stmt = select(Book).order_by(column_ref.asc()).offset(skip).limit(limit)
+            else:
+                stmt = select(Book).order_by(column_ref.desc()).offset(skip).limit(limit)
+
+            books = [row[0] for row in session.execute(stmt).all()]
+            return list(books), page_count
+
+
+
     def search_books(self, query: str) -> List[Book]:
-        session = self.Session()
+        session = self.session()
 
         book_ids = session.execute(text(f"SELECT rowid FROM {BookFTS.__tablename__} WHERE {BookFTS.__tablename__} MATCH '{query}'"))
 
@@ -148,3 +170,6 @@ if __name__ == "__main__":
 
     books = db.search_books('Boy')
     print(f"Found {len(books)} books in {dt()} ms")
+
+    books, page_count = db.get_paginated_books(200, 20)
+    print(f"Paginate {len(books)} books (page 200), in {dt()} ms")
