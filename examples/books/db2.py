@@ -52,8 +52,7 @@ class BookDatabase:
         with Session(self.engine) as session:
             rows = session.query(BookFTS).count() # type: ignore
             if rows == 0:
-                with self.engine.connect() as connection:
-                    self._populate_fts_index(connection)
+                self._populate_fts_index()
 
         # Keep the count of the records
 
@@ -66,33 +65,46 @@ class BookDatabase:
         Faker.seed(4321)
         fake = Faker()
         with Session(self.engine) as session:
-            for _ in range(num_records):
-                book = Book(
-                    title=fake.sentence(nb_words=4),
-                    author=fake.name(),
-                    publication_date=fake.date_between(start_date='-50y', end_date='today'),
-                    genre=fake.word(ext_word_list=['Fiction', 'Non-fiction', 'Mystery', 'Science Fiction', 'Romance']),
-                    rating=fake.pyint(min_value=1, max_value=5)
+            while num_records > 0:
+                recs = num_records if num_records < 10000 else 10000
+                num_records -= recs
+                session.bulk_insert_mappings(
+                    Book,
+                    [ dict(
+                        title=fake.sentence(nb_words=4),
+                        author=fake.name(),
+                        publication_date=fake.date_between(start_date='-50y', end_date='today'),
+                        genre=fake.word(ext_word_list=['Fiction', 'Non-fiction', 'Mystery', 'Science Fiction', 'Romance']),
+                        rating=fake.pyint(min_value=1, max_value=5)
+                    ) for _ in range(0, recs)]
                 )
-                session.add(book)
             session.commit()
 
 
-    def _populate_fts_index(self, connection: Connection) -> None:
+    def _populate_fts_index(self) -> None:
         log.info('Populating FTS table...')
-        books: List[Book] = connection.execute(Book.__table__.select()).fetchall() # type: ignore
+        books: List[Book] = self.list_books()
+        with Session(self.engine) as session:
+            num_records = len(books)
+            skip = 0
+            while num_records > 0:
+                bulk_count = num_records if num_records < 10000 else 10000
+                bulk_recs = books[skip: skip+bulk_count]
+                session.bulk_insert_mappings(
+                    BookFTS,
+                    [dict(
+                        rowid=rec.id,
+                        title=rec.title,
+                        author=rec.author,
+                        publication_date=rec.publication_date,
+                        genre=rec.genre,
+                        rating=rec.rating
+                        ) for rec in bulk_recs]
+                )
+                skip += bulk_count
+                num_records -= bulk_count
 
-        for book in books:
-            connection.execute(BookFTS.__table__.insert().values(
-                        rowid=book.id,
-                        title=book.title,
-                        author=book.author,
-                        publication_date=book.publication_date,
-                        genre=book.genre,
-                        rating=book.rating
-                        ))
-
-        connection.commit()
+            session.commit()
 
 
     def get_total_records(self) -> int:
