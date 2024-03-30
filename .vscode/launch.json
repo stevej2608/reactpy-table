@@ -53,6 +53,22 @@
     },
 
     {
+      "name": "1d examples/books/db2.py",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "examples.books.db2",
+      "justMyCode": false,
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "serverReadyAction": {
+        "pattern": "Uvicorn running on\\s+(https?://\\S+)",
+        "uriFormat": "%s/",
+        "action": "debugWithChrome",
+        "killOnServerStop": true
+      }
+    },
+
+    {
       "name": "2a. PyTest (tests/test_example_app.py)",
       "type": "debugpy",
       "request": "launch",
@@ -95,6 +111,23 @@
       "args": [
         "-o log_cli=1",
         "tests/test_memo.py",
+        "--headed"
+      ],
+      "cwd": "${workspaceRoot}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "justMyCode": false
+    },
+
+    {
+      "name": "2d. PyTest (tests/test_db.py)",
+      "type": "debugpy",
+      "request": "launch",
+      "stopOnEntry": false,
+      "module": "pytest",
+      "args": [
+        "-o log_cli=1",
+        "tests/test_db.py",
         "--headed"
       ],
       "cwd": "${workspaceRoot}",
