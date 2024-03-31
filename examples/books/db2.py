@@ -1,37 +1,38 @@
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, Type
 
 from faker import Faker
-from sqlalchemy import inspect, Column, Integer, String, create_engine, select, text, Table
-from sqlalchemy.orm import Session, declarative_base, sessionmaker
+from sqlalchemy import create_engine, func, inspect
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlmodel import Field, Session, SQLModel, col, select, text  # type:ignore
 
 from utils import DT, log, logging
 
-Base = declarative_base()
 
-class BookFTS(Base):
-    __tablename__ = 'book_fts'
-    rowid = Column(Integer, primary_key=True)
-    title = Column(String)
-    author = Column(String)
-    publication_date = Column(String)
-    genre = Column(String)
-    rating = Column(Integer)
+class Book_FTS(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str
+    author: str
+    publication_date: str
+    genre: str
+    rating: int
+
+    @classmethod
+    def table_name(cls) -> str:
+        return cls.__tablename__
 
 
-class Book(Base):
-    __tablename__ = 'book'
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
-    author = Column(String)
-    publication_date = Column(String)
-    genre = Column(String)
-    rating = Column(Integer)
+class Book(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str
+    author: str
+    publication_date: str
+    genre: str
+    rating: int
 
 class BookDatabase:
 
-    def __init__(self, db_url: str):
-        self.engine = create_engine(db_url)
+    def __init__(self, url: str):
+        self.engine = create_engine(url='sqlite:///books.db')
 
         # Create the FTS table using SQL statements
 
@@ -39,26 +40,23 @@ class BookDatabase:
 
         if not inspector.has_table('book_fts'):
             with self.engine.connect() as connection:
-                connection.execute(text(f"CREATE VIRTUAL TABLE {BookFTS.__tablename__} USING fts5(title, author, publication_date, genre, rating)"))
+                connection.execute(text(f"CREATE VIRTUAL TABLE {Book_FTS.table_name()} USING fts5(title, author, publication_date, genre, rating)"))
 
-        Base.metadata.create_all(self.engine)
+        SQLModel.metadata.create_all(self.engine)
 
         # Create the books table if needed
 
         if self.get_row_count(Book) == 0:
-                self._generate_fake_books(100000)
-
-        self.session = sessionmaker(bind=self.engine)
+            self._generate_fake_books(100000)
 
         # Populate the FTS table if it's empty
 
-        if self.get_row_count(BookFTS) == 0:
+        if self.get_row_count(Book_FTS) == 0:
             self._populate_fts_index()
 
         # Keep the count of the records
 
-        with Session(self.engine) as session:
-            self.total_rows = session.query(Book).count() # type: ignore
+        self.total_rows = self.get_row_count(Book)
 
 
     def _generate_fake_books(self,num_records:int):
@@ -92,7 +90,7 @@ class BookDatabase:
                 bulk_count = num_records if num_records < 10000 else 10000
                 bulk_recs = books[skip: skip+bulk_count]
                 session.bulk_insert_mappings(
-                    BookFTS,
+                    Book_FTS,
                     [dict(
                         rowid=rec.id,
                         title=rec.title,
@@ -108,10 +106,12 @@ class BookDatabase:
             session.commit()
 
 
-    def get_row_count(self, table:Table) -> int:
+    def get_row_count(self, table:SQLModel) -> int:
         with Session(self.engine) as session:
-            rows = session.query(table).count()
-            return rows
+            statement = select(func.count()).select_from(table)
+            result = session.exec(statement)
+            count = result.one()
+            return count
 
 
     def get_total_records(self) -> int:
@@ -119,45 +119,49 @@ class BookDatabase:
 
 
     def create_book(self, book: Book) -> None:
-
-        with self.session() as session:
+        with Session(self.engine) as session:
             session.add(book)
             session.commit()
-
-        self._update_fts_index(session, book)
-        self.total_rows += 1
+            self._update_fts_index(session, book)
+            self.total_rows += 1
 
 
     def read_book(self, book_id: int) -> Optional[Book]:
-        with self.session() as session:
-            book = session.query(Book).filter_by(id=book_id).first()
+        with Session(self.engine) as session:
+            statement = select(Book).where(col(Book.id) == book_id) # type: ignore
+            book = session.exec(statement).one()
             return book
 
 
     def update_book(self, book: Book) -> None:
-
-        with self.session() as session:
-            session.merge(book)
-            session.commit()
-
-        self._update_fts_index(session, book)
-        session.close()
+        with Session(self.engine) as session:
+            db_book = session.get(Book, book.id)
+            if db_book:
+                db_book.title = book.title
+                db_book.author = book.author
+                db_book.publication_date = book.publication_date
+                db_book.genre = book.genre
+                db_book.rating = book.rating
+                session.commit()
+            else:
+                raise ValueError(f"Book with ID {book.id} not found.")
 
 
     def delete_book(self, book_id: int) -> None:
-        with self.session() as session:
-            book = session.query(Book).filter_by(id=book_id).first()
-            if book:
-                session.delete(book)
-                session.commit()
+        with Session(self.engine) as session:
+            db_book = session.get(Book, book_id)
+            if db_book:
+                session.delete(db_book)
+                session.commit()            
                 self._delete_from_fts_index(session, book_id)
                 self.total_rows -= 1
 
 
     def list_books(self) -> List[Book]:
-        with self.session() as session:
-            books = session.query(Book).all()
-            return books
+        with Session(self.engine) as session:
+            statement = select(Book)
+            books = session.exec(statement).all()
+            return list(books)
 
 
     def get_paginated_books(self, skip:int, limit:int, col_id:str='id', desc:str='ASC') -> Tuple[List[Book], int]:
@@ -180,8 +184,9 @@ class BookDatabase:
 
             stmt = select(Book).order_by(order).offset(skip).limit(limit)
 
-            books = [row[0] for row in session.execute(stmt).all()]
-            return list(books), self.total_rows
+            books = session.exec(stmt).all()
+            page_count = int(self.total_rows / limit)
+            return list(books), page_count
 
 
     def get_books(self, query: str="", skip:int=0, limit:int=20, col_id:str='id', desc:str='ASC') -> Tuple[List[Book], int]:
@@ -196,34 +201,31 @@ class BookDatabase:
 
         Returns:
             Tuple[List[Book], int]: Books and count of total matching rows
+      
         """
 
-        with self.session() as session:
+        with Session(self.engine) as session:
             if query:
 
-                # Get the book IDs that match the query from the FTS table
-
-                cursor = session.execute(text(f"""
-                                SELECT rowid FROM {BookFTS.__tablename__} 
-                                WHERE {BookFTS.__tablename__} 
+                cursor = session.exec(text(f"""
+                                SELECT rowid FROM {Book_FTS.table_name()} 
+                                WHERE {Book_FTS.table_name()} 
                                 MATCH '{query}'
-                                """))
+                                """)) # type: ignore
+
                 if cursor:
 
                     # Get query matching book ids
-
-                    book_ids = [row[0] for row in cursor]
+                    book_ids = [row.rowid for row in cursor]
                     total_count = len(book_ids)
 
                     # Column to sort on and sort direction
-
-                    column_ref: InstrumentedAttribute[Any] = Book.__dict__[col_id]
-                    order = column_ref.asc() if desc=='ASC' else column_ref.desc()
+                    column_ref = getattr(Book, col_id)
+                    order = column_ref.asc() if desc == 'ASC' else column_ref.desc()
 
                     # Get the books from the main table
-
-                    stmt = select(Book).filter(Book.id.in_(book_ids)).order_by(order).offset(skip).limit(limit)
-                    books = [row[0] for row in session.execute(stmt).all()]
+                    stmt = select(Book).where(Book.id.in_(book_ids)).order_by(order).offset(skip).limit(limit)
+                    books = list(session.exec(stmt).all())
 
                     return books, total_count
                 else:
@@ -232,22 +234,29 @@ class BookDatabase:
                 return self.get_paginated_books(skip=skip, limit=limit, col_id=col_id, desc=desc)
 
 
-
     def _update_fts_index(self, session: Session, book: Book) -> None:
-        session.execute(BookFTS.__table__.insert().values(
-            rowid=book.id,
-            title=book.title,
-            author=book.author,
-            publication_date=book.publication_date,
-            genre=book.genre,
-            rating=book.rating
-            ))
+        with Session(self.engine) as session:
+            db_book = session.get(Book_FTS, book.id)
+            if db_book:
+                db_book.title = book.title
+                db_book.author = book.author
+                db_book.publication_date = book.publication_date
+                db_book.genre = book.genre
+                db_book.rating = book.rating
+                session.commit()
+            else:
+                raise ValueError(f"Book_FTS with ID {book.id} not found.")
+
 
     def _delete_from_fts_index(self, session: Session, book_id: int) -> None:
-        session.execute(BookFTS.__table__.delete().where(BookFTS.rowid == book_id))
-
-
-# python -m examples.books.db2
+        with Session(self.engine) as session:
+            db_book = session.get(Book_FTS, book_id)
+            if db_book:
+                session.delete(db_book)
+                session.commit() 
+            else:           
+                raise ValueError(f"Book_FTS with ID {book_id} not found.")
+# 
 
 if __name__ == "__main__":
     log.setLevel(logging.INFO)

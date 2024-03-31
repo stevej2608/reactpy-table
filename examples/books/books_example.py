@@ -113,7 +113,7 @@ def AppMain():
 
 
     table_data, page_count, loading = use_api(
-        db='sqlite:///books.db',
+        url='sqlite:///books.db',
         query=DBQuery(pagination=pagination, sort=sort)
         )
 
