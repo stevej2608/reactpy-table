@@ -1,7 +1,7 @@
 from typing import Tuple, List
 from pydantic import BaseModel
 
-from reactpy import use_state, use_effect
+from reactpy import use_state, use_effect, use_memo
 
 from reactpy_table.types.sort_state import SortState
 from reactpy_table.types.paginator_state import PaginatorState
@@ -25,7 +25,7 @@ EMPTY_BOOK_LIST: BookList = []
 
 def use_api(url:str, query:DBQuery) -> Tuple[BookList, int, bool]:
 
-    db = BookDatabase(url=url)
+    db = use_memo(lambda: BookDatabase(url=url),[url])
 
     data, set_data = use_state(EMPTY_BOOK_LIST)
     count, set_count = use_state(0)
@@ -43,7 +43,7 @@ def use_api(url:str, query:DBQuery) -> Tuple[BookList, int, bool]:
         col = query.sort.id
         desc = query.sort.desc
 
-        table_data, page_count = db.get_paginated_books(skip, limit, col, desc)
+        table_data, page_count = db.get_books("", skip, limit, col, desc)
 
         log.info("fetched %d books in %s ms", len(table_data), dt())
 
