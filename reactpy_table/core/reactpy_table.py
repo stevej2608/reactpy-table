@@ -49,7 +49,7 @@ class ReactpyTable(Table[TData], Generic[TData]):
 
             self._data = self.row_model.pipeline()
 
-            log.info('refresh data=%s', self.refresh_data_dump())
+            # log.info('refresh data=%s', self.refresh_data_dump())
 
             self._updater(self)
 
@@ -85,8 +85,8 @@ class ReactpyTable(Table[TData], Generic[TData]):
         # from the next feature up the pipeline.
 
         def search_update() -> TableData[TData]:
-            if self._initial_data.rows:
-                log.info('          5. _initial_data %s...', self.refresh_data_dump())
+            # if self._initial_data.rows:
+            #     log.info('          5. _initial_data %s...', self.refresh_data_dump())
             return self._initial_data
 
         def sort_update() -> TableData[TData]:

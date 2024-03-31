@@ -28,6 +28,9 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
                 set_refresh(table.UID)
 
         def _create_table() -> Table[TData]:
+
+            log.info('>>>>>>>>>>>>> create_table() <<<<<<<<<<<<<<< ')
+
             table =  ReactpyTable(
                 updater=state_updater,
                 table_options = core_options,
@@ -49,7 +52,7 @@ def use_reactpy_table(options: Options[TData]) -> Table[TData]:
 
     table = create_table()
 
-    log.info('table=%s', id(table))
+    # log.info('table=%s', id(table))
 
     if core_options != table.table_state:
         table.set_options(core_options)

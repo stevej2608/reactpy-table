@@ -72,7 +72,7 @@ def get_paginated_books(skip:int, limit:int, col_id:str, desc:str) -> Tuple[List
     def get_total_records(session: Session) -> int:
         rows = session.query(Book).count() # type: ignore
         return rows
-    
+
     with Session(engine) as session:
         page_count = int(get_total_records(session) / limit)
 

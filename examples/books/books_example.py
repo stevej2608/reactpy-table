@@ -8,7 +8,7 @@ from utils import For, log, logging, pico_run
 from ..components import Button, Search, TablePaginator
 from ..hooks import use_pagination, use_sorting, use_api, DBQuery
 
-from .db import COLS, Book
+from .db2 import COLS, Book
 
 
 
@@ -109,7 +109,7 @@ def AppMain():
 
     sort, sorting_change = use_sorting()
 
-    log.info('skip=%d, limit=%d', skip, limit)
+    # log.info('skip=%d, limit=%d', skip, limit)
 
 
     table_data, page_count, loading = use_api(
@@ -151,7 +151,7 @@ def AppMain():
         TablePaginator(table.paginator),
     )
 
-# python -m examples.sql_table_example
+# python -m examples.books.books_example
 
 if __name__ == "__main__":
     log.setLevel(logging.INFO)

@@ -1,18 +1,28 @@
+from datetime import datetime
 from typing import Any, List, Optional, Tuple, Sequence, cast
-
 from faker import Faker
 from sqlalchemy import create_engine, func, inspect
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlmodel import Field, Session, SQLModel, col, select, text  # type:ignore
 
+from reactpy_table import ColumnDef, Columns
 from utils import DT, log, logging
+
+COLS: Columns = [
+    ColumnDef(name='id', label='#'),
+    ColumnDef(name='title', label='Title'),
+    ColumnDef(name='author', label='Author'),
+    ColumnDef(name='publication_date', label='Date'),
+    ColumnDef(name='genre', label='Genre'),
+    ColumnDef(name='rating', label='Rating'),
+    ]
 
 
 class Book_FTS(SQLModel, table=True):
     rowid: Optional[int] = Field(default=None, primary_key=True)
     title: str
     author: str
-    publication_date: str
+    publication_date: datetime
     genre: str
     rating: int
 
@@ -25,7 +35,7 @@ class Book(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str
     author: str
-    publication_date: str
+    publication_date: datetime
     genre: str
     rating: int
 

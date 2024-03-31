@@ -8,6 +8,8 @@ from reactpy_table.types.paginator_state import PaginatorState
 
 from  ..books.db2 import Book, BookDatabase
 
+from utils import log, DT
+
 class DBQuery(BaseModel):
     sort: SortState
     pagination: PaginatorState
@@ -30,6 +32,9 @@ def use_api(url:str, query:DBQuery) -> Tuple[BookList, int, bool]:
     loading, set_loading = use_state(False)
 
     def _get_data():
+
+        dt = DT()
+
         set_loading(True)
 
         skip = query.pagination.page_size * query.pagination.page_index
@@ -39,6 +44,8 @@ def use_api(url:str, query:DBQuery) -> Tuple[BookList, int, bool]:
         desc = query.sort.desc
 
         table_data, page_count = db.get_paginated_books(skip, limit, col, desc)
+
+        log.info("fetched %d books in %s ms", len(table_data), dt())
 
         set_data(table_data)
         set_count(page_count)

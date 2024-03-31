@@ -113,7 +113,6 @@ class DefaultPaginator(Paginator[TData]):
             self._paginator_state = new_state
 
             if self.table.table_state.on_pagination_change:
-                log.info('>>>>>>>>>> Refresh')
                 self.table.table_state.on_pagination_change(new_state)
             else:
                 self.refresh()
