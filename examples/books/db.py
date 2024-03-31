@@ -1,15 +1,12 @@
-from datetime import datetime as dt
-from typing import Optional, List, Tuple, Any
-
-import sqlalchemy as db
-
+from datetime import datetime
+from typing import Any, List, Optional, Tuple, Sequence, cast
 from faker import Faker
-from sqlmodel import Field, Session, SQLModel, col, select  # type:ignore
+from sqlalchemy import create_engine, func, inspect
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlmodel import Field, Session, SQLModel, col, select, text  # type:ignore
 
 from reactpy_table import ColumnDef, Columns
-
-from utils import log
+from utils import DT, log, logging
 
 COLS: Columns = [
     ColumnDef(name='id', label='#'),
@@ -20,111 +17,275 @@ COLS: Columns = [
     ColumnDef(name='rating', label='Rating'),
     ]
 
-engine = db.create_engine('sqlite:///books.db')
 
-# https://sqlmodel.tiangolo.com/
+class Book_FTS(SQLModel, table=True):
+    rowid: Optional[int] = Field(default=None, primary_key=True)
+    title: str
+    author: str
+    publication_date: datetime
+    genre: str
+    rating: int
+
+    @classmethod
+    def table_name(cls) -> str:
+        return str(cls.__tablename__) # type:ignore
+
 
 class Book(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str
     author: str
-    publication_date: dt
+    publication_date: datetime
     genre: str
     rating: int
 
-SQLModel.metadata.create_all(engine)
+class BookDatabase:
 
-def generate_fake_books(num_records:int):
-    fake = Faker()
-    with Session(engine) as session:
-        for _ in range(num_records):
-            book = Book(
-                title=fake.sentence(nb_words=4),
-                author=fake.name(),
-                publication_date=fake.date_between(start_date='-50y', end_date='today'),
-                genre=fake.word(ext_word_list=['Fiction', 'Non-fiction', 'Mystery', 'Science Fiction', 'Romance']),
-                rating=fake.pyint(min_value=1, max_value=5)
-            )
-            session.add(book)
-        session.commit()
+    def __init__(self, url: str):
+        self.engine = create_engine(url='sqlite:///books.db')
 
+        # Create the FTS table using SQL statements
 
-def search_books(title:str):
-    with Session(engine) as session:
-        statement = select(Book).where(Book.title == title)
-        books = session.exec(statement).all()
-    return books
+        inspector = inspect(self.engine)
 
+        if not inspector.has_table('book_fts'):
+            with self.engine.connect() as connection:
+                connection.execute(text(f"CREATE VIRTUAL TABLE {Book_FTS.table_name()} USING fts5(title, author, publication_date, genre, rating)"))
 
-# Function to filter books by genre
-def filter_books_by_genre(genre:str):
-    with Session(engine) as session:
-        statement = select(Book).where(Book.genre == genre)
-        books = session.exec(statement).all()
-    return books
+        SQLModel.metadata.create_all(self.engine)
 
-# https://sqlmodel.tiangolo.com/tutorial/fastapi/limit-and-offset
+        # Create the books table if needed
 
-def get_paginated_books(skip:int, limit:int, col_id:str, desc:str) -> Tuple[List[Book], int]:
+        if self.get_row_count(Book) == 0:
+            self._generate_fake_books(100000)
 
-    log.info('get_paginated_books(skip=%d, limit=%d)', skip, limit)
+        # Populate the FTS table if it's empty
 
-    def get_total_records(session: Session) -> int:
-        rows = session.query(Book).count() # type: ignore
-        return rows
+        if self.get_row_count(Book_FTS) == 0:
+            self._populate_fts_index()
 
-    with Session(engine) as session:
-        page_count = int(get_total_records(session) / limit)
+        # Keep the count of the records
 
-        column_ref: InstrumentedAttribute[Any] = Book.__dict__[col_id]
-
-        if desc=='ASC':
-            stmt = select(Book).order_by(col(column_ref).asc()).offset(skip).limit(limit)
-        else:
-            stmt = select(Book).order_by(col(column_ref).desc()).offset(skip).limit(limit)
+        self.total_rows = self.get_row_count(Book)
 
 
-        books = session.exec(stmt).all()
-        return list(books), page_count
-
-
-def create_book(title:str, author:str, publication_date: dt, genre: str, rating:int):
-    with Session(engine) as session:
-        book = Book(title=title, author=author, publication_date=publication_date, genre=genre, rating=rating)
-        session.add(book)
-        session.commit()
-
-
-def update_book(book_id:int, title:str, author:str, publication_date: dt, genre:str, rating:int):
-    with Session(engine) as session:
-        statement = select(Book).where(col(Book.id) == book_id) # type: ignore
-        book = session.exec(statement).one()
-        if book:
-            book.title = title
-            book.author = author
-            book.publication_date = publication_date
-            book.genre = genre
-            book.rating = rating
+    def _generate_fake_books(self,num_records:int):
+        log.info('Populating Books table...')
+        Faker.seed(4321)
+        fake = Faker()
+        with Session(self.engine) as session:
+            while num_records > 0:
+                recs = num_records if num_records < 10000 else 10000
+                num_records -= recs
+                session.bulk_insert_mappings(
+                    Book,
+                    [ dict(
+                        title=fake.sentence(nb_words=4),
+                        author=fake.name(),
+                        publication_date=fake.date_between(start_date='-50y', end_date='today'),
+                        genre=fake.word(ext_word_list=['Fiction', 'Non-fiction', 'Mystery', 'Science Fiction', 'Romance']),
+                        rating=fake.pyint(min_value=1, max_value=5)
+                    ) for _ in range(0, recs)]
+                )
             session.commit()
 
 
-def all_books() -> List[Book]:
-    with Session(engine) as session:
-        statement = select(Book)
-        books = session.exec(statement).all()
-        return list(books)
+    def _populate_fts_index(self) -> None:
+        log.info('Populating FTS table...')
+        books: List[Book] = self.list_books()
+        with Session(self.engine) as session:
+            num_records = len(books)
+            skip = 0
+            while num_records > 0:
+                bulk_count = num_records if num_records < 10000 else 10000
+                bulk_recs = books[skip: skip+bulk_count]
+                session.bulk_insert_mappings(
+                    Book_FTS,
+                    [dict(
+                        rowid=rec.id,
+                        title=rec.title,
+                        author=rec.author,
+                        publication_date=rec.publication_date,
+                        genre=rec.genre,
+                        rating=rec.rating
+                        ) for rec in bulk_recs]
+                )
+                skip += bulk_count
+                num_records -= bulk_count
+
+            session.commit()
 
 
+    def get_row_count(self, table:SQLModel) -> int:
+        with Session(self.engine) as session:
+            # pylint: disable=not-callable
+            statement = select(func.count()).select_from(table) # type: ignore
+            result = session.exec(statement)
+            count = result.one()
+            return count
 
-def delete_book(book_id:int):
-    with Session(engine) as session:
-        statement = select(Book).where(col(Book.id) == book_id)
-        book = session.exec(statement).one()
-        session.delete(book)
-        session.commit()
+
+    def get_total_records(self) -> int:
+        return self.get_row_count(Book)
 
 
-# python -m examples.books.db
+    def create_book(self, book: Book) -> None:
+        with Session(self.engine) as session:
+            session.add(book)
+            session.commit()
+            self._update_fts_index(session, book)
+            self.total_rows += 1
+
+
+    def read_book(self, book_id: int) -> Optional[Book]:
+        with Session(self.engine) as session:
+            statement = select(Book).where(col(Book.id) == book_id) # type: ignore
+            book = session.exec(statement).one()
+            return book
+
+
+    def update_book(self, book: Book) -> None:
+        with Session(self.engine) as session:
+            db_book = session.get(Book, book.id)
+            if db_book:
+                db_book.title = book.title
+                db_book.author = book.author
+                db_book.publication_date = book.publication_date
+                db_book.genre = book.genre
+                db_book.rating = book.rating
+                session.commit()
+            else:
+                raise ValueError(f"Book with ID {book.id} not found.")
+
+
+    def delete_book(self, book_id: int) -> None:
+        with Session(self.engine) as session:
+            db_book = session.get(Book, book_id)
+            if db_book:
+                session.delete(db_book)
+                session.commit()
+                self._delete_from_fts_index(session, book_id)
+                self.total_rows -= 1
+
+
+    def list_books(self) -> List[Book]:
+        with Session(self.engine) as session:
+            statement = select(Book)
+            books = session.exec(statement).all()
+            return list(books)
+
+
+    def get_paginated_books(self, skip:int, limit:int, col_id:str='id', desc:str='ASC') -> Tuple[List[Book], int]:
+        """Return a page of books together with the total number of books in the database
+
+        Args:
+            skip (int, optional): Skip n rows. Defaults to 0.
+            limit (int, optional): Return n rows. Defaults to 20.
+            col_id (str, optional): Sort returned rows on given column. Defaults to 'id'.
+            desc (str, optional): Sort rows ASC or DESC. Defaults to 'ASC'.
+
+        Returns:
+            Tuple[List[Book], int]: Books and count of total books
+        """
+
+        with Session(self.engine) as session:
+
+            column_ref: InstrumentedAttribute[Any] = Book.__dict__[col_id]
+            order = column_ref.asc() if desc=='ASC' else column_ref.desc()
+
+            stmt = select(Book).order_by(order).offset(skip).limit(limit)
+
+            books = session.exec(stmt).all()
+            return list(books), self.total_rows
+
+
+    def get_books(self, query: str="", skip:int=0, limit:int=20, col_id:str='id', desc:str='ASC') -> Tuple[List[Book], int]:
+        """Get filtered, sorted and paginated rows of books
+
+        Args:
+            query (str): Query string for full text search
+            skip (int, optional): Skip n rows. Defaults to 0.
+            limit (int, optional): Return n rows. Defaults to 20.
+            col_id (str, optional): Sort returned rows on given column. Defaults to 'id'.
+            desc (str, optional): Sort rows ASC or DESC. Defaults to 'ASC'.
+
+        Returns:
+            Tuple[List[Book], int]: Books and count of total matching rows
+      
+        """
+
+        with Session(self.engine) as session:
+            if query:
+
+                cursor = cast(Sequence[Book_FTS], session.exec(text(f"""
+                                SELECT rowid FROM {Book_FTS.table_name()} 
+                                WHERE {Book_FTS.table_name()} 
+                                MATCH '{query}'
+                                """))) # type: ignore
+
+                if cursor:
+
+
+                    # Get query matching book ids
+                    book_ids = [row.rowid for row in cursor]
+                    total_count = len(book_ids)
+
+                    # Column to sort on and sort direction
+                    column_ref = getattr(Book, col_id)
+                    order = column_ref.asc() if desc == 'ASC' else column_ref.desc()
+
+                    # Get the books from the main table
+
+                    # pylint: disable=no-member
+                    stmt = select(Book).where(Book.id.in_(book_ids)).order_by(order).offset(skip).limit(limit) # type: ignore
+
+                    books = list(session.exec(stmt).all())
+
+                    return books, total_count
+                else:
+                    return [], 0
+            else:
+                return self.get_paginated_books(skip=skip, limit=limit, col_id=col_id, desc=desc)
+
+
+    def _update_fts_index(self, session: Session, book: Book) -> None:
+        with Session(self.engine) as session:
+            db_book = session.get(Book_FTS, book.id)
+            if db_book:
+                db_book.title = book.title
+                db_book.author = book.author
+                db_book.publication_date = book.publication_date
+                db_book.genre = book.genre
+                db_book.rating = book.rating
+                session.commit()
+            else:
+                raise ValueError(f"Book_FTS with ID {book.id} not found.")
+
+
+    def _delete_from_fts_index(self, session: Session, book_id: int) -> None:
+        with Session(self.engine) as session:
+            db_book = session.get(Book_FTS, book_id)
+            if db_book:
+                session.delete(db_book)
+                session.commit()
+            else:
+                raise ValueError(f"Book_FTS with ID {book_id} not found.")
+
 
 if __name__ == "__main__":
-    generate_fake_books(100000)
+    log.setLevel(logging.INFO)
+    db = BookDatabase('sqlite:///books.db')
+
+    dt = DT()
+
+    books, count  = db.get_books(query='Nice')
+    print(f"Found {len(books)}/{count} books in {dt()} ms")
+
+    books, count  = db.get_books(query='Boy')
+    print(f"Found {len(books)}/{count} books in {dt()} ms")
+
+    books, count = db.get_books(query='Boy')
+    print(f"Found {len(books)}/{count} books in {dt()} ms")
+
+    books, page_count = db.get_paginated_books(200, 20)
+    print(f"Paginate {len(books)} books (page 10 of 200), in {dt()} ms")

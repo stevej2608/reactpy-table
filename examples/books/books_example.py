@@ -8,7 +8,7 @@ from utils import For, log, logging, pico_run
 from ..components import Button, Search, TablePaginator
 from ..hooks import use_pagination, use_sorting, use_api, DBQuery
 
-from .db2 import COLS, Book
+from .db import COLS, Book
 
 
 

@@ -1,4 +1,4 @@
-from examples.books.db2 import BookDatabase
+from examples.books.db import BookDatabase
 
 
 db = BookDatabase("sqlite:///books.db")

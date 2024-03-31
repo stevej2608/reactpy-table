@@ -6,7 +6,7 @@ from reactpy import use_state, use_effect, use_memo
 from reactpy_table.types.sort_state import SortState
 from reactpy_table.types.paginator_state import PaginatorState
 
-from  ..books.db2 import Book, BookDatabase
+from  ..books.db import Book, BookDatabase
 
 from utils import log, DT
 
@@ -28,7 +28,7 @@ def use_api(url:str, query:DBQuery) -> Tuple[BookList, int, bool]:
     db = use_memo(lambda: BookDatabase(url=url),[url])
 
     data, set_data = use_state(EMPTY_BOOK_LIST)
-    count, set_count = use_state(0)
+    page_count, set_page_count = use_state(0)
     loading, set_loading = use_state(False)
 
     def _get_data():
@@ -43,16 +43,16 @@ def use_api(url:str, query:DBQuery) -> Tuple[BookList, int, bool]:
         col = query.sort.id
         desc = query.sort.desc
 
-        table_data, page_count = db.get_books("", skip, limit, col, desc)
+        table_data, row_count = db.get_books("", skip, limit, col, desc)
 
         log.info("fetched %d books in %s ms", len(table_data), dt())
 
         set_data(table_data)
-        set_count(page_count)
+        set_page_count(int(row_count / limit))
 
         set_loading(False)
 
     use_effect(_get_data, [url, str(query)])
 
 
-    return (data, count, loading)
+    return (data, page_count, loading)
