@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Tuple, Type
+from typing import Any, List, Optional, Tuple, Sequence, cast
 
 from faker import Faker
 from sqlalchemy import create_engine, func, inspect
@@ -9,7 +9,7 @@ from utils import DT, log, logging
 
 
 class Book_FTS(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    rowid: Optional[int] = Field(default=None, primary_key=True)
     title: str
     author: str
     publication_date: str
@@ -18,7 +18,7 @@ class Book_FTS(SQLModel, table=True):
 
     @classmethod
     def table_name(cls) -> str:
-        return cls.__tablename__
+        return str(cls.__tablename__) # type:ignore
 
 
 class Book(SQLModel, table=True):
@@ -108,7 +108,8 @@ class BookDatabase:
 
     def get_row_count(self, table:SQLModel) -> int:
         with Session(self.engine) as session:
-            statement = select(func.count()).select_from(table)
+            # pylint: disable=not-callable
+            statement = select(func.count()).select_from(table) # type: ignore
             result = session.exec(statement)
             count = result.one()
             return count
@@ -152,7 +153,7 @@ class BookDatabase:
             db_book = session.get(Book, book_id)
             if db_book:
                 session.delete(db_book)
-                session.commit()            
+                session.commit()
                 self._delete_from_fts_index(session, book_id)
                 self.total_rows -= 1
 
@@ -207,13 +208,14 @@ class BookDatabase:
         with Session(self.engine) as session:
             if query:
 
-                cursor = session.exec(text(f"""
+                cursor = cast(Sequence[Book_FTS], session.exec(text(f"""
                                 SELECT rowid FROM {Book_FTS.table_name()} 
                                 WHERE {Book_FTS.table_name()} 
                                 MATCH '{query}'
-                                """)) # type: ignore
+                                """))) # type: ignore
 
                 if cursor:
+
 
                     # Get query matching book ids
                     book_ids = [row.rowid for row in cursor]
@@ -224,7 +226,10 @@ class BookDatabase:
                     order = column_ref.asc() if desc == 'ASC' else column_ref.desc()
 
                     # Get the books from the main table
-                    stmt = select(Book).where(Book.id.in_(book_ids)).order_by(order).offset(skip).limit(limit)
+
+                    # pylint: disable=no-member
+                    stmt = select(Book).where(Book.id.in_(book_ids)).order_by(order).offset(skip).limit(limit) # type: ignore
+
                     books = list(session.exec(stmt).all())
 
                     return books, total_count
@@ -253,10 +258,10 @@ class BookDatabase:
             db_book = session.get(Book_FTS, book_id)
             if db_book:
                 session.delete(db_book)
-                session.commit() 
-            else:           
+                session.commit()
+            else:
                 raise ValueError(f"Book_FTS with ID {book_id} not found.")
-# 
+
 
 if __name__ == "__main__":
     log.setLevel(logging.INFO)

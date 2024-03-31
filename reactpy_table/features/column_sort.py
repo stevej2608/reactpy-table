@@ -3,7 +3,7 @@ from typing import Dict, Tuple, Any
 from pydantic import BaseModel
 from utils.memo import memo, MemoOpts
 
-from ..types import ColumnDef, ColumnSort,SortState, ITable, TData, TableData, TFeatureFactory, UpstreamData, update_state
+from ..types import ColumnDef, ColumnSort,SortState, ITable, TData, TableData, TFeatureFactory, UpstreamData
 
 from .null_updater import null_updater
 
