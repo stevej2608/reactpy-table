@@ -34,6 +34,13 @@ class ReactpyTable(Table[TData], Generic[TData]):
         return next(self._unique_sequence)
 
 
+    def refresh_data_dump(self):
+        if self._data.rows:
+            return f"{str(self._data.rows[0])[0:50]} ..."
+        else:
+            return 'Empty'
+
+
     def refresh(self) -> Self:
 
         try:
@@ -42,13 +49,14 @@ class ReactpyTable(Table[TData], Generic[TData]):
 
             self._data = self.row_model.pipeline()
 
-            log.info('refresh data=%s', str(self._data.rows[0])[0:50])
+            log.info('refresh data=%s', self.refresh_data_dump())
 
             self._updater(self)
 
             return self
         except Exception as ex:
             log.info('Update failed %s', ex)
+            raise(ex)
 
         return self
 
@@ -77,7 +85,8 @@ class ReactpyTable(Table[TData], Generic[TData]):
         # from the next feature up the pipeline.
 
         def search_update() -> TableData[TData]:
-            log.info('          5. _initial_data %s...', str(self._initial_data.rows[0])[0:50])
+            if self._initial_data.rows:
+                log.info('          5. _initial_data %s...', self.refresh_data_dump())
             return self._initial_data
 
         def sort_update() -> TableData[TData]:

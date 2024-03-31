@@ -35,9 +35,9 @@ class ISortOptions(Protocol, Generic[TData]):
     sorter: TFeatureFactory[TData, ColumnSort[TData]] | None = None
 
     sorting: SortState | None = None
-    manual_sort: bool = False
+    manual_sorting: bool = False
     on_sort_change: SortCallback | None = None
-    sort: bool = False
+    sort: bool = True
 
 
 class ISearchOptions(Protocol, Generic[TData]):
@@ -75,6 +75,7 @@ class Options(TableData[TData],
         on_sort_change: SortCallback | None = None,
         sorter: TFeatureFactory[TData, ColumnSort[TData]] | None = None,
         sorting: SortState | None = None,
+        sort: bool = True,
 
         # Row model
 
@@ -97,7 +98,7 @@ class Options(TableData[TData],
         # Sort
 
         self.sorter = sorter
-        self.manual_sorting = manual_sorting,
+        self.manual_sorting = manual_sorting
         self.on_sort_change = on_sort_change
         self.sorting = sorting
 

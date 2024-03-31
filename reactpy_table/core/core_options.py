@@ -19,7 +19,7 @@ class ITableState(Protocol, Generic[TData]):
     # Sort
 
     sorting: SortState | None = None
-    manual_sort: bool = False
+    manual_sorting: bool = False
     on_sort_change: SortCallback | None = None
     sort: bool = False
 
@@ -41,7 +41,7 @@ class TableState(ITableState[TData], Generic[TData]):
         # Sort
 
         self.sorting = options.sorting
-        self.manual_sort = options.manual_sort
+        self.manual_sorting = options.manual_sorting
         self.on_sort_change  = options.on_sort_change
         self.sort = options.sort
 
@@ -75,7 +75,7 @@ class TableState(ITableState[TData], Generic[TData]):
         if self.sorting != val.sorting:
             return False
 
-        if self.manual_sort != val.manual_sort:
+        if self.manual_sorting != val.manual_sorting:
             return False
 
         if self.sort != val.sort:
