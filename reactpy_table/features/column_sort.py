@@ -53,12 +53,11 @@ class DefaultColumnSort(ColumnSort[TData]):
                 return table_data
 
 
-        if self.table.table_state.manual_sorting:
+        if self.table.table_state.manual_sorting or not self.table.table_state.sort:
             self.pipeline = null_updater(upstream_data=upstream_data)
-        elif self.table.table_state.sort:
-            self.pipeline = memo(deps, updater, MemoOpts(name='      3. DefaultColumnSort', debug=False))
         else:
-            ...
+            self.pipeline = memo(deps, updater, MemoOpts(name='      3. DefaultColumnSort', debug=False))
+
 
     # @update_state
     def toggle_sort(self, col: ColumnDef) -> None:

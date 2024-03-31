@@ -46,12 +46,10 @@ class DefaultPaginator(Paginator[TData]):
             return table_data
 
 
-        if self.table.table_state.manual_pagination:
+        if self.table.table_state.manual_pagination or not self.table.table_state.pagination:
             self.pipeline = null_updater(upstream_data=upstream_data)
-        elif self.table.table_state.pagination:
-            self.pipeline = memo(deps, updater, MemoOpts(name='    2. DefaultPaginator', debug=False))
         else:
-            ...
+            self.pipeline = memo(deps, updater, MemoOpts(name='    2. DefaultPaginator', debug=False))
 
 
     @property

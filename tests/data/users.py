@@ -15020,5 +15020,5 @@ class DataModel(BaseModel):
     name: str
     address: str
 
-def make_data(rows:int=len(ROW_DATA)) -> List[DataModel]:
+def make_data() -> List[DataModel]:
     return [DataModel(**cast(Any, row)) for row in ROW_DATA]

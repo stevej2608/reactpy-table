@@ -8,7 +8,7 @@ from .data.users import make_data, DataModel
 
 @pytest.mark.anyio
 async def test_make_data():
-    rows = make_data(100)
+    rows = make_data()
     assert rows[0].index == 0
     assert rows[99].name == "Stark Cote"
 
@@ -20,7 +20,7 @@ async def test_use_memo():
     @component
     def TestComponent():
         nonlocal rows
-        table_data = use_memo(lambda: make_data(100))
+        table_data = use_memo(make_data)
         rows += table_data
         return html.div()
 
@@ -40,7 +40,7 @@ async def test_basic_usage():
         nonlocal table
         table = use_reactpy_table(
             Options(
-                rows=make_data(100),
+                rows=make_data(),
                 cols=COLS,
             )
         )
