@@ -11,6 +11,8 @@ from ..types import (
     RowModel,
     TableData,
     TableSearch,
+    SearchState,
+    SearchCallback,
     TData,
     TFeatureFactory,
     UpstreamData,
@@ -41,7 +43,11 @@ class ISortOptions(Protocol, Generic[TData]):
 
 
 class ISearchOptions(Protocol, Generic[TData]):
-    search: TFeatureFactory[TData, TableSearch[TData]] | None = None
+    searcher: TFeatureFactory[TData, TableSearch[TData]] | None = None
+    manual_search: bool = False
+    on_search_change: SearchCallback | None = None
+    searching: SearchState | None = None
+    search: bool = True
 
 
 class IRowModelOptions(Protocol, Generic[TData]):
@@ -83,7 +89,11 @@ class Options(TableData[TData],
 
         # Search
 
-        search: TFeatureFactory[TData, TableSearch[TData]] | None = None
+        searcher: TFeatureFactory[TData, TableSearch[TData]] | None = None,
+        manual_search: bool  = False,
+        on_search_change: SearchCallback | None = None,
+        searching: SearchState | None = None,
+        search: bool = True,
     ):
         super().__init__(rows=rows, cols=cols)
 
@@ -108,4 +118,8 @@ class Options(TableData[TData],
 
         # Search
 
+        self.searcher = searcher
+        self.manual_search = manual_search
+        self.on_search_change = on_search_change
+        self.searching = searching
         self.search = search

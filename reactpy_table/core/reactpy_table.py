@@ -107,6 +107,7 @@ class ReactpyTable(Table[TData], Generic[TData]):
         self._updater = updater
         self._table_state = table_options
         self._unique_sequence = unique_id()
+
         self.search = features.search(self, search_update)
         self.sort = features.sort(self, sort_update)
         self.paginator = features.paginator(self, paginator_update)

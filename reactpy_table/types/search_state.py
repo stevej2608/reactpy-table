@@ -3,12 +3,14 @@ from typing import Callable
 
 from pydantic import BaseModel
 
-class PaginatorState(BaseModel):
-    page_index: int
-    page_size: int
+
+
+class SearchState(BaseModel):
+    search_term: str = ''
+    case_sensitive: bool = False
 
     def __str__(self):
         return f"{json.dumps(self.model_dump())}"
 
 
-PaginatorCallback = Callable[[PaginatorState], None]
+SearchCallback = Callable[[SearchState], None]

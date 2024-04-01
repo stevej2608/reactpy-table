@@ -2,26 +2,28 @@ from typing import Tuple
 
 from utils.memo import MemoOpts, memo
 
-from ..types import ITable, TableData, TableSearch, TData, TFeatureFactory, UpstreamData, update_state
+from ..types import ITable, TableData, TableSearch, SearchState, TData, TFeatureFactory, UpstreamData
 
 
 class DefaultTableSearch(TableSearch[TData]):
 
     def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData]):
         super().__init__(table)
-        self.search_term: str = ''
-        self.case_sensitive: bool = False
+        self._search_state = SearchState()
+
 
         def deps() -> Tuple[TableData[TData], str, bool]:
             return (
                 upstream_data(),
-                self.search_term,
-                self.case_sensitive
+                self._search_state,
             )
 
         def updater(upstream_data: TableData[TData],
-                   search_term: str, case_sensitive:bool
+                   state: SearchState
                    ) -> TableData[TData]:
+
+            case_sensitive = state.case_sensitive
+            search_term = state.search_term
 
             def _filter(row: TData) -> bool:
                 nonlocal search_term
@@ -49,15 +51,18 @@ class DefaultTableSearch(TableSearch[TData]):
         self.pipeline = memo(deps, updater, MemoOpts(name='        4. DefaultTableSearch', debug=False))
 
 
-    @update_state
+    # @update_state
     def table_search(self, search_term: str, case_sensitive: bool = False):
 
-        self.case_sensitive = case_sensitive
+        new_state = SearchState(search_term=search_term, case_sensitive=case_sensitive)
 
-        if case_sensitive:
-            self.search_term = search_term.lower()
-        else:
-            self.search_term = search_term
+        if new_state != self._search_state:
+            self._search_state = new_state
+
+            if self.table.table_state.on_search_change:
+                self.table.table_state.on_search_change(new_state)
+            else:
+                self.refresh()
 
 
 def getDefaultTableSearch() -> TFeatureFactory[TData, TableSearch[TData]]:
