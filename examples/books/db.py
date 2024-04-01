@@ -4,6 +4,7 @@ from faker import Faker
 from sqlalchemy import create_engine, func, inspect
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlmodel import Field, Session, SQLModel, col, select, text  # type:ignore
+from sqlalchemy.exc import OperationalError
 
 from reactpy_table import ColumnDef, Columns
 from utils import DT, log, logging
@@ -217,11 +218,14 @@ class BookDatabase:
         with Session(self.engine) as session:
             if query:
 
-                cursor = cast(Sequence[Book_FTS], session.exec(text(f"""
-                                SELECT rowid FROM {Book_FTS.table_name()} 
-                                WHERE {Book_FTS.table_name()} 
-                                MATCH '{query}'
-                                """))) # type: ignore
+                try:
+                    cursor = cast(Sequence[Book_FTS], session.exec(text(f"""
+                                    SELECT rowid FROM {Book_FTS.table_name()} 
+                                    WHERE {Book_FTS.table_name()} 
+                                    MATCH '{query}'
+                                    """))) # type: ignore
+                except OperationalError:
+                    return [], 0
 
                 if cursor:
 

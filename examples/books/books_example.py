@@ -118,9 +118,6 @@ def AppMain():
         query=DBQuery(pagination=pagination, sort=sort, search=search)
         )
 
-    # table_data, page_count = use_memo(
-    #     lambda: get_paginated_books(skip, limit), [skip,limit]
-    #     )
 
     table = use_reactpy_table(options=Options(
         rows=table_data,
