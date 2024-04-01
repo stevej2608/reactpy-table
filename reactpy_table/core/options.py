@@ -3,7 +3,6 @@ from typing import Callable, Generic, List, Protocol
 from ..types import (
     Columns,
     ColumnSort,
-    SortState,
     SortCallback,
     ITable,
     Paginator,
@@ -11,7 +10,6 @@ from ..types import (
     RowModel,
     TableData,
     TableSearch,
-    SearchState,
     SearchCallback,
     TData,
     TFeatureFactory,
@@ -30,28 +28,25 @@ class IPaginationOptions(Protocol, Generic[TData]):
     on_pagination_change: PaginatorCallback | None = None
     page_count: int | None = None
     pagination: bool = False
-    paginator: TFeatureFactory[TData, Paginator[TData]] |None = None
+    pagination_feature: TFeatureFactory[TData, Paginator[TData]] |None = None
 
 
 class ISortOptions(Protocol, Generic[TData]):
-    sorter: TFeatureFactory[TData, ColumnSort[TData]] | None = None
-
-    sorting: SortState | None = None
+    sort_feature: TFeatureFactory[TData, ColumnSort[TData]] | None = None
     manual_sorting: bool = False
     on_sort_change: SortCallback | None = None
     sort: bool = True
 
 
 class ISearchOptions(Protocol, Generic[TData]):
-    searcher: TFeatureFactory[TData, TableSearch[TData]] | None = None
+    search_feature: TFeatureFactory[TData, TableSearch[TData]] | None = None
     manual_search: bool = False
     on_search_change: SearchCallback | None = None
-    searching: SearchState | None = None
     search: bool = True
 
 
 class IRowModelOptions(Protocol, Generic[TData]):
-    row_model: TFeatureFactory[TData, RowModel[TData]] | None = None
+    row_model_feature: TFeatureFactory[TData, RowModel[TData]] | None = None
 
 
 class Options(TableData[TData],
@@ -73,26 +68,24 @@ class Options(TableData[TData],
         on_pagination_change: PaginatorCallback | None = None,
         page_count: int | None = None,
         pagination: bool = False,
-        paginator: TFeatureFactory[TData, Paginator[TData]] | None = None,
+        pagination_feature: TFeatureFactory[TData, Paginator[TData]] | None = None,
 
         # Sort
 
         manual_sorting: bool  = False,
         on_sort_change: SortCallback | None = None,
-        sorter: TFeatureFactory[TData, ColumnSort[TData]] | None = None,
-        sorting: SortState | None = None,
+        sort_feature: TFeatureFactory[TData, ColumnSort[TData]] | None = None,
         sort: bool = True,
 
         # Row model
 
-        row_model: TFeatureFactory[TData, RowModel[TData]] | None = None,
+        row_model_feature: TFeatureFactory[TData, RowModel[TData]] | None = None,
 
         # Search
 
-        searcher: TFeatureFactory[TData, TableSearch[TData]] | None = None,
+        search_feature: TFeatureFactory[TData, TableSearch[TData]] | None = None,
         manual_search: bool  = False,
         on_search_change: SearchCallback | None = None,
-        searching: SearchState | None = None,
         search: bool = True,
     ):
         super().__init__(rows=rows, cols=cols)
@@ -103,23 +96,21 @@ class Options(TableData[TData],
         self.on_pagination_change = on_pagination_change
         self.page_count = page_count
         self.pagination = pagination
-        self.paginator = paginator
+        self.pagination_feature = pagination_feature
 
         # Sort
 
-        self.sorter = sorter
+        self.sort_feature = sort_feature
         self.manual_sorting = manual_sorting
         self.on_sort_change = on_sort_change
-        self.sorting = sorting
 
         # Row model
 
-        self.row_model = row_model
+        self.row_model_feature = row_model_feature
 
         # Search
 
-        self.searcher = searcher
+        self.search_feature = search_feature
         self.manual_search = manual_search
         self.on_search_change = on_search_change
-        self.searching = searching
         self.search = search

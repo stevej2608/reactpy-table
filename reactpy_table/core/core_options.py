@@ -4,7 +4,7 @@ from typing import Protocol, Generic, List, cast
 
 from ..types.paginator_state import PaginatorCallback
 from ..types.sort_state import SortState, SortCallback
-from ..types.search_state import SearchState, SearchCallback
+from ..types.search_state import SearchCallback
 
 from ..types.table_data import TData, Columns
 
