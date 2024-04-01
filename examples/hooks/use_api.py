@@ -5,6 +5,7 @@ from reactpy import use_state, use_effect, use_memo
 
 from reactpy_table.types.sort_state import SortState
 from reactpy_table.types.paginator_state import PaginatorState
+from reactpy_table.types.search_state import SearchState
 
 from  ..books.db import Book, BookDatabase
 
@@ -13,9 +14,10 @@ from utils import log, DT
 class DBQuery(BaseModel):
     sort: SortState
     pagination: PaginatorState
+    search: SearchState
 
     def __str__(self):
-        return f"sort({self.sort}, pagination({self.pagination}))"
+        return f"sort({self.sort}), pagination({self.pagination}), search({self.search})"
 
 
 BookList = List[Book]
@@ -43,7 +45,9 @@ def use_api(url:str, query:DBQuery) -> Tuple[BookList, int, bool]:
         col = query.sort.id
         desc = query.sort.desc
 
-        table_data, row_count = db.get_books("", skip, limit, col, desc)
+        search_term = query.search.search_term
+
+        table_data, row_count = db.get_books(search_term, skip, limit, col, desc)
 
         log.info("fetched %d books in %s ms", len(table_data), dt())
 

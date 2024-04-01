@@ -6,7 +6,7 @@ from reactpy_table import ColumnDef, Options, Table, use_reactpy_table
 from utils import For, log, logging, pico_run
 
 from ..components import Button, Search, TablePaginator
-from ..hooks import use_pagination, use_sorting, use_api, DBQuery
+from ..hooks import use_pagination, use_sorting, use_search, use_api, DBQuery
 
 from .db import COLS, Book
 
@@ -108,13 +108,14 @@ def AppMain():
     skip, limit, pagination, pagination_change = use_pagination()
 
     sort, sorting_change = use_sorting()
+    search, search_change = use_search()
 
     # log.info('skip=%d, limit=%d', skip, limit)
 
 
     table_data, page_count, loading = use_api(
         url='sqlite:///books.db',
-        query=DBQuery(pagination=pagination, sort=sort)
+        query=DBQuery(pagination=pagination, sort=sort, search=search)
         )
 
     # table_data, page_count = use_memo(
@@ -132,6 +133,9 @@ def AppMain():
         manual_sorting = True,
         on_sort_change = sorting_change,
         # sorting = sorting
+
+        manual_search = True,
+        on_search_change = search_change,
 
     ))
 
