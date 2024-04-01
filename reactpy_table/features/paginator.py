@@ -8,6 +8,7 @@ from utils.memo import memo, MemoOpts
 from ..types import ITable, Paginator, PaginatorState, TableData, TData, TFeatureFactory, UpstreamData
 
 from .null_updater import null_updater
+from .feature_control import FeatureControl
 
 
 DEFAULT_PAGE_SIZE = 10
@@ -26,16 +27,16 @@ class DefaultPaginator(Paginator[TData]):
                 upstream_data(),
                 self.page_size,
                 self.page_index,
-                self.table.table_state.pagination
+                self.table.table_state.pagination_control == FeatureControl.DISABLED
             )
 
         def updater(upstream_data: TableData[TData],
                    page_size: int,
                    page_index:int,
-                   enabled: bool
+                   disabled: bool
                    ) -> TableData[TData]:
 
-            if not enabled:
+            if disabled:
                 return upstream_data
 
             low = page_size * page_index
@@ -46,10 +47,10 @@ class DefaultPaginator(Paginator[TData]):
             return table_data
 
 
-        if self.table.table_state.manual_pagination or not self.table.table_state.pagination:
-            self.pipeline = null_updater(upstream_data=upstream_data)
-        else:
+        if self.table.table_state.pagination_control is FeatureControl.DEFAULT:
             self.pipeline = memo(deps, updater, MemoOpts(name='    2. DefaultPaginator', debug=False))
+        else:
+            self.pipeline = null_updater(upstream_data=upstream_data)
 
 
     @property

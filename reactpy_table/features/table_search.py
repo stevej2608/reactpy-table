@@ -12,7 +12,7 @@ class DefaultTableSearch(TableSearch[TData]):
         self._search_state = SearchState()
 
 
-        def deps() -> Tuple[TableData[TData], str, bool]:
+        def deps() -> Tuple[TableData[TData], SearchState]:
             return (
                 upstream_data(),
                 self._search_state,

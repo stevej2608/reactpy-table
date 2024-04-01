@@ -2,7 +2,7 @@ from typing import Any, Callable, Dict, List
 
 from reactpy import component, event, html, use_memo, use_state
 
-from reactpy_table import ColumnDef, Options, Table, use_reactpy_table
+from reactpy_table import ColumnDef, Options, FeatureControl, Table, use_reactpy_table
 from utils import For, ServerOptions, log, logging, pico_run
 
 from .components import Button, Search, TablePaginator, ModalForm
@@ -109,7 +109,7 @@ def AppMain():
     table = use_reactpy_table(options=Options(
         rows=table_data,
         cols = COLS,
-        pagination=True
+        pagination_control=FeatureControl.DEFAULT
     ))
 
     modal_open, set_modal_open = use_state(False)

@@ -6,6 +6,7 @@ from utils.memo import memo, MemoOpts
 from ..types import ColumnDef, ColumnSort,SortState, ITable, TData, TableData, TFeatureFactory, UpstreamData
 
 from .null_updater import null_updater
+from .feature_control import FeatureControl
 
 class ColumnState(BaseModel):
     column_name: str
@@ -53,10 +54,10 @@ class DefaultColumnSort(ColumnSort[TData]):
                 return table_data
 
 
-        if self.table.table_state.manual_sorting or not self.table.table_state.sort:
-            self.pipeline = null_updater(upstream_data=upstream_data)
-        else:
+        if self.table.table_state.sort_control is FeatureControl.DEFAULT:
             self.pipeline = memo(deps, updater, MemoOpts(name='      3. DefaultColumnSort', debug=False))
+        else:
+            self.pipeline = null_updater(upstream_data=upstream_data)
 
 
     # @update_state

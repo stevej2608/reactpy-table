@@ -2,7 +2,7 @@ from typing import Any, Callable, Dict, List
 
 from reactpy import component, event, html
 
-from reactpy_table import ColumnDef, Options, Table, use_reactpy_table
+from reactpy_table import ColumnDef, Options, FeatureControl, Table, use_reactpy_table
 from utils import For, log, logging, pico_run
 
 from ..components import Button, Search, TablePaginator
@@ -126,15 +126,14 @@ def AppMain():
         rows=table_data,
         cols = COLS,
 
-        manual_pagination=True,
+        pagination_control = FeatureControl.MANUAL,
         on_pagination_change = pagination_change,
         page_count = page_count,
 
-        manual_sorting = True,
+        sort_control = FeatureControl.MANUAL,
         on_sort_change = sorting_change,
-        # sorting = sorting
 
-        manual_search = True,
+        search_control=FeatureControl.MANUAL,
         on_search_change = search_change,
 
     ))

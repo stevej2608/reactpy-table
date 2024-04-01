@@ -1,4 +1,5 @@
 from typing import Callable, Generic, List, Protocol
+from ..features.feature_control import FeatureControl
 
 from ..types import (
     Columns,
@@ -24,25 +25,24 @@ TableSearchType = Callable[[ITable[TData], UpstreamData[TData]], TableSearch[TDa
 
 
 class IPaginationOptions(Protocol, Generic[TData]):
-    manual_pagination: bool = False
-    on_pagination_change: PaginatorCallback | None = None
-    page_count: int | None = None
-    pagination: bool = False
-    pagination_feature: TFeatureFactory[TData, Paginator[TData]] |None = None
+    pagination_feature: TFeatureFactory[TData, Paginator[TData]] |None
+    on_pagination_change: PaginatorCallback | None
+    pagination_control: FeatureControl
+    page_count: int | None
 
 
 class ISortOptions(Protocol, Generic[TData]):
-    sort_feature: TFeatureFactory[TData, ColumnSort[TData]] | None = None
-    manual_sorting: bool = False
-    on_sort_change: SortCallback | None = None
-    sort: bool = True
+    sort_feature: TFeatureFactory[TData, ColumnSort[TData]] | None
+    on_sort_change: SortCallback | None
+    sort_control: FeatureControl
+
 
 
 class ISearchOptions(Protocol, Generic[TData]):
-    search_feature: TFeatureFactory[TData, TableSearch[TData]] | None = None
-    manual_search: bool = False
-    on_search_change: SearchCallback | None = None
-    search: bool = True
+    search_feature: TFeatureFactory[TData, TableSearch[TData]] | None
+    on_search_change: SearchCallback | None
+    search_control: FeatureControl
+
 
 
 class IRowModelOptions(Protocol, Generic[TData]):
@@ -64,18 +64,16 @@ class Options(TableData[TData],
 
         # Paginator
 
-        manual_pagination: bool = False,
-        on_pagination_change: PaginatorCallback | None = None,
-        page_count: int | None = None,
-        pagination: bool = False,
         pagination_feature: TFeatureFactory[TData, Paginator[TData]] | None = None,
+        on_pagination_change: PaginatorCallback | None = None,
+        pagination_control: FeatureControl = FeatureControl.DISABLED,
+        page_count: int | None = None,
 
         # Sort
 
-        manual_sorting: bool  = False,
         on_sort_change: SortCallback | None = None,
         sort_feature: TFeatureFactory[TData, ColumnSort[TData]] | None = None,
-        sort: bool = True,
+        sort_control: FeatureControl  = FeatureControl.DEFAULT,
 
         # Row model
 
@@ -84,25 +82,24 @@ class Options(TableData[TData],
         # Search
 
         search_feature: TFeatureFactory[TData, TableSearch[TData]] | None = None,
-        manual_search: bool  = False,
         on_search_change: SearchCallback | None = None,
-        search: bool = True,
+        search_control: FeatureControl  = FeatureControl.DEFAULT,
+
     ):
         super().__init__(rows=rows, cols=cols)
 
         # Pagination
 
-        self.manual_pagination = manual_pagination
-        self.on_pagination_change = on_pagination_change
-        self.page_count = page_count
-        self.pagination = pagination
         self.pagination_feature = pagination_feature
+        self.on_pagination_change = on_pagination_change
+        self.pagination_control = pagination_control
+        self.page_count = page_count
 
         # Sort
 
         self.sort_feature = sort_feature
-        self.manual_sorting = manual_sorting
         self.on_sort_change = on_sort_change
+        self.sort_control = sort_control
 
         # Row model
 
@@ -111,6 +108,6 @@ class Options(TableData[TData],
         # Search
 
         self.search_feature = search_feature
-        self.manual_search = manual_search
         self.on_search_change = on_search_change
-        self.search = search
+        self.search_control = search_control
+

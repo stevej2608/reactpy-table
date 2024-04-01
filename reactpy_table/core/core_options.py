@@ -7,6 +7,7 @@ from ..types.sort_state import SortState, SortCallback
 from ..types.search_state import SearchCallback
 
 from ..types.table_data import TData, Columns
+from ..features.feature_control import FeatureControl
 
 class ITableState(Protocol, Generic[TData]):
     rows: List[TData]
@@ -14,22 +15,19 @@ class ITableState(Protocol, Generic[TData]):
 
     # Pagination
 
-    pagination: bool
-    manual_pagination: bool
+    pagination_control: FeatureControl
     on_pagination_change: PaginatorCallback | None
     page_count: int | None
 
     # Sort
 
-    sorting: SortState | None = None
-    manual_sorting: bool = False
-    on_sort_change: SortCallback | None = None
-    sort: bool = False
+    sort_control: FeatureControl
+    on_sort_change: SortCallback | None
 
     # Search
 
-    manual_search: bool = False
-    on_search_change: SearchCallback | None = None
+    search_control: FeatureControl
+    on_search_change: SearchCallback | None
 
 
 
@@ -41,21 +39,18 @@ class TableState(ITableState[TData], Generic[TData]):
 
         # Pagination
 
-        self.pagination = options.pagination
-        self.manual_pagination = options.manual_pagination
+        self.pagination_control = options.pagination_control
         self.on_pagination_change = options.on_pagination_change
         self.page_count = options.page_count
 
         # Sort
 
-        self.sorting = options.sorting
-        self.manual_sorting = options.manual_sorting
+        self.sort_control = options.sort_control
         self.on_sort_change  = options.on_sort_change
-        self.sort = options.sort
 
         # Search
 
-        self.manual_search = options.manual_search
+        self.search_control = options.search_control
         self.on_search_change = options.on_search_change
 
 
@@ -74,24 +69,16 @@ class TableState(ITableState[TData], Generic[TData]):
 
         # Pagination
 
-        if self.pagination != val.pagination:
+        if self.pagination_control != val.pagination_control:
             return False
 
-        if self.manual_pagination != val.manual_pagination:
-            return False
 
         if self.page_count != val.page_count:
             return False
 
         # Sort
 
-        if self.sorting != val.sorting:
-            return False
-
-        if self.manual_sorting != val.manual_sorting:
-            return False
-
-        if self.sort != val.sort:
+        if self.sort_control != val.sort_control:
             return False
 
 

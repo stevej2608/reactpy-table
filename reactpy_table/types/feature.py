@@ -1,8 +1,13 @@
 from typing import Any, Callable, Generic, Protocol, TypeVar, cast
-
+from enum import Enum
 from .abstract_table import ITable
 from .table_data import TableData, TData
 from .updater import UpstreamData
+
+class FeatureControl(Enum):
+    DISABLED = 1
+    DEFAULT = 2
+    MANUAL = 3
 
 
 class IFeature(Protocol, Generic[TData]):
