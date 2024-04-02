@@ -80,8 +80,8 @@ companies table. The built-in feature data pipeline is used.
 a SQLite book database containing 100k books. Search, sort and 
 pagination is handled by SQL queries.
 
-* Full text search on database < 20ms
-* Page traversal < 2ms
+* FTS5 full text search on database < 20ms
+* Next/Prev page traversal < 2ms
 
 
 ## Feature Set
