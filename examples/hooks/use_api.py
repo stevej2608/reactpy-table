@@ -28,6 +28,15 @@ EMPTY_BOOK_LIST: BookList = []
 # https://reactpy.dev/docs/reference/hooks-api.html#async-effects
 
 def use_api(url:str, query:DBQuery) -> Tuple[BookList, int, bool]:
+    """Interface to SQLite DB
+
+    Args:
+        url (str): URL of database
+        query (DBQuery): The initial query
+
+    Returns:
+        Tuple[BookList, int, bool]: Returned requested page, number of pages available and a loading flag
+    """
 
     db = use_memo(lambda: BookDatabase(url=url),[url])
 

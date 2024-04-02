@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from typing import Any, List, Optional, Sequence, Tuple, cast
 
@@ -8,7 +9,7 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlmodel import Field, Session, SQLModel, col, select, text  # type:ignore
 
 from reactpy_table import ColumnDef, Columns
-from utils import DT, logging
+from utils import DT
 
 log = logging.getLogger(__name__)
 

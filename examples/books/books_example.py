@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List
 from reactpy import component, event, html
 
 from reactpy_table import ColumnDef, Options, FeatureControl, Table, use_reactpy_table
-from utils import For, pico_run
+from utils import For, pico_run, set_log_level
 
 from ..components import Button, Search, TablePaginator
 from ..hooks import use_pagination, use_sorting, use_search, use_api, DBQuery
@@ -106,13 +106,13 @@ def TFoot(table: Table[Book]):
 @component
 def AppMain():
 
-    _skip, _limit, pagination, pagination_change = use_pagination()
+    # Feature state - only needed because the
+    # sort, search and pagination is being performed by
+    # the SQLite API
 
+    pagination, pagination_change = use_pagination()
     sort, sorting_change = use_sorting()
     search, search_change = use_search()
-
-    # log.info('skip=%d, limit=%d', skip, limit)
-
 
     table_data, page_count, _loading = use_api(
         url='sqlite:///books.db',
@@ -155,5 +155,5 @@ def AppMain():
 # python -m examples.books.books_example
 
 if __name__ == "__main__":
-    log.setLevel(logging.INFO)
+    set_log_level(logging.INFO)
     pico_run(AppMain)
