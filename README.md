@@ -10,8 +10,8 @@ The initial release supports the following features:
 - [X] Headless UI, CSS agnostic
 - [X] Freeform text search
 - [X] Forward/Reverse column based sort
-- [X] Pagination
-- [X] Integration with SQLModel/SQLAlchemy (full text search, sort and pagination)
+- [X] Pagination (offset, limit)
+- [X] Integration with SQLModel/SQLAlchemy (fts5 based full text search, sort and pagination)
 - [ ] Integration with Pandas (in progress)
 - [ ] Remote large dataset support (in progress)
 
