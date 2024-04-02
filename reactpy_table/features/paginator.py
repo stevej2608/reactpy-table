@@ -1,15 +1,12 @@
-from typing import Tuple
-from ctypes import ArgumentError
 import math
+from ctypes import ArgumentError
+from typing import Tuple
 
 from utils.logger import log
-from utils.memo import memo, MemoOpts
+from utils.memo import MemoOpts, memo
 
-from ..types import ITable, Paginator, PaginatorState, TableData, TData, TFeatureFactory, UpstreamData
-
+from ..types import FeatureControl, ITable, Paginator, PaginatorState, TableData, TData, TFeatureFactory, UpstreamData
 from .null_updater import null_updater
-from ..types.feature_control import FeatureControl
-
 
 DEFAULT_PAGE_SIZE = 10
 

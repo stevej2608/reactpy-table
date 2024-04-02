@@ -19,3 +19,4 @@ from .table_data import EMPTY_TABLE, ColumnDef, Columns, TableData, TData
 from .updater import UpstreamData
 
 from .table_state import ITableState, TableState
+from .feature_control import FeatureControl

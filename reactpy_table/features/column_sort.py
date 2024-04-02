@@ -1,12 +1,22 @@
-from typing import Dict, Tuple, Any
+from typing import Any, Dict, Tuple
 
 from pydantic import BaseModel
-from utils.memo import memo, MemoOpts
 
-from ..types import ColumnDef, ColumnSort,SortState, ITable, TData, TableData, TFeatureFactory, UpstreamData
+from utils.memo import MemoOpts, memo
 
+from ..types import (
+    ColumnDef,
+    ColumnSort,
+    FeatureControl,
+    ITable,
+    SortState,
+    TableData,
+    TData,
+    TFeatureFactory,
+    UpstreamData,
+)
 from .null_updater import null_updater
-from ..types.feature_control import FeatureControl
+
 
 class ColumnState(BaseModel):
     column_name: str

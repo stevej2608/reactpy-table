@@ -1,13 +1,12 @@
 from typing import Callable
-from reactpy import use_state, use_memo
+
+from reactpy import use_memo, use_state
 
 from utils import log
 
 from ..features import getDefaultColumnSort, getDefaultPaginator, getDefaultRowModel, getDefaultTableSearch
-from ..types import TData
-
+from ..types import TData, TableState
 from .feature_factories import FeatureFactories
-from ..types.table_state import TableState
 from .options import Options
 from .reactpy_table import ReactpyTable
 from .table import Table

@@ -3,6 +3,7 @@ from typing import Callable, Generic, List, Protocol
 from ..types import (
     Columns,
     ColumnSort,
+    FeatureControl,
     ITable,
     ITableState,
     Paginator,
@@ -16,7 +17,6 @@ from ..types import (
     TFeatureFactory,
     UpstreamData,
 )
-from ..types.feature_control import FeatureControl
 
 PaginatorType = Callable[[ITable[TData], UpstreamData[TData]], Paginator[TData]] | None
 ColumnSortType = Callable[[ITable[TData], UpstreamData[TData]], ColumnSort[TData]] | None

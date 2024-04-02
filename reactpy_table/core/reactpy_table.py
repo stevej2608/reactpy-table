@@ -1,11 +1,11 @@
-from typing import Generic, Self, Callable, cast
 import random
+from typing import Callable, Generic, Self, cast
+
 from utils import log
-from ..types import TableData, TData
+
+from ..types import TableData, TableState, TData
 from .feature_factories import FeatureFactories
 from .table import Table
-
-from ..types.table_state import TableState
 
 
 def unique_id():
