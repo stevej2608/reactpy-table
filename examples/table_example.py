@@ -1,9 +1,10 @@
+import logging
 from typing import Any, Callable, Dict, List
 
 from reactpy import component, event, html, use_memo, use_state
 
 from reactpy_table import ColumnDef, Options, FeatureControl, Table, use_reactpy_table
-from utils import For, ServerOptions, logging, pico_run
+from utils import For, ServerOptions, pico_run, set_log_level
 
 from .components import Button, Search, TablePaginator, ModalForm
 from .data.sp500 import COLS, CompanyModel, get_sp500
@@ -134,7 +135,7 @@ def AppMain():
 # python -m examples.table_example
 
 if __name__ == "__main__":
-    log.setLevel(logging.INFO)
+    set_log_level(logging.INFO)
     pico_run(AppMain, options=ServerOptions(
         head = ["assets/css/modal.css"
         ]))

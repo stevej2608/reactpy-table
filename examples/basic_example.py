@@ -1,7 +1,8 @@
+import logging
 from reactpy import component, html, use_memo
 
 from reactpy_table import Options, Table, use_reactpy_table
-from utils import logging, pico_run, For
+from utils import pico_run, For, set_log_level
 
 from .data.sp500 import COLS, CompanyModel, get_sp500
 
@@ -55,5 +56,5 @@ def AppMain():
 # python -m examples.basic_example
 
 if __name__ == "__main__":
-    log.setLevel(logging.INFO)
+    set_log_level(logging.INFO)
     pico_run(AppMain)

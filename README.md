@@ -11,6 +11,7 @@ The initial release supports the following features:
 - [X] Freeform text search
 - [X] Forward/Reverse column based sort
 - [X] Pagination
+- [X] Integration with SQLAlchemy (full text search, sort and pagination)
 - [ ] Integration with Pandas and SQLAlchemy (in progress)
 - [ ] Remote large dataset support
 
@@ -19,9 +20,14 @@ The initial release supports the following features:
 	pip install reactpy-table
 
 *[basic_example.py](examples/basic_example.py)*
-```
+```python
+from reactpy import component, html, use_memo
+from reactpy_table import Options, Table, use_reactpy_table
+
+from .data.sp500 import COLS, CompanyModel, get_sp500
+
 @component
-def THead(table: Table):
+def THead(table: Table[CompanyModel]):
     cols = table.data.cols
     return html.thead(
         html.th(cols[0].label),
@@ -30,7 +36,7 @@ def THead(table: Table):
         html.th(cols[3].label)
     )
 
-@component
+
 def TRow(index: int, row: CompanyModel):
     return  html.tr(
         html.td(str(row.index)),
@@ -51,7 +57,7 @@ def AppMain():
     table_data = use_memo(lambda:get_sp500(rows=50))
     table = use_reactpy_table(Options(
         rows=table_data,
-        cols = COLS
+        cols = COLS,
     ))
 
     return html.div(
@@ -62,7 +68,21 @@ def AppMain():
             TBody(table)
         ),
     )
+
 ```
+
+### More complex examples
+
+**examples/table_example.py** demonstrates search, sort and pagination on SP500 
+companies table. The built-in feature data pipeline is used.
+
+**examples/books/books_example.py** demonstrates search, sort and pagination on
+a SQLite book database containing 100k books. Search, sort and 
+pagination is handled by SQL queries.
+
+* Full text search on database < 20ms
+* Page traversal < 2ms
+
 
 ## Feature Set
 
@@ -80,6 +100,11 @@ operation. Any change will, if required, recalculate the table data.
 A default set of features is applied by default. One or more custom
 features that will replace the default can be supplied as options 
 when the table is created.
+
+A callback mechanism is available for each feature that provides
+support for accessing external data sources (databases, 
+pandas data-frames etc).
+
 
 ### Custom Features
 
