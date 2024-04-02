@@ -1,23 +1,22 @@
 from typing import Callable, Generic, List, Protocol
-from ..features.feature_control import FeatureControl
 
 from ..types import (
     Columns,
     ColumnSort,
-    SortCallback,
     ITable,
+    ITableState,
     Paginator,
     PaginatorCallback,
     RowModel,
+    SearchCallback,
+    SortCallback,
     TableData,
     TableSearch,
-    SearchCallback,
     TData,
     TFeatureFactory,
     UpstreamData,
 )
-
-from .core_options import ITableState
+from ..types.feature_control import FeatureControl
 
 PaginatorType = Callable[[ITable[TData], UpstreamData[TData]], Paginator[TData]] | None
 ColumnSortType = Callable[[ITable[TData], UpstreamData[TData]], ColumnSort[TData]] | None

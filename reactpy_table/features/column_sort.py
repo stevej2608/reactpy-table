@@ -6,7 +6,7 @@ from utils.memo import memo, MemoOpts
 from ..types import ColumnDef, ColumnSort,SortState, ITable, TData, TableData, TFeatureFactory, UpstreamData
 
 from .null_updater import null_updater
-from .feature_control import FeatureControl
+from ..types.feature_control import FeatureControl
 
 class ColumnState(BaseModel):
     column_name: str

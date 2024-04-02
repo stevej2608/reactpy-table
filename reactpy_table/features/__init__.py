@@ -5,4 +5,3 @@ from .column_sort import getDefaultColumnSort, DefaultColumnSort
 from .paginator import getDefaultPaginator, DefaultPaginator
 from .row_model import getDefaultRowModel, DefaultRowModel
 from .table_search import getDefaultTableSearch, DefaultTableSearch
-from .feature_control import FeatureControl

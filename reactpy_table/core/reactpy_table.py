@@ -5,7 +5,7 @@ from ..types import TableData, TData
 from .feature_factories import FeatureFactories
 from .table import Table
 
-from .core_options import TableState
+from ..types.table_state import TableState
 
 
 def unique_id():

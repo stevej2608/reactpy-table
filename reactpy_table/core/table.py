@@ -2,7 +2,7 @@ from typing import Generic, Protocol, Self
 
 from ..types import IColumnSort, IPaginator, IRowModel, ITable, ITableSearch, TData
 
-from .core_options import TableState
+from ..types.table_state import TableState
 
 class IFeatureSet(Generic[TData], Protocol):
     paginator: IPaginator[TData]

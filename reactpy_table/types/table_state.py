@@ -1,13 +1,11 @@
-from typing import Protocol, Generic, List, cast
+from typing import Generic, List, Protocol, cast
 
-# from reactpy_table.types import search_state
+from .feature_control import FeatureControl
+from .paginator_state import PaginatorCallback
+from .search_state import SearchCallback
+from .sort_state import SortCallback
+from .table_data import Columns, TData
 
-from ..types.paginator_state import PaginatorCallback
-from ..types.sort_state import SortState, SortCallback
-from ..types.search_state import SearchCallback
-
-from ..types.table_data import TData, Columns
-from ..features.feature_control import FeatureControl
 
 class ITableState(Protocol, Generic[TData]):
     rows: List[TData]
@@ -28,7 +26,6 @@ class ITableState(Protocol, Generic[TData]):
 
     search_control: FeatureControl
     on_search_change: SearchCallback | None
-
 
 
 class TableState(ITableState[TData], Generic[TData]):

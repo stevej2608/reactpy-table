@@ -1,7 +1,7 @@
 from typing import Generic, Protocol, Callable, Self
 from utils.memo import TMemoResult
 from .table_data import TableData, TData
-from ..core.core_options import TableState
+from .table_state import TableState
 
 
 class ITable(Generic[TData], Protocol):

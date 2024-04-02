@@ -7,7 +7,7 @@ from ..features import getDefaultColumnSort, getDefaultPaginator, getDefaultRowM
 from ..types import TData
 
 from .feature_factories import FeatureFactories
-from .core_options import TableState
+from ..types.table_state import TableState
 from .options import Options
 from .reactpy_table import ReactpyTable
 from .table import Table

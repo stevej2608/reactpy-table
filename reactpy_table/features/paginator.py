@@ -8,7 +8,7 @@ from utils.memo import memo, MemoOpts
 from ..types import ITable, Paginator, PaginatorState, TableData, TData, TFeatureFactory, UpstreamData
 
 from .null_updater import null_updater
-from .feature_control import FeatureControl
+from ..types.feature_control import FeatureControl
 
 
 DEFAULT_PAGE_SIZE = 10
