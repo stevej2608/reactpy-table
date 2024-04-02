@@ -1,42 +1,43 @@
-from typing import Tuple
-from ctypes import ArgumentError
+import logging
 import math
+from ctypes import ArgumentError
+from typing import Tuple
 
-from utils.logger import log
-from utils.memo import memo, MemoOpts
 
-from ..types import ITable, Paginator, TableData, TData, TFeatureFactory, UpstreamData, update_state
+from utils.memo import MemoOpts, memo
 
+from ..types import FeatureControl, ITable, Paginator, PaginatorState, TableData, TData, TFeatureFactory, UpstreamData
+from .null_updater import null_updater
+
+log = logging.getLogger(__name__)
 
 DEFAULT_PAGE_SIZE = 10
 
-
 class DefaultPaginator(Paginator[TData]):
 
-    def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData], page_size: int, enabled:bool=False):
-        super().__init__(table, upstream_data)
+    def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData], page_size: int):
+        super().__init__(table)
         self.upstream_data = upstream_data
-        self._page_size = page_size
-        self._page_index = 0
-        self.enabled = enabled
+        self._paginator_state = PaginatorState(page_index=0, page_size=page_size)
+
 
         def deps() -> Tuple[TableData[TData], int, int, bool]:
             return (
                 upstream_data(),
-                self._page_size,
-                self._page_index,
-                self.enabled
+                self.page_size,
+                self.page_index,
+                self.table.table_state.pagination_control == FeatureControl.DISABLED
             )
 
         def updater(upstream_data: TableData[TData],
-                   page_size: int, 
+                   page_size: int,
                    page_index:int,
-                   enabled: bool
+                   disabled: bool
                    ) -> TableData[TData]:
-            
-            if not enabled:
+
+            if disabled:
                 return upstream_data
-            
+
             low = page_size * page_index
             high = min(low + page_size, len(upstream_data.rows))
 
@@ -44,16 +45,20 @@ class DefaultPaginator(Paginator[TData]):
             table_data = TableData(rows=rows, cols=upstream_data.cols)
             return table_data
 
-        self.pipeline = memo(deps, updater, MemoOpts(name='3. DefaultPaginator'))
+
+        if self.table.table_state.pagination_control is FeatureControl.DEFAULT:
+            self.pipeline = memo(deps, updater, MemoOpts(name='    2. DefaultPaginator', debug=False))
+        else:
+            self.pipeline = null_updater(upstream_data=upstream_data)
 
 
     @property
     def page_index(self) -> int:
-        return self._page_index
+        return self._paginator_state.page_index
 
     @property
     def page_size(self) -> int:
-        return self._page_size
+        return self._paginator_state.page_size
 
     @property
     def page_base(self) -> int:
@@ -61,8 +66,10 @@ class DefaultPaginator(Paginator[TData]):
 
     @property
     def page_count(self) -> int:
-        row_count = self.row_count
-        return math.ceil(row_count / self.page_size)
+        pages = self.table.table_state.page_count
+        if pages is None:
+            pages = math.ceil(self.row_count / self.page_size)
+        return pages
 
     @property
     def row_count(self) -> int:
@@ -83,18 +90,32 @@ class DefaultPaginator(Paginator[TData]):
         last_page = self.page_count - 1
         self.set_page_index(last_page)
 
-    @update_state
+
     def set_page_size(self, page_size: int):
         log.info("set_page_size")
+        self.set_pagination(self.page_index, page_size)
 
-        self._page_index = int((self.page_index * self.page_size) / page_size)
-        self._page_size = page_size
 
-    @update_state
     def set_page_index(self, page_index: int):
         if page_index < 0 or page_index > self.page_count-1:
             raise ArgumentError(f'Requested page {page_index} is not in range [0..{self.page_count-1}]')
-        self._page_index = page_index
+        self.set_pagination(page_index, self.page_size)
+
+
+    # @update_state
+    def set_pagination(self, page_index: int, page_size: int):
+
+        page_index = int((page_index * page_size) / page_size)
+        new_state = PaginatorState(page_index=page_index, page_size=page_size)
+
+        if new_state != self._paginator_state:
+
+            self._paginator_state = new_state
+
+            if self.table.table_state.on_pagination_change:
+                self.table.table_state.on_pagination_change(new_state)
+            else:
+                self.refresh()
 
 
     def can_get_previous_page(self) -> bool:
@@ -105,7 +126,7 @@ class DefaultPaginator(Paginator[TData]):
         return self.page_index < page_count - 1
 
 
-def getDefaultPaginator(page_size: int=DEFAULT_PAGE_SIZE, enabled:bool=False) -> TFeatureFactory[TData, Paginator[TData]]:
+def getDefaultPaginator(page_size: int=DEFAULT_PAGE_SIZE) -> TFeatureFactory[TData, Paginator[TData]]:
     """Return a wrapped function that when called creates a DefaultPaginator instance
 
     Args:
@@ -116,6 +137,6 @@ def getDefaultPaginator(page_size: int=DEFAULT_PAGE_SIZE, enabled:bool=False) ->
     """
 
     def wrapper(table: ITable[TData], upstream_data: UpstreamData[TData]) -> Paginator[TData]:
-        return DefaultPaginator(table=table, upstream_data=upstream_data, page_size=page_size, enabled=enabled)
+        return DefaultPaginator(table, upstream_data, page_size=page_size)
 
     return wrapper

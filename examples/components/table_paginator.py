@@ -1,16 +1,16 @@
+import logging
 from typing import Any, Dict, List
 
 from reactpy import component, event, html, use_state
 
 from reactpy_table import IPaginator
-from utils.logger import log
-from utils.reactpy_helpers import For
+from utils import For
 
 from ..data.sp500 import CompanyModel
-
-from .text import Text
 from .button import Button
+from .text import Text
 
+log = logging.getLogger(__name__)
 
 @component
 def TablePaginator(paginator: IPaginator[CompanyModel]):

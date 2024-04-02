@@ -1,16 +1,20 @@
+import logging
 from typing import Any, Callable, Dict, List
 
-from reactpy import component, event, html, use_memo, use_state
+from reactpy import component, event, html
 
-from reactpy_table import ColumnDef, Options, Table, use_reactpy_table
-from utils import For, ServerOptions, log, logging, pico_run
+from reactpy_table import ColumnDef, Options, FeatureControl, Table, use_reactpy_table
+from utils import For, pico_run, set_log_level
 
-from .components import Button, Search, TablePaginator, getCustomRowModel, ModalForm
-from .data.sp500 import COLS, CompanyModel, get_sp500
+from ..components import Button, Search, TablePaginator
+from ..hooks import use_pagination, use_sorting, use_search, use_api, DBQuery
 
+from .db import COLS, Book
+
+log = logging.getLogger(__name__)
 
 @component
-def THead(table: Table[CompanyModel]):
+def THead(table: Table[Book]):
 
     @component
     def Action():
@@ -51,7 +55,7 @@ def TColgroup(col_widths: List[int]):
 
 Action = Callable[[int], None]
 
-def TRow(index: int, row: CompanyModel, edit_row: Action, delete_row: Action):
+def TRow(index: int, row: Book, edit_row: Action, delete_row: Action):
 
     @component
     def Actions():
@@ -63,17 +67,16 @@ def TRow(index: int, row: CompanyModel, edit_row: Action, delete_row: Action):
 
     return  html.tr({'id': f"row-{index}"},
         Actions(),
-        html.td(str(row.index)),
-        html.td(row.symbol),
-        html.td(row.name),
-        html.td(row.sector),
-        html.td(row.industry),
-        html.td(row.headquarters),
-        html.td(row.CIK),
+        html.td(str(row.id)),
+        html.td(row.title),
+        html.td(row.author),
+        html.td(row.publication_date.strftime("%Y-%m-%d")),
+        html.td(row.genre),
+        html.td(str(row.rating)),
     )
 
 
-def TBody(table: Table[CompanyModel]):
+def TBody(table: Table[Book]):
 
     rows = table.data.rows
     page_base = table.paginator.page_base
@@ -83,7 +86,7 @@ def TBody(table: Table[CompanyModel]):
 
     def edit_row(index:int):
         row = rows[index].model_copy()
-        row.industry = "XXXX"
+        row.author = "XXXX"
         table.row_model.update_row(page_base + index, row)
 
 
@@ -93,7 +96,7 @@ def TBody(table: Table[CompanyModel]):
 
 
 @component
-def TFoot(table: Table[CompanyModel]):
+def TFoot(table: Table[Book]):
     columns = table.data.cols
     return html.tfoot(
         For(html.td, [col.label for col in columns])
@@ -103,23 +106,45 @@ def TFoot(table: Table[CompanyModel]):
 @component
 def AppMain():
 
-    table_data = use_memo(get_sp500)
+    # Feature state - only needed because the
+    # sort, search and pagination is being performed by
+    # the SQLite API
+
+    pagination, pagination_change = use_pagination()
+    sort, sorting_change = use_sorting()
+    search, search_change = use_search()
+
+    table_data, page_count, _loading = use_api(
+        url='sqlite:///books.db',
+        query=DBQuery(pagination=pagination, sort=sort, search=search)
+        )
+
 
     table = use_reactpy_table(options=Options(
         rows=table_data,
         cols = COLS,
-        row_model=getCustomRowModel()
+
+        pagination_control = FeatureControl.MANUAL,
+        on_pagination_change = pagination_change,
+        page_count = page_count,
+
+        sort_control = FeatureControl.MANUAL,
+        on_sort_change = sorting_change,
+
+        search_control=FeatureControl.MANUAL,
+        on_search_change = search_change,
+
     ))
 
-    modal_open, set_modal_open = use_state(False)
+
+    log.info('refresh UI')
 
     return html.div(
-        ModalForm(open=modal_open, set_open=set_modal_open),
         html.br(),
         html.h2('ReactPy SQL Table Example'),
         Search(table.search),
         html.table({"role": "grid"},
-            TColgroup([100, 80, 175, 250, 200, 300, 250, 100]),
+            TColgroup([100, 80, 450, 250, 200, 300]),
             THead(table),
             TBody(table),
             TFoot(table),
@@ -127,11 +152,8 @@ def AppMain():
         TablePaginator(table.paginator),
     )
 
-# python -m examples.sql_table_example
+# python -m examples.books.books_example
 
 if __name__ == "__main__":
-    log.setLevel(logging.INFO)
-
-    pico_run(AppMain, options=ServerOptions(
-        head = ["assets/css/modal.css"
-        ]))
+    set_log_level(logging.INFO)
+    pico_run(AppMain)

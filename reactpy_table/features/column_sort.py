@@ -1,9 +1,21 @@
-from typing import Dict, Tuple, Any
+from typing import Any, Dict, Tuple
 
 from pydantic import BaseModel
-from utils.memo import memo, MemoOpts
 
-from ..types import ColumnDef, ColumnSort, ITable, TData, TableData, TFeatureFactory, UpstreamData, update_state
+from utils.memo import MemoOpts, memo
+
+from ..types import (
+    ColumnDef,
+    ColumnSort,
+    FeatureControl,
+    ITable,
+    SortState,
+    TableData,
+    TData,
+    TFeatureFactory,
+    UpstreamData,
+)
+from .null_updater import null_updater
 
 
 class ColumnState(BaseModel):
@@ -20,7 +32,7 @@ class ColumnState(BaseModel):
 class DefaultColumnSort(ColumnSort[TData]):
 
     def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData], state: Dict[str, ColumnState]):
-        super().__init__(table, upstream_data)
+        super().__init__(table)
         self._all_columns_state = state
         self._active_column_state: ColumnState | None = None
 
@@ -51,13 +63,26 @@ class DefaultColumnSort(ColumnSort[TData]):
             else:
                 return table_data
 
-        self.pipeline = memo(deps, updater, MemoOpts(name='2. DefaultColumnSort'))
+
+        if self.table.table_state.sort_control is FeatureControl.DEFAULT:
+            self.pipeline = memo(deps, updater, MemoOpts(name='      3. DefaultColumnSort', debug=False))
+        else:
+            self.pipeline = null_updater(upstream_data=upstream_data)
 
 
-    @update_state
-    def toggle_sort(self, col: ColumnDef) -> bool:
+    # @update_state
+    def toggle_sort(self, col: ColumnDef) -> None:
         self._active_column_state = self.get_state(col, toggle=True)
-        return self._active_column_state.reverse
+        if self.table.table_state.on_sort_change:
+
+            new_state= SortState(
+                id=self._active_column_state.column_name,
+                desc= 'DESC' if self._active_column_state.reverse else 'ASC'
+                )
+
+            self.table.table_state.on_sort_change(new_state)
+        else:
+            self.refresh()
 
 
     def is_sort_reverse(self, col: ColumnDef) -> bool:

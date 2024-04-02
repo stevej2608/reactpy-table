@@ -1,46 +1,62 @@
-from typing import Any, Callable, Union
-from copy import copy
-from reactpy import use_state
+import logging
+from typing import Callable
 
-from utils.logger import log
+from reactpy import use_memo, use_state
 
 from ..features import getDefaultColumnSort, getDefaultPaginator, getDefaultRowModel, getDefaultTableSearch
-from ..types import TableData, TData
-
+from ..types import TableState, Table, TData
 from .feature_factories import FeatureFactories
 from .options import Options
 from .reactpy_table import ReactpyTable
-from .table import Table
+
+
+log = logging.getLogger(__name__)
 
 
 def use_reactpy_table(options: Options[TData]) -> Table[TData]:
 
-    set_table: Union[Callable[[Union[Any, Callable[[Any], Any]]], None], None] = None
 
-    def _create_table() -> Table[TData]:
+    core_options = use_memo(lambda: TableState(options), [options])
+    # table_data = use_memo(lambda: TableData(rows=options.rows, cols=options.cols), [options.rows, options.cols])
 
-        def state_updater(self: ReactpyTable[TData]) -> None:
-            try:
-                if set_table is not None:
-                    set_table(copy(self))
-            except Exception as ex:
-                log.info("Update model failed %s", ex)
+    def create_table() -> Table[TData]:
 
-        table_data = TableData(rows=options.rows, cols=options.cols)
+        set_refresh: Callable[[int], None] | None = None
 
-        table = ReactpyTable(
-            data=table_data,
-            updater=state_updater,
-            features=FeatureFactories[TData](
-                paginator=options.paginator or getDefaultPaginator(enabled=options.pagination),
-                sort=options.sort or getDefaultColumnSort(),
-                search=options.search or getDefaultTableSearch(),
-                row_model=options.row_model or getDefaultRowModel(),
-            ),
-        )
+        def state_updater(table: ReactpyTable[TData]) -> None:
+            if set_refresh:
+                set_refresh(table.UID)
 
-        return table.refresh()
+        def _create_table() -> Table[TData]:
 
-    table, set_table = use_state(_create_table)
+            log.info('>>>>>>>>>>>>> create_table() <<<<<<<<<<<<<<< ')
+
+            table =  ReactpyTable(
+                updater=state_updater,
+                table_options = core_options,
+                features=FeatureFactories[TData](
+                    paginator=options.pagination_feature or getDefaultPaginator(),
+                    sort=options.sort_feature or getDefaultColumnSort(),
+                    search=options.search_feature or getDefaultTableSearch(),
+                    row_model=options.row_model_feature or getDefaultRowModel(),
+                ),
+            )
+
+            return table.refresh()
+
+        table, _ = use_state(_create_table)
+        _, set_refresh = use_state(table.UID)
+
+        return table
+
+
+    table = create_table()
+
+    # log.info('table=%s', id(table))
+
+    if core_options != table.table_state:
+        table.set_options(core_options)
+
+
 
     return table

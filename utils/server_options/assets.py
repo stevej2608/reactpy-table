@@ -1,9 +1,12 @@
+import logging
 from mimetypes import guess_type
 from os import path
 
 from fastapi import FastAPI, Response
 from utils.server_options.default_options import ServerOptions
-from utils.logger import log
+
+
+log = logging.getLogger(__name__)
 
 # pyright: reportUnusedFunction=false
 

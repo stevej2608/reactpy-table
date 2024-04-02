@@ -1,5 +1,4 @@
 from typing import Protocol
-
 from .feature import FeatureBase, IFeature
 from .table_data import TData
 

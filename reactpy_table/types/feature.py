@@ -1,8 +1,12 @@
-from typing import Any, Callable, Generic, List, Protocol, TypeVar, cast
-
+from typing import Any, Callable, Generic, Protocol, TypeVar, cast
+from enum import Enum
 from .abstract_table import ITable
-from .table_data import TableData, TData
-from .updater import UpstreamData
+from .table_data import TableData, TData, UpstreamData
+
+class FeatureControl(Enum):
+    DISABLED = 1
+    DEFAULT = 2
+    MANUAL = 3
 
 
 class IFeature(Protocol, Generic[TData]):
@@ -16,10 +20,6 @@ class IFeature(Protocol, Generic[TData]):
 
 class FeatureBase(IFeature[TData], Generic[TData]):
 
-    # updater: UpstreamData[TData]
-
-    _initial_values: List[TData]
-
     @property
     def data(self) -> TableData[TData]:
         return self._table.data
@@ -28,8 +28,13 @@ class FeatureBase(IFeature[TData], Generic[TData]):
     def table(self) -> ITable[TData]:
         return self._table
 
-    def __init__(self, table: ITable[TData], upstream_data: UpstreamData[TData]):
+    def __init__(self, table: ITable[TData]):
         self._table = table
+
+
+    def refresh(self):
+        self.table.refresh()
+
 
 
 TFeature= TypeVar("TFeature")
