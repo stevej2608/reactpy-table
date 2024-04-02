@@ -1015,20 +1015,6 @@ files = [
 typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
-name = "pydeps"
-version = "1.12.20"
-description = "Display module dependencies"
-optional = false
-python-versions = "*"
-files = [
-    {file = "pydeps-1.12.20-py3-none-any.whl", hash = "sha256:7278a8912bdada26b773d3550f0cc8fd76bed172d23dc1472c457d6292b67fd7"},
-    {file = "pydeps-1.12.20.tar.gz", hash = "sha256:4f6a833a7998bfa24e339c55535882905c22960efc14902c361f74b2952aff19"},
-]
-
-[package.dependencies]
-stdlib-list = "*"
-
-[[package]]
 name = "pyee"
 version = "11.0.1"
 description = "A rough port of Node.js's EventEmitter to Python with a few tricks of its own"
@@ -1496,24 +1482,6 @@ anyio = ">=3.4.0,<5"
 full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.7)", "pyyaml"]
 
 [[package]]
-name = "stdlib-list"
-version = "0.10.0"
-description = "A list of Python Standard Libraries (2.7 through 3.12)."
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "stdlib_list-0.10.0-py3-none-any.whl", hash = "sha256:b3a911bc441d03e0332dd1a9e7d0870ba3bb0a542a74d7524f54fb431256e214"},
-    {file = "stdlib_list-0.10.0.tar.gz", hash = "sha256:6519c50d645513ed287657bfe856d527f277331540691ddeaf77b25459964a14"},
-]
-
-[package.extras]
-dev = ["build", "stdlib-list[doc,lint,test]"]
-doc = ["furo", "sphinx"]
-lint = ["black", "mypy", "ruff"]
-support = ["sphobjinv"]
-test = ["coverage[toml]", "pytest", "pytest-cov"]
-
-[[package]]
 name = "trio"
 version = "0.24.0"
 description = "A friendly Python library for async concurrency and I/O"
@@ -1837,4 +1805,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "3ff5e84d86f334b7ddc3ea8294f5bea57bcf3952608234b310b4f94902ee3454"
+content-hash = "033b62d8177e7d21a4f5f28aa53a28c599f5dc74112f63e05654922985cda390"
