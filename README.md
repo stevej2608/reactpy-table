@@ -115,8 +115,8 @@ an example a custom paginator that accepts *page _size* and
 ```
 def getCustomPaginator(page_size, start_page) 
 
-    def _feature_factory(table, updater):
-        return CustomPaginator(table, updater, page_size, start_page)
+    def _feature_factory(table, upstream_data):
+        return CustomPaginator(table, upstream_data, page_size, start_page)
     
     return _feature_factory
 
