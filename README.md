@@ -11,9 +11,9 @@ The initial release supports the following features:
 - [X] Freeform text search
 - [X] Forward/Reverse column based sort
 - [X] Pagination
-- [X] Integration with SQLAlchemy (full text search, sort and pagination)
-- [ ] Integration with Pandas and SQLAlchemy (in progress)
-- [ ] Remote large dataset support
+- [X] Integration with SQLModel/SQLAlchemy (full text search, sort and pagination)
+- [ ] Integration with Pandas (in progress)
+- [ ] Remote large dataset support (in progress)
 
 ## Usage
 
