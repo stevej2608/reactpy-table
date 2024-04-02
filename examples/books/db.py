@@ -1,13 +1,16 @@
 from datetime import datetime
-from typing import Any, List, Optional, Tuple, Sequence, cast
+from typing import Any, List, Optional, Sequence, Tuple, cast
+
 from faker import Faker
 from sqlalchemy import create_engine, func, inspect
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlmodel import Field, Session, SQLModel, col, select, text  # type:ignore
-from sqlalchemy.exc import OperationalError
 
 from reactpy_table import ColumnDef, Columns
-from utils import DT, log, logging
+from utils import DT, logging
+
+log = logging.getLogger(__name__)
 
 COLS: Columns = [
     ColumnDef(name='id', label='#'),

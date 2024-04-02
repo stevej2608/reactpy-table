@@ -5,9 +5,6 @@ logging.basicConfig(
     datefmt='%H:%M:%S'
 )
 
-log: logging.Logger = logging.getLogger()
-
-
 LOGS = [
     "asgi-logger",
     "concurrent.futures",

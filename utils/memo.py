@@ -1,7 +1,8 @@
-
+import logging
 from typing import Callable, Any, TypeVar, Tuple
 from pydantic import BaseModel
-from utils import log
+
+log = logging.getLogger(__name__)
 
 TDeps = TypeVar('TDeps', bound=Tuple[Any, ...])
 TMemoResult = TypeVar('TMemoResult')
@@ -16,8 +17,8 @@ NO_OPTS =  MemoOpts()
 def memo(get_deps: Callable[[], TDeps],
          fn: Callable[..., TMemoResult],
          opts: MemoOpts = NO_OPTS) -> Callable[[], TMemoResult]:
-    """Keeps an internal state. If the new state, returned by get_deps()
-    is different the, costly, update method fn is called. The returned
+    """Keeps an internal state. If the latest dependencies, returned by get_deps()
+    are different the, costly, update method fn is called. The returned
     value and the new state are saved internally
 
     Args:

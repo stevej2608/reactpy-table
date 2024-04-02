@@ -1,9 +1,12 @@
+import logging
 from typing import Tuple
 
 from reactpy import use_state
 
 from reactpy_table.types.search_state import SearchCallback, SearchState
-from utils import log
+
+
+log = logging.getLogger(__name__)
 
 
 def use_search() -> Tuple[SearchState, SearchCallback]:

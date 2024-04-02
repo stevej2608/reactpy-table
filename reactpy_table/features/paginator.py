@@ -1,15 +1,17 @@
+import logging
 import math
 from ctypes import ArgumentError
 from typing import Tuple
 
-from utils.logger import log
+
 from utils.memo import MemoOpts, memo
 
 from ..types import FeatureControl, ITable, Paginator, PaginatorState, TableData, TData, TFeatureFactory, UpstreamData
 from .null_updater import null_updater
 
-DEFAULT_PAGE_SIZE = 10
+log = logging.getLogger(__name__)
 
+DEFAULT_PAGE_SIZE = 10
 
 class DefaultPaginator(Paginator[TData]):
 

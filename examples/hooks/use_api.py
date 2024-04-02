@@ -1,15 +1,17 @@
-from typing import Tuple, List
+import logging
+from typing import List, Tuple
+
 from pydantic import BaseModel
+from reactpy import use_effect, use_memo, use_state
 
-from reactpy import use_state, use_effect, use_memo
-
-from reactpy_table.types.sort_state import SortState
 from reactpy_table.types.paginator_state import PaginatorState
 from reactpy_table.types.search_state import SearchState
+from reactpy_table.types.sort_state import SortState
+from utils import DT
 
-from  ..books.db import Book, BookDatabase
+from ..books.db import Book, BookDatabase
 
-from utils import log, DT
+log = logging.getLogger(__name__)
 
 class DBQuery(BaseModel):
     sort: SortState

@@ -1,12 +1,12 @@
+import logging
 import random
 from typing import Callable, Generic, Self, cast
-
-from utils import log
 
 from ..types import TableData, TableState, TData
 from .feature_factories import FeatureFactories
 from .table import Table
 
+log = logging.getLogger(__name__)
 
 def unique_id():
     seed = random.getrandbits(32)

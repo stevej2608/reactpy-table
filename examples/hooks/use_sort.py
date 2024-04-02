@@ -1,10 +1,11 @@
+import logging
 from typing import Tuple
 
 from reactpy import use_state
 
 from reactpy_table.types.sort_state import SortCallback, SortState, SQL_DIRECTION
-from utils import log
 
+log = logging.getLogger(__name__)
 
 def use_sorting(initial_field:str = "id", initial_order:SQL_DIRECTION = "ASC") -> Tuple[SortState, SortCallback]:
 

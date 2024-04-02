@@ -1,9 +1,11 @@
 from reactpy import component, html, use_memo
 
 from reactpy_table import Options, Table, use_reactpy_table
-from utils import log, logging, pico_run, For
+from utils import logging, pico_run, For
 
 from .data.sp500 import COLS, CompanyModel, get_sp500
+
+log = logging.getLogger(__name__)
 
 # Minimal example, see table_example.py for search, sort & pagination
 

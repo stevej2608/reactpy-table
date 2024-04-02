@@ -1,9 +1,12 @@
+import logging
 from typing import Tuple
 
 from reactpy import use_state
 
 from reactpy_table.types.paginator_state import PaginatorCallback, PaginatorState
-from utils import log
+
+
+log = logging.getLogger(__name__)
 
 
 def use_pagination(initial_size: int = 10) -> Tuple[int,int, PaginatorState, PaginatorCallback]:

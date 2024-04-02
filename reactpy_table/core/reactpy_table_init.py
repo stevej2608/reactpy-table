@@ -1,15 +1,16 @@
+import logging
 from typing import Callable
 
 from reactpy import use_memo, use_state
 
-from utils import log
-
 from ..features import getDefaultColumnSort, getDefaultPaginator, getDefaultRowModel, getDefaultTableSearch
-from ..types import TData, TableState
+from ..types import TableState, TData
 from .feature_factories import FeatureFactories
 from .options import Options
 from .reactpy_table import ReactpyTable
 from .table import Table
+
+log = logging.getLogger(__name__)
 
 
 def use_reactpy_table(options: Options[TData]) -> Table[TData]:

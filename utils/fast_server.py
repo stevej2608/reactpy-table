@@ -1,8 +1,9 @@
 import inspect
-from types import FunctionType
+import logging
 import os
 import sys
 from pathlib import Path
+from types import FunctionType
 from typing import Any, Callable
 
 import uvicorn
@@ -12,10 +13,12 @@ from reactpy.backend.fastapi import Options as FastApiOptions
 from reactpy.backend.fastapi import configure
 from reactpy.core.component import Component
 
-from utils.logger import log, logging, disable_noisy_logs
+from utils.logger import disable_noisy_logs
 from utils.server_options.assets import assets_api
 from utils.server_options.default_options import DEFAULT_OPTIONS, ServerOptions
 from utils.var_name import var_name
+
+log = logging.getLogger(__name__)
 
 # pyright: reportDeprecated=false
 # pyright: reportUnusedFunction=false

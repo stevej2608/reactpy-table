@@ -1,16 +1,17 @@
+import logging
 from typing import Any, Callable, Dict, List
 
 from reactpy import component, event, html
 
 from reactpy_table import ColumnDef, Options, FeatureControl, Table, use_reactpy_table
-from utils import For, log, logging, pico_run
+from utils import For, pico_run
 
 from ..components import Button, Search, TablePaginator
 from ..hooks import use_pagination, use_sorting, use_search, use_api, DBQuery
 
 from .db import COLS, Book
 
-
+log = logging.getLogger(__name__)
 
 @component
 def THead(table: Table[Book]):
