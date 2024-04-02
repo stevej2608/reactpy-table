@@ -4,11 +4,11 @@ from typing import Callable
 from reactpy import use_memo, use_state
 
 from ..features import getDefaultColumnSort, getDefaultPaginator, getDefaultRowModel, getDefaultTableSearch
-from ..types import TableState, TData
+from ..types import TableState, Table, TData
 from .feature_factories import FeatureFactories
 from .options import Options
 from .reactpy_table import ReactpyTable
-from .table import Table
+
 
 log = logging.getLogger(__name__)
 

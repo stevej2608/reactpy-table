@@ -4,7 +4,7 @@ from typing import Callable, Generic, Self, cast
 
 from ..types import TableData, TableState, TData
 from .feature_factories import FeatureFactories
-from .table import Table
+from ..types.table import Table
 
 log = logging.getLogger(__name__)
 

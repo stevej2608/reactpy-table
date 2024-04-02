@@ -106,7 +106,7 @@ def TFoot(table: Table[Book]):
 @component
 def AppMain():
 
-    skip, limit, pagination, pagination_change = use_pagination()
+    _skip, _limit, pagination, pagination_change = use_pagination()
 
     sort, sorting_change = use_sorting()
     search, search_change = use_search()
@@ -114,7 +114,7 @@ def AppMain():
     # log.info('skip=%d, limit=%d', skip, limit)
 
 
-    table_data, page_count, loading = use_api(
+    table_data, page_count, _loading = use_api(
         url='sqlite:///books.db',
         query=DBQuery(pagination=pagination, sort=sort, search=search)
         )

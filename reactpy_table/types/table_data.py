@@ -2,6 +2,7 @@ from typing import Any, Callable, Dict, Generic, List, Optional, Protocol, TypeV
 
 from pydantic import BaseModel
 
+
 # https://tanstack.com/table/v8/docs/api/core/column-def
 
 class ColumnDef(BaseModel):
@@ -42,3 +43,6 @@ class TableData(Generic[TData]):
         return f"TableData(rows({len(self.rows)}), cols({len(self.cols)})"
 
 EMPTY_TABLE = TableData[Any](rows=[], cols=[])
+
+
+UpstreamData = Callable[[], TableData[TData]]
