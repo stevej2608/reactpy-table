@@ -2,7 +2,7 @@ from typing import Any, Dict, Tuple
 
 from pydantic import BaseModel
 
-from utils.memo import MemoOpts, memo
+from reactpy_table.utils.memo import MemoOpts, memo
 
 from ..types import (
     ColumnDef,

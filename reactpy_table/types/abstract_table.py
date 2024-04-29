@@ -1,5 +1,5 @@
 from typing import Generic, Protocol, Callable, Self
-from utils.memo import TMemoResult
+from reactpy_table.utils.memo import TMemoResult
 from .table_data import TableData, TData
 from .table_state import TableState
 

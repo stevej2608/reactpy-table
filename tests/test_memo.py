@@ -1,5 +1,5 @@
 from typing import Tuple, Generic, Protocol, Callable
-from utils.memo import TMemoResult, memo, MemoOpts
+from reactpy_table.utils.memo import TMemoResult, memo, MemoOpts
 
 
 

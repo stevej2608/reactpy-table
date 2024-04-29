@@ -2,7 +2,7 @@ from typing import Tuple, Any, List
 from enum import Enum
 from ctypes import ArgumentError
 from pydantic import BaseModel
-from utils.memo import memo, MemoOpts
+from reactpy_table.utils.memo import memo, MemoOpts
 from ..types import ITable, RowModel, TData, TableData, TFeatureFactory, UpstreamData, update_state
 
 class Action(Enum):

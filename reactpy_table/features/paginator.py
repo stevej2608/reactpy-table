@@ -4,7 +4,7 @@ from ctypes import ArgumentError
 from typing import Tuple
 
 
-from utils.memo import MemoOpts, memo
+from reactpy_table.utils.memo import MemoOpts, memo
 
 from ..types import FeatureControl, ITable, Paginator, PaginatorState, TableData, TData, TFeatureFactory, UpstreamData
 from .null_updater import null_updater

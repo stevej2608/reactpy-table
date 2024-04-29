@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from utils.memo import memo
+from reactpy_table.utils.memo import memo
 
 from ..types import TableData, TData, UpstreamData
 
