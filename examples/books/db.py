@@ -53,7 +53,7 @@ class BookDatabase:
 
         inspector = inspect(self.engine)
 
-        if not inspector.has_table('book_fts'):
+        if not inspector.has_table(Book_FTS.table_name()):
             with self.engine.connect() as connection:
                 connection.execute(text(f"CREATE VIRTUAL TABLE {Book_FTS.table_name()} USING fts5(title, author, publication_date, genre, rating)"))
 
