@@ -15,4 +15,4 @@ def Search(search: ITableSearch[CompanyModel]):
         text = event['currentTarget']['value']
         search.table_search(text)
 
-    return html.input({'id':'tbl-search', 'type': 'search', 'placeholder': 'Search', 'aria-label': 'Search', 'onchange': on_change})
+    return html.input({'id':'tbl-search', 'type': 'search', 'placeholder': 'Search', 'aria-label': 'Search', 'on_change': on_change})

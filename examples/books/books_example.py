@@ -27,7 +27,7 @@ def THead(table: Table[Book]):
 
         @event
         def on_click(event: Dict[str, Any]):
-            log.info('onclick col=%s', col)
+            log.info('on_click col=%s', col)
             sort.toggle_sort(col)
 
         # https://symbl.cc/en/collections/arrow-symbols/
@@ -35,7 +35,7 @@ def THead(table: Table[Book]):
         up = sort.is_sort_reverse(col)
 
         text = col.label + (" 🠕" if up else " 🠗")
-        return html.th({'id': f'tbl-sort-{col.label.lower()}', 'onclick': on_click}, text)
+        return html.th({'id': f'tbl-sort-{col.label.lower()}', 'on_click': on_click}, text)
 
     columns = table.data.cols
 

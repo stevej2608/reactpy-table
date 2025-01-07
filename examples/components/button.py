@@ -9,10 +9,10 @@ from reactpy import component, event, html
 def Button(id:str, text:str, action: Callable[...,None], disabled: bool=False, table_button: bool=False):
 
     @event
-    def onclick(event: Dict[str, Any]):
+    def on_click(event: Dict[str, Any]):
         action()
 
-    props: Dict[str,Any] = {'id': id, 'onclick': onclick, 'disabled': disabled}
+    props: Dict[str,Any] = {'id': id, 'on_click': on_click, 'disabled': disabled}
 
     if table_button:
 

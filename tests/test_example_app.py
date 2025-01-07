@@ -3,6 +3,8 @@ from reactpy.testing import DisplayFixture
 
 from examples.table_example import AppMain
 
+from .tooling.wait_stable import wait_page_stable
+
 
 # https://playwright.dev/python/docs/next/locators
 # https://playwright.dev/python/docs/next/other-locators#xpath-locator
@@ -45,6 +47,8 @@ async def test_paginator(display: DisplayFixture):
     # Set page size = 20
 
     await display.page.select_option("select", label="20")
+    await wait_page_stable(display.page)
+
 
     # Confirm first row, last row, number of rows and page display
 
@@ -64,6 +68,7 @@ async def test_paginator(display: DisplayFixture):
 
     pg_next = display.page.locator("id=pg-next")
     await pg_next.click()
+    await wait_page_stable(display.page)
 
     # Confirm first row, last row, number of rows and page display
 
@@ -83,6 +88,7 @@ async def test_paginator(display: DisplayFixture):
 
     pg_next = display.page.locator("id=pg-last")
     await pg_next.click()
+    await wait_page_stable(display.page)
 
     rows = await display.page.locator("tr").count()
     assert rows == 5
@@ -108,6 +114,7 @@ async def test_search(display: DisplayFixture):
 
     search = display.page.locator("id=tbl-search")
     await search.fill("Building Products")
+    await wait_page_stable(display.page)
 
     rows = await display.page.locator("tr").count()
     assert rows == 6
@@ -125,15 +132,21 @@ async def test_sort(display: DisplayFixture):
     search = display.page.locator("id=tbl-sort-#")
 
     await search.click()
+    await wait_page_stable(display.page)
+
     index = await get_row_index(display, 0)
     assert index == 505
 
     await search.click()
+    await wait_page_stable(display.page)
+
     index = await get_row_index(display, 0)
     assert index == 1
 
     search = display.page.locator("id=tbl-sort-sector")
 
     await search.click()
+    await wait_page_stable(display.page)
+
     index = await get_row_index(display, 0)
     assert index == 11

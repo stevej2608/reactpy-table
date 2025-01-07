@@ -12,7 +12,7 @@ include = ["reactpy-tablet/*.py"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-reactpy = "^1.0.2"
+reactpy = "^1.1.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest-timeout = "2.2.0"
