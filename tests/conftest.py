@@ -2,7 +2,6 @@ import pytest
 from playwright.async_api import Browser
 from playwright.async_api import async_playwright, Page
 from reactpy.testing import DisplayFixture, BackendFixture
-from reactpy.config import REACTPY_TESTING_DEFAULT_TIMEOUT
 from tests.page_containers import PicoContainer
 
 @pytest.fixture(scope="session")
@@ -38,7 +37,7 @@ async def server():
 @pytest.fixture(scope="session")
 async def page(browser: Browser):
     pg = await browser.new_page()
-    pg.set_default_timeout(REACTPY_TESTING_DEFAULT_TIMEOUT.current * 1000)
+    pg.set_default_timeout(10000)
     try:
         yield pg
     finally:

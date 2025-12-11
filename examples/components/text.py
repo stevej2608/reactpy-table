@@ -1,11 +1,9 @@
-from typing import List
-
 from reactpy import component, html
-from reactpy.core.component import Component
+from reactpy.types import VdomChildren
 
 
 @component
-def Text(*children: List[Component]):
+def Text(*children: VdomChildren):
     """Add the pico button margin to make the 
     given text line up with the button text."""
 

@@ -1,8 +1,7 @@
 from types import FunctionType
 from typing import Union, Callable, cast
 from reactpy import component, html
-from reactpy.core.types import VdomChildren
-from reactpy.core.component import Component
+from reactpy.types import VdomChildren, ComponentType
 from reactpy.testing import DisplayFixture
 
 
@@ -20,7 +19,7 @@ class PicoContainer:
         if isinstance(app, FunctionType):
             children = app()
         else:
-            children = cast(Component, app)
+            children = cast(ComponentType, app)
 
         @component
         def AppContainer():

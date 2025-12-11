@@ -1,7 +1,7 @@
 from typing import Callable, Any, Union, cast, List, overload
 
 from reactpy import html
-from reactpy.core.types import VdomDict
+from reactpy.types import VdomDict
 
 ListCallable = Callable[[Any], VdomDict]
 EnumerateCallable = Callable[[int, Any], VdomDict]

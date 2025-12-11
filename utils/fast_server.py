@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from reactpy import html
 from reactpy.backend.fastapi import Options as FastApiOptions
 from reactpy.backend.fastapi import configure
-from reactpy.core.component import Component
+from reactpy.types import ComponentType
 
 from utils.logger import disable_noisy_logs
 from utils.server_options.assets import assets_api
@@ -27,7 +27,7 @@ app = FastAPI(description="ReactPy", version="0.1.0")
 
 
 
-def extract_wrapped(decorated: Callable[..., Component]) -> FunctionType:
+def extract_wrapped(decorated: ComponentType) -> FunctionType:
     """Return the FunctionType object for the functions wrapped by @component"""
 
     # https://stackoverflow.com/a/43506509/489239
@@ -41,7 +41,7 @@ def extract_wrapped(decorated: Callable[..., Component]) -> FunctionType:
     return func
 
 def run(
-    app_main: Callable[[], Component],
+    app_main: ComponentType,
     options: ServerOptions = DEFAULT_OPTIONS,
     host: str = "127.0.0.1",
     port: int = 8000,
@@ -51,7 +51,7 @@ def run(
     """Called once to run reactpy application on the fastapi server
 
     Args:
-        app_main (Callable[[], Component]): Function that returns a reactpy Component
+        app_main (ComponentType): Function that returns a reactpy Component
         options (Options, optional): Server options. Defaults to DASHBOARD_OPTIONS.
 
     Usage:

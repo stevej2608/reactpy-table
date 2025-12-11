@@ -2,7 +2,7 @@ from typing import Any, List, Self
 
 from pydantic import BaseModel, ValidationError, field_validator, ValidationInfo
 from reactpy import html
-from reactpy.core.types import VdomDict
+from reactpy.types import VdomDict
 
 
 

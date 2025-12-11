@@ -1,6 +1,8 @@
 from typing import List
 import pytest
-from reactpy import html, component, Layout, use_memo
+from reactpy import html, component, use_memo
+from reactpy.core.layout import Layout
+from reactpy.core._life_cycle_hook import HOOK_STACK
 from reactpy_table import use_reactpy_table, Columns, Options
 
 from .data.users import make_data, DataModel
@@ -24,6 +26,8 @@ async def test_use_memo():
         rows += table_data
         return html.div()
 
+    # Initialize the hook stack context for ReactPy v2
+    HOOK_STACK._state.set([])
     async with Layout(TestComponent()) as layout:
         await layout.render()
         assert rows[0].index == 0
@@ -46,6 +50,8 @@ async def test_basic_usage():
         )
         return html.div()
 
+    # Initialize the hook stack context for ReactPy v2
+    HOOK_STACK._state.set([])
     async with Layout(TestComponent()) as layout:
         await layout.render()
         assert table
