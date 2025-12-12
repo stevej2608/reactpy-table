@@ -2,8 +2,9 @@ import logging
 from reactpy import component, html, use_memo
 
 from reactpy_table import Options, Table, use_reactpy_table
-from utils import pico_run, For, set_log_level
+from utils import For, set_log_level
 
+from examples.runner import pico_run
 from .data.sp500 import COLS, CompanyModel, get_sp500
 
 log = logging.getLogger(__name__)
