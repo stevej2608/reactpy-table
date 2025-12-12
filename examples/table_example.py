@@ -36,7 +36,7 @@ def THead(table: Table[CompanyModel]):
         up = sort.is_sort_reverse(col)
 
         text = col.label + (" 🠕" if up else " 🠗")
-        return html.th({'id': f'tbl-sort-{col.label.lower()}', 'on_click': on_click}, text)
+        return html.th({'id': f'tbl-sort-{col.label.lower()}', 'onClick': on_click}, text)
 
     columns = table.data.cols
 

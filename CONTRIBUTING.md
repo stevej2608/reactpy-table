@@ -1,6 +1,6 @@
 ## Building
 
-    poetry install --no-root
+    hatch build --clean
 
 ### Debugging
 
@@ -14,13 +14,14 @@ examples and for the pytest tests.
 
 *Then:*
 
-    pytest [--headed]
+    hatch test [--headed]
 
 ## Publish 
 
-    rm -rf dist && poetry build
-    poetry publish
+    hatch build --clean
+    hatch publish
 
 Or publish to local repo
 
-    poetry publish -r pypicloud
+    hatch build --clean
+    hatch publish -r pypicloud

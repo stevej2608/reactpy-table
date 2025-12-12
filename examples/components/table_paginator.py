@@ -20,14 +20,17 @@ def TablePaginator(paginator: IPaginator[CompanyModel]):
 
         @event
         def on_change(event: Dict[str, Any]):
-            page_size = int(event['currentTarget']['value'])
-            paginator.set_page_size(page_size)
+            for selection in event['currentTarget']:
+                if selection['selected']:
+                    page_size = int(selection['value'])
+                    paginator.set_page_size(page_size)
+                    break
 
 
         def PageOption(size:int):
             return html.option({'value': size}, f"{size}")
 
-        return html.select({'id': 'dd1', 'value': sizes[0], "on_change": on_change}, For(PageOption, sizes))
+        return html.select({'id': 'dd1', 'value': sizes[0], "onChange": on_change}, For(PageOption, sizes))
 
     @component
     def PageInput():

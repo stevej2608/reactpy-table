@@ -12,7 +12,7 @@ def Button(id:str, text:str, action: Callable[...,None], disabled: bool=False, t
     def on_click(event: Dict[str, Any]):
         action()
 
-    props: Dict[str,Any] = {'id': id, 'on_click': on_click, 'disabled': disabled}
+    props: Dict[str,Any] = {'id': id, 'onClick': on_click, 'disabled': disabled}
 
     if table_button:
 
