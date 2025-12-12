@@ -59,7 +59,7 @@ def TablePaginator(paginator: IPaginator[CompanyModel]):
     no_previous = not paginator.can_get_previous_page()
     no_next = not paginator.can_get_next_page()
 
-    return html.div({'class_name': 'grid', 'style': {'align-items': 'center','grid-template-columns': '2.5fr 1.5fr 1.5fr 2.5fr 4fr 1.2fr 2fr 3fr'}},
+    return html.div({'class': 'grid', 'style': {'align-items': 'center','grid-template-columns': '2.5fr 1.5fr 1.5fr 2.5fr 4fr 1.2fr 2fr 3fr'}},
         Button("pg-first", "<<", paginator.first_page, disabled = no_previous),
         Button("pg-prev", "<", paginator.previous_page, disabled = no_previous),
         Button("pg-next", ">", paginator.next_page, disabled = no_next),

@@ -60,7 +60,7 @@ def TRow(index: int, row: Book, edit_row: Action, delete_row: Action):
 
     @component
     def Actions():
-        return html.td({'class_name': 'grid', 'style': {'align-items': 'center','grid-template-columns': '0.5fr 0.5fr'}},
+        return html.td({'class': 'grid', 'style': {'align-items': 'center','grid-template-columns': '0.5fr 0.5fr'}},
             Button("row-edit", "📝", lambda : edit_row(index), table_button=True),
             Button("row-edit", "❌", lambda : delete_row(index),  table_button=True),
         )

@@ -138,7 +138,7 @@ def pico_run(
     @component
     def PicoContainer():
         return html.div(
-            {"class_name": "container", 'style': {'max-width': '1900px'}},
+            {'class': "container", 'style': {'max-width': '1900px'}},
             html.section(app())
         )
 
