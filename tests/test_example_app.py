@@ -19,7 +19,7 @@ async def get_row_index(display:DisplayFixture, row:int) -> int:
     return int(text[0].split('\t')[1])
 
 
-@pytest.mark.anyio
+
 async def test_paginator(display: DisplayFixture):
 
     await display.show(AppMain)
@@ -103,7 +103,6 @@ async def test_paginator(display: DisplayFixture):
     assert text[0] == "Page 26 of 26"
 
 
-@pytest.mark.anyio
 async def test_search(display: DisplayFixture):
     await display.show(AppMain)
     h2 = await display.page.wait_for_selector("h2")
@@ -120,7 +119,6 @@ async def test_search(display: DisplayFixture):
     assert rows == 6
 
 
-@pytest.mark.anyio
 async def test_sort(display: DisplayFixture):
     await display.show(AppMain)
     h2 = await display.page.wait_for_selector("h2")

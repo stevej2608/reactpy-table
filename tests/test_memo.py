@@ -1,8 +1,6 @@
 from typing import Tuple, Generic, Protocol, Callable
 from reactpy_table.utils.memo import TMemoResult, memo, MemoOpts
 
-
-
 def test_memo_simple():
 
     class IPipeline(Protocol, Generic[TMemoResult]):
