@@ -4,8 +4,11 @@ from reactpy import component, html
 from reactpy.types import VdomChildren, ComponentType
 from reactpy.testing import DisplayFixture
 
-
-from utils.server_options.pico_options import PICO_CSS
+PICO_CSS = {
+    'rel': 'stylesheet',
+    'href': 'https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css',
+    'crossorigin': 'anonymous'
+}
 
 
 class PicoContainer:

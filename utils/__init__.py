@@ -1,10 +1,8 @@
 # pyright: reportUnusedImport=false
 # ruff: noqa: F401
 
+from .dt import DT
 from .logger import set_log_level
-# TODO: Update fast_server.py for ReactPy v2 before enabling
-# from .pico_run import pico_run, ServerOptions
 from .reactpy_helpers import For
 from .types import EventArgs
 from .unique_sequence import UID
-from .dt import DT
