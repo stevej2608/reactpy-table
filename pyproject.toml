@@ -7,7 +7,7 @@ requires = ["hatchling"]
 ##############################
 
 [project]
-name = "reactpy_table"
+name = "reactpy-table"
 description = "Table library for ReactPy"
 readme = "README.md"
 keywords = ["React", "ReactJS", "ReactPy", "forms", "components"]
@@ -15,6 +15,7 @@ license = "MIT"
 authors = [{ name = "Steve Jones", email = "jonesst2608@gmail.com" }]
 requires-python = ">=3.9"
 classifiers = [
+  "Development Status :: 5 - Production/Stable",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -25,8 +26,7 @@ classifiers = [
 ]
 dependencies = ["reactpy==2.0.0b4"]
 dynamic = ["version"]
-urls.Homepage = "https://github.com/stevej2608/reactpy-table/blob/master/README.md"
-urls.Repository = "https://github.com/stevej2608/reactpy-table"
+urls.Homepage = "https://github.com/stevej2608/reactpy-table"
 urls.Source = "https://github.com/stevej2608/reactpy-table"
 
 [tool.hatch.version]
@@ -51,7 +51,6 @@ installer = "uv"
 [tool.hatch.envs.hatch-test]
 extra-dependencies = [
   "asgi-tools",
-  "asgiref",
   "asgiref",
   "exceptiongroup",
   "faker>=24.3.0",
@@ -105,7 +104,7 @@ line-length = 120
 typeCheckingMode = "strict"
 pythonVersion = "3.11"
 reportMissingTypeStubs = false
-ignore = ["tmp"]
+ignore = ["tmp", "tmp/**", "**/tmp/**"]
 
 
 

@@ -138,3 +138,4 @@ tmp/
 /.VSCodeCounter
 /js
 /reactpy_router
+books.db
