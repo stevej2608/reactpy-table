@@ -83,7 +83,7 @@ class BookDatabase:
                 recs = num_records if num_records < 10000 else 10000
                 num_records -= recs
                 session.bulk_insert_mappings(
-                    Book,
+                    Book,  # type: ignore
                     [ dict(
                         title=fake.sentence(nb_words=4),
                         author=fake.name(),
@@ -105,7 +105,7 @@ class BookDatabase:
                 bulk_count = num_records if num_records < 10000 else 10000
                 bulk_recs = books[skip: skip+bulk_count]
                 session.bulk_insert_mappings(
-                    Book_FTS,
+                    Book_FTS,  # type: ignore
                     [dict(
                         rowid=rec.id,
                         title=rec.title,
@@ -121,7 +121,7 @@ class BookDatabase:
             session.commit()
 
 
-    def get_row_count(self, table:SQLModel) -> int:
+    def get_row_count(self, table: type[SQLModel]) -> int:
         with Session(self.engine) as session:
             # pylint: disable=not-callable
             statement = select(func.count()).select_from(table) # type: ignore

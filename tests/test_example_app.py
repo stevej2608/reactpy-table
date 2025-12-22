@@ -1,4 +1,3 @@
-import pytest
 from reactpy.testing import DisplayFixture
 
 from examples.table_example import AppMain
