@@ -51,7 +51,7 @@ def THead(table: Table[CompanyModel]):
 def TColgroup(col_widths: List[int]):
     """Return a html.colgroup with the given widths"""
     return  html.colgroup(
-        [html.col({'style': {'width':f"{width}px"}}) for width in col_widths]
+        [html.col({'style': {'width':f"{width}px"}, 'key': str(i)}) for i, width in enumerate(col_widths)]
     )
 
 Action = Callable[[int], None]
@@ -66,7 +66,7 @@ def TRow(index: int, row: CompanyModel, edit_row: Action, delete_row: Action):
         )
 
 
-    return  html.tr({'id': f"row-{index}"},
+    return  html.tr({'id': f"row-{index}", 'key': f"row-{index}"},
         Actions(),
         html.td(str(row.index)),
         html.td(row.symbol),
