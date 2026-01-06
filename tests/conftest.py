@@ -32,8 +32,8 @@ def pytest_addoption(parser: Parser) -> None:
     )
 
 @pytest.fixture
-async def display(server: BackendFixture, page: Page) -> AsyncGenerator[DisplayFixture, None]:
-    async with DisplayFixture(server, page) as display:
+async def display(server: BackendFixture, browser: Browser) -> AsyncGenerator[DisplayFixture, None]:
+    async with DisplayFixture(server, browser) as display:
         yield display
 
 @pytest.fixture
