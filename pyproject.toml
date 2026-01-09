@@ -1,7 +1,6 @@
 [build-system]
 build-backend = "hatchling.build"
 requires = ["hatchling"]
-
 ##############################
 # >>> Hatch Build Config <<< #
 ##############################
@@ -17,10 +16,10 @@ requires-python = ">=3.9"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
@@ -34,10 +33,8 @@ path = "src/reactpy_table/__init__.py"
 
 [tool.hatch.build.targets.sdist]
 include = ["/src", "/tests", "/examples", "/utils"]
-
 [tool.hatch.build.targets.wheel]
 packages = ["src/reactpy_table"]
-
 [tool.hatch.metadata]
 license-files = { paths = ["LICENSE"] }
 
@@ -50,13 +47,13 @@ installer = "uv"
 
 [tool.hatch.envs.hatch-test]
 extra-dependencies = [
-  "asgi-tools",
+  "asgi_tools",
   "asgiref",
   "exceptiongroup",
-  "faker>=24.3.0",
+  "faker==40.1.0",
   "orjson",
   "playwright",
-  "pydantic>=2.5.3",
+  "pydantic",
   "pyright",
   "pytest-asyncio",
   "pytest-sugar",
@@ -68,7 +65,7 @@ randomize = true
 matrix-name-format = "{variable}-{value}"
 
 [[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.10", "3.11", "3.12", "3.13"]
+python = ["3.11", "3.12", "3.13", "3.14"]
 
 [tool.pytest.ini_options]
 testpaths = "tests"
@@ -87,8 +84,6 @@ extra-dependencies = ["pyright"]
 [tool.hatch.envs.python.scripts]
 type_check = ["pyright reactpy_table"]
 
-[tool.hatch.envs.javascript]
-detached = true
 #########################
 # >>> Generic Tools <<< #
 #########################
@@ -96,7 +91,6 @@ detached = true
 [tool.ruff]
 # https://docs.astral.sh/ruff/configuration/
 # https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff
-
 line-length = 120
 
 [tool.pyright]
@@ -105,6 +99,3 @@ typeCheckingMode = "strict"
 pythonVersion = "3.11"
 reportMissingTypeStubs = false
 ignore = ["tmp", "tmp/**", "**/tmp/**"]
-
-
-

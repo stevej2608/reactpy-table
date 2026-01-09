@@ -4,13 +4,12 @@ from typing import Any, Callable, Dict, List
 from reactpy import component, event, html, use_memo, use_state
 
 from reactpy_table import ColumnDef, Options, FeatureControl, Table, use_reactpy_table
-from utils import For, set_log_level
-from examples.runner import pico_run
+from utils.logger import log
+from utils import For
+from utils.app_runner import PicoRunner
 
 from .components import Button, Search, TablePaginator, ModalForm
 from .data.sp500 import COLS, CompanyModel, get_sp500
-
-log = logging.getLogger(__name__)
 
 # Example supports search, sort & pagination
 
@@ -136,5 +135,5 @@ def AppMain():
 # python -m examples.table_example
 
 if __name__ == "__main__":
-    set_log_level(logging.INFO)
-    pico_run(AppMain, additional_head=["assets/css/modal.css"])
+    log.setLevel(logging.INFO)
+    PicoRunner.run(AppMain, additional_head=["assets/css/modal.css"])

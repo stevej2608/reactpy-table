@@ -4,15 +4,14 @@ from typing import Any, Callable, Dict, List
 from reactpy import component, event, html
 
 from reactpy_table import ColumnDef, Options, FeatureControl, Table, use_reactpy_table
-from utils import For, set_log_level
-from examples.runner import pico_run
+from utils.logger import log
+from utils import For
+from utils.app_runner import PicoRunner
 
 from ..components import Button, Search, TablePaginator
 from ..hooks import use_pagination, use_sorting, use_search, use_api, DBQuery
 
 from .db import COLS, Book
-
-log = logging.getLogger(__name__)
 
 @component
 def THead(table: Table[Book]):
@@ -156,5 +155,5 @@ def AppMain():
 # python -m examples.books.books_example
 
 if __name__ == "__main__":
-    set_log_level(logging.INFO)
-    pico_run(AppMain)
+    log.setLevel(logging.INFO)
+    PicoRunner.run(AppMain)

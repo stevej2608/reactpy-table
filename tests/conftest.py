@@ -8,7 +8,7 @@ from reactpy.testing import DisplayFixture, BackendFixture
 from reactpy.testing.common import GITHUB_ACTIONS
 from reactpy._option import Option
 
-
+from tests.tooling.page_containers import IContainer, PicoContainer
 
 REACTPY_TESTS_DEFAULT_TIMEOUT = Option(
     "REACTPY_TESTS_DEFAULT_TIMEOUT",
@@ -40,6 +40,11 @@ async def display(server: BackendFixture, browser: Browser) -> AsyncGenerator[Di
 async def server() -> AsyncGenerator[BackendFixture, None]:
     async with BackendFixture() as server:
         yield server
+
+
+@pytest.fixture
+async def container(display: DisplayFixture) -> IContainer:
+    return PicoContainer(display)
 
 
 @pytest.fixture
